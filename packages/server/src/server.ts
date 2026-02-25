@@ -44,7 +44,7 @@ export class Server implements IServer {
   private readonly port: number
   private readonly host: string
   private readonly development: boolean
-  private readonly wsConfig: Required<WebSocketOptions>
+  private readonly wsConfig: WebSocketOptions
   private readonly middlewares: MiddlewareFn[]
   private readonly options: ServerOptions
 

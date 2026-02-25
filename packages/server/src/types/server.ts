@@ -16,11 +16,17 @@ import type {
 } from "../websocket/websocket-type-generator"
 
 /**
- * WebSocket server configuration, using Bun's native WebSocketHandler options.
+ * WebSocket server configuration.
  */
 export type WebSocketOptions = Pick<
   WebSocketHandler<unknown>,
-  "maxPayloadLength" | "idleTimeout" | "perMessageDeflate" | "backpressureLimit"
+  | "maxPayloadLength"
+  | "backpressureLimit"
+  | "closeOnBackpressureLimit"
+  | "idleTimeout"
+  | "publishToSelf"
+  | "sendPings"
+  | "perMessageDeflate"
 >
 
 /**
