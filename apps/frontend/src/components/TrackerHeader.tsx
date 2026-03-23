@@ -84,15 +84,17 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
         </div>
 
         {/* Index counters */}
-        <div className="flex items-center gap-4 text-xs text-gray-400 shrink-0 ml-2">
-          <span>
-            Skills:{" "}
+        <div className="flex items-center gap-3 shrink-0 ml-2">
+          <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-3 py-1 min-w-18">
+            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
+              Skill Idx
+            </span>
             {editingSkillIdx ? (
               <input
                 autoFocus
                 type="number"
                 min={1}
-                className="bg-gray-800 text-amber-300 font-mono rounded px-1 w-16 border border-amber-500 text-xs"
+                className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
                 value={skillIdxInput}
                 onChange={(e) => setSkillIdxInput(e.target.value)}
                 onBlur={handleSkillIdxSave}
@@ -108,21 +110,23 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
                   setSkillIdxInput(String(tracker.skillIndex))
                   setEditingSkillIdx(true)
                 }}
-                className="text-amber-300 font-mono hover:text-amber-200 hover:underline"
-                title="Click to edit next skill index"
+                className="text-amber-300 font-mono text-sm font-bold hover:text-amber-200 leading-none"
+                title="Click to edit next skill roll index"
               >
                 {tracker.skillIndex}
               </button>
             )}
-          </span>
-          <span>
-            Bonuses:{" "}
+          </div>
+          <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-3 py-1 min-w-18">
+            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
+              Bonus Idx
+            </span>
             {editingBonusIdx ? (
               <input
                 autoFocus
                 type="number"
                 min={1}
-                className="bg-gray-800 text-amber-300 font-mono rounded px-1 w-16 border border-amber-500 text-xs"
+                className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
                 value={bonusIdxInput}
                 onChange={(e) => setBonusIdxInput(e.target.value)}
                 onBlur={handleBonusIdxSave}
@@ -138,13 +142,13 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
                   setBonusIdxInput(String(tracker.bonusIndex))
                   setEditingBonusIdx(true)
                 }}
-                className="text-amber-300 font-mono hover:text-amber-200 hover:underline"
-                title="Click to edit next bonus index"
+                className="text-amber-300 font-mono text-sm font-bold hover:text-amber-200 leading-none"
+                title="Click to edit next bonus roll index"
               >
                 {tracker.bonusIndex}
               </button>
             )}
-          </span>
+          </div>
         </div>
 
         {/* Tracker ID + copy + switch */}
