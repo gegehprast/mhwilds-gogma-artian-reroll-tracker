@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { BonusRollsBirdView } from "./components/BonusRollsBirdView"
+import { SkillRollsBirdView } from "./components/SkillRollsBirdView"
 import { TrackerHeader } from "./components/TrackerHeader"
 import { TrackerSetup } from "./components/TrackerSetup"
 import { WeaponPanel } from "./components/WeaponPanel"
@@ -15,9 +17,13 @@ export default function App() {
 function MainApp() {
   const { query } = useTracker()
   const [selectedWeaponId, setSelectedWeaponId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<"skills" | "bonuses">("skills")
+  const [activeTab, setActiveTab] = useState<
+    "skills" | "bonuses" | "skills-bird" | "bonuses-bird"
+  >("skills-bird")
 
   const tracker = query.data
+
+  const isBirdView = activeTab === "skills-bird" || activeTab === "bonuses-bird"
 
   function handleSwitchTracker() {
     localStorage.removeItem("tracker_id")
@@ -53,7 +59,12 @@ function MainApp() {
 
       {/* Roll type tabs */}
       <div className="bg-gray-900 border-b border-gray-800 px-4 flex gap-4">
-        {(["skills", "bonuses"] as const).map((tab) => (
+        {(
+          [
+            ["skills-bird", "Skills ↔"],
+            ["bonuses-bird", "Bonuses ↔"],
+          ] as const
+        ).map(([tab, label]) => (
           <button
             key={tab}
             type="button"
@@ -64,22 +75,28 @@ function MainApp() {
                 : "border-transparent text-gray-500 hover:text-gray-300"
             }`}
           >
-            {tab === "skills" ? "Skill Rolls" : "Bonus Rolls"}
+            {label}
           </button>
         ))}
       </div>
 
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Weapon list sidebar */}
-        <WeaponSelector
-          trackerId={tracker.id}
-          selectedWeaponId={selectedWeaponId}
-          onSelect={setSelectedWeaponId}
-        />
+        {/* Weapon list sidebar — hidden in bird view */}
+        {!isBirdView && (
+          <WeaponSelector
+            trackerId={tracker.id}
+            selectedWeaponId={selectedWeaponId}
+            onSelect={setSelectedWeaponId}
+          />
+        )}
 
-        {/* Roll panel */}
-        {selectedWeaponId ? (
+        {/* Content area */}
+        {activeTab === "skills-bird" ? (
+          <SkillRollsBirdView tracker={tracker} />
+        ) : activeTab === "bonuses-bird" ? (
+          <BonusRollsBirdView tracker={tracker} />
+        ) : selectedWeaponId ? (
           <WeaponPanel
             tracker={tracker}
             weaponId={selectedWeaponId}

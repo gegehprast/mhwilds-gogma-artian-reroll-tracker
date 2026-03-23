@@ -11,9 +11,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
   const { updateName, setSkillIndex, setBonusIndex } = useTracker()
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState(tracker.name)
-  const [editingSkillIdx, setEditingSkillIdx] = useState(false)
   const [skillIdxInput, setSkillIdxInput] = useState(String(tracker.skillIndex))
-  const [editingBonusIdx, setEditingBonusIdx] = useState(false)
   const [bonusIdxInput, setBonusIdxInput] = useState(String(tracker.bonusIndex))
   const [copied, setCopied] = useState(false)
 
@@ -36,7 +34,6 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
     if (!Number.isNaN(v) && v >= 1 && v !== tracker.skillIndex) {
       setSkillIndex.mutate({ id: tracker.id, skillIndex: v })
     }
-    setEditingSkillIdx(false)
   }
 
   function handleBonusIdxSave() {
@@ -44,7 +41,6 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
     if (!Number.isNaN(v) && v >= 1 && v !== tracker.bonusIndex) {
       setBonusIndex.mutate({ id: tracker.id, bonusIndex: v })
     }
-    setEditingBonusIdx(false)
   }
 
   return (
@@ -55,7 +51,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
         </h1>
 
         {/* Tracker name — click to edit */}
-        <div className="flex items-center gap-1 min-w-0">
+        <div className="flex items-center gap-1 min-w-0 ml-auto">
           {editingName ? (
             <input
               autoFocus
@@ -78,7 +74,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
               className="text-sm font-medium text-gray-200 hover:text-amber-300 truncate max-w-48"
               title="Click to rename"
             >
-              {tracker.name}
+              {tracker.name} ✎
             </button>
           )}
         </div>
@@ -89,70 +85,42 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
             <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
               Skill Idx
             </span>
-            {editingSkillIdx ? (
-              <input
-                autoFocus
-                type="number"
-                min={1}
-                className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
-                value={skillIdxInput}
-                onChange={(e) => setSkillIdxInput(e.target.value)}
-                onBlur={handleSkillIdxSave}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSkillIdxSave()
-                  else if (e.key === "Escape") setEditingSkillIdx(false)
-                }}
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setSkillIdxInput(String(tracker.skillIndex))
-                  setEditingSkillIdx(true)
-                }}
-                className="text-amber-300 font-mono text-sm font-bold hover:text-amber-200 leading-none"
-                title="Click to edit next skill roll index"
-              >
-                {tracker.skillIndex}
-              </button>
-            )}
+            <input
+              autoFocus
+              type="number"
+              min={1}
+              className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
+              value={skillIdxInput}
+              onChange={(e) => setSkillIdxInput(e.target.value)}
+              onBlur={handleSkillIdxSave}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSkillIdxSave()
+                if (e.key === "Escape") handleSkillIdxSave()
+              }}
+            />
           </div>
           <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-3 py-1 min-w-18">
             <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
               Bonus Idx
             </span>
-            {editingBonusIdx ? (
-              <input
-                autoFocus
-                type="number"
-                min={1}
-                className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
-                value={bonusIdxInput}
-                onChange={(e) => setBonusIdxInput(e.target.value)}
-                onBlur={handleBonusIdxSave}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleBonusIdxSave()
-                  else if (e.key === "Escape") setEditingBonusIdx(false)
-                }}
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setBonusIdxInput(String(tracker.bonusIndex))
-                  setEditingBonusIdx(true)
-                }}
-                className="text-amber-300 font-mono text-sm font-bold hover:text-amber-200 leading-none"
-                title="Click to edit next bonus roll index"
-              >
-                {tracker.bonusIndex}
-              </button>
-            )}
+            <input
+              autoFocus
+              type="number"
+              min={1}
+              className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
+              value={bonusIdxInput}
+              onChange={(e) => setBonusIdxInput(e.target.value)}
+              onBlur={handleBonusIdxSave}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleBonusIdxSave()
+                if (e.key === "Escape") handleBonusIdxSave()
+              }}
+            />
           </div>
         </div>
 
         {/* Tracker ID + copy + switch */}
-        <div className="flex items-center gap-2 ml-auto shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <span className="text-xs text-gray-500">ID:</span>
           <span className="font-mono text-xs text-amber-300 select-all bg-gray-800 px-2 py-1 rounded">
             {tracker.id}
