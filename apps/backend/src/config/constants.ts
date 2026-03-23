@@ -82,14 +82,6 @@ export const ERROR_CODES = {
   INTERNAL_ERROR: "INTERNAL_ERROR",
   SERVICE_UNAVAILABLE: "SERVICE_UNAVAILABLE",
   DATABASE_ERROR: "DATABASE_ERROR",
-
-  // WebSocket
-  WS_MESSAGE_INVALID: "WS_MESSAGE_INVALID",
-  WS_HANDLER_NOT_FOUND: "WS_HANDLER_NOT_FOUND",
-  WS_RATE_LIMIT_EXCEEDED: "WS_RATE_LIMIT_EXCEEDED",
-
-  // Testing
-  TEST_ERROR: "TEST_ERROR",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES] & string
@@ -102,6 +94,7 @@ export const HEADERS = {
   AUTHORIZATION: "Authorization",
   X_REQUEST_ID: "X-Request-ID",
   X_REQUESTED_WITH: "X-Requested-With",
+  X_TRACKER_ID: "X-Tracker-Id",
   X_RATE_LIMIT_LIMIT: "X-RateLimit-Limit",
   X_RATE_LIMIT_REMAINING: "X-RateLimit-Remaining",
   X_RATE_LIMIT_RESET: "X-RateLimit-Reset",

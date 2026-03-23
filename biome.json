@@ -37,6 +37,10 @@
                         "accessibility": "explicit"
                     }
                 }
+            },
+            "a11y": {
+                "noAutofocus": "off",
+                "useSemanticElements": "off"
             }
         }
     },

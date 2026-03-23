@@ -73,24 +73,6 @@ export class InvalidCredentialsError extends AppError {
 }
 
 /**
- * Token expired error (401)
- */
-export class TokenExpiredError extends AppError {
-  public constructor(message = "Token has expired") {
-    super(message, ERROR_CODES.TOKEN_EXPIRED, 401)
-  }
-}
-
-/**
- * Invalid token error (401)
- */
-export class InvalidTokenError extends AppError {
-  public constructor(message = "Invalid token") {
-    super(message, ERROR_CODES.TOKEN_INVALID, 401)
-  }
-}
-
-/**
  * Insufficient permissions error (403)
  */
 export class ForbiddenError extends AppError {
@@ -162,24 +144,6 @@ export class InternalError extends AppError {
 export class ServiceUnavailableError extends AppError {
   public constructor(message = "Service temporarily unavailable") {
     super(message, ERROR_CODES.SERVICE_UNAVAILABLE, 503)
-  }
-}
-
-/**
- * WebSocket message invalid error
- */
-export class WsMessageInvalidError extends AppError {
-  public constructor(message: string, details?: unknown) {
-    super(message, ERROR_CODES.WS_MESSAGE_INVALID, 400, details)
-  }
-}
-
-/**
- * WebSocket handler not found error
- */
-export class WsHandlerNotFoundError extends AppError {
-  public constructor(message: string) {
-    super(message, ERROR_CODES.WS_HANDLER_NOT_FOUND, 404)
   }
 }
 

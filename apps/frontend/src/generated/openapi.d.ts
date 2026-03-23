@@ -104,7 +104,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/register": {
+    "/api/trackers": {
         parameters: {
             query?: never;
             header?: never;
@@ -114,17 +114,133 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Register new user
-         * @description Create a new user account with email and password
+         * Create tracker
+         * @description Creates a new tracker and returns it with its generated ID.
          */
-        post: operations["register"];
+        post: operations["createTracker"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/auth/login": {
+    "/api/trackers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get tracker
+         * @description Returns a tracker by its ID.
+         */
+        get: operations["getTracker"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update tracker
+         * @description Update the tracker's name or skill/bonus index counters.
+         */
+        patch: operations["updateTracker"];
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/weapons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List weapons
+         * @description Returns all weapons for a tracker.
+         */
+        get: operations["listWeapons"];
+        put?: never;
+        /**
+         * Find or create weapon
+         * @description Returns an existing weapon matching the type+element within the tracker, or creates one.
+         */
+        post: operations["findOrCreateWeapon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/weapons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete weapon
+         * @description Deletes a weapon and all its rolls.
+         */
+        delete: operations["deleteWeapon"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List skill rolls
+         * @description Returns all skill rolls for a weapon, ordered by index.
+         */
+        get: operations["listSkillRolls"];
+        put?: never;
+        /**
+         * Create skill roll
+         * @description Creates a new skill roll at the tracker's current skill index, then increments the counter.
+         */
+        post: operations["createSkillRoll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete skill roll
+         * @description Deletes a single skill roll by ID.
+         */
+        delete: operations["deleteSkillRoll"];
+        options?: never;
+        head?: never;
+        /**
+         * Update skill roll
+         * @description Correct group_skill or series_skill. The index is not editable.
+         */
+        patch: operations["updateSkillRoll"];
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
         parameters: {
             query?: never;
             header?: never;
@@ -134,17 +250,17 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Login user
-         * @description Authenticate user with email and password
+         * Import skill rolls
+         * @description Replaces a range of skill rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's skill index counter.
          */
-        post: operations["login"];
+        post: operations["importSkillRolls"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/auth/me": {
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls": {
         parameters: {
             query?: never;
             header?: never;
@@ -152,65 +268,61 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get current user
-         * @description Get the authenticated user's profile (requires Bearer token)
+         * List bonus rolls
+         * @description Returns all bonus rolls for a weapon, ordered by index.
          */
-        get: operations["getCurrentUser"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/todos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List todos
-         * @description Lists all todo items for the authenticated user (requires Bearer token)
-         */
-        get: operations["listTodos"];
+        get: operations["listBonusRolls"];
         put?: never;
         /**
-         * Create a new todo
-         * @description Creates a new todo for the authenticated user (requires Bearer token)
+         * Create bonus roll
+         * @description Creates a new bonus roll at the tracker's current bonus index, then increments the counter.
          */
-        post: operations["createTodo"];
+        post: operations["createBonusRoll"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/todos/{id}": {
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get a todo by ID
-         * @description Retrieves a specific todo item by its ID (requires Bearer token)
-         */
-        get: operations["getTodo"];
-        /**
-         * Update a todo
-         * @description Updates a todo item by its ID (requires Bearer token)
-         */
-        put: operations["updateTodo"];
+        get?: never;
+        put?: never;
         post?: never;
         /**
-         * Delete a todo
-         * @description Deletes a todo item by its ID (requires Bearer token)
+         * Delete bonus roll
+         * @description Deletes a single bonus roll by ID.
          */
-        delete: operations["deleteTodo"];
+        delete: operations["deleteBonusRoll"];
+        options?: never;
+        head?: never;
+        /**
+         * Update bonus roll
+         * @description Correct any of the five bonus stat columns. The index is not editable.
+         */
+        patch: operations["updateBonusRoll"];
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import bonus rolls
+         * @description Replaces a range of bonus rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's bonus index counter.
+         */
+        post: operations["importBonusRolls"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -220,58 +332,68 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /**
-         * Register Request
-         * @description User registration data
-         */
-        RegisterBody: {
-            /**
-             * Format: email
-             * @example john@doe.com
-             */
-            email: string;
-            /**
-             * @description User password (min 12 characters, must include uppercase, lowercase, number, and special character)
-             * @example qwer1234
-             */
-            password: string & (unknown & unknown);
-            /** @example John Doe */
+        CreateTrackerBody: {
             name?: string;
         };
-        /**
-         * Login Request
-         * @description User login credentials
-         */
-        LoginBody: {
-            /**
-             * Format: email
-             * @example john@doe.com
-             */
-            email: string;
-            /** @example qwer1234 */
-            password: string;
+        UpdateTrackerBody: {
+            name?: string;
+            skillIndex?: number;
+            bonusIndex?: number;
+        };
+        CreateWeaponBody: {
+            weaponType: components["schemas"]["WeaponType"];
+            element: components["schemas"]["Element"];
         };
         /**
-         * Create Todo Body
-         * @description Schema for creating a new todo item
+         * WeaponType
+         * @enum {string}
          */
-        CreateTodoBody: {
-            /** @example Buy groceries */
-            title: string;
-            /** @example Milk, Bread, Eggs */
-            description?: string;
-        };
+        WeaponType: "Great Sword" | "Sword & Shield" | "Dual Blades" | "Long Sword" | "Hammer" | "Hunting Horn" | "Lance" | "Gunlance" | "Switch Axe" | "Charge Blade" | "Insect Glaive" | "Light Bowgun" | "Heavy Bowgun" | "Bow";
         /**
-         * Update Todo Body
-         * @description Schema for updating a todo item
+         * Element
+         * @enum {string}
          */
-        UpdateTodoBody: {
-            /** @example Buy groceries */
-            title?: string;
-            /** @example Milk, Bread, Eggs */
-            description?: string;
-            /** @example false */
-            completed?: boolean;
+        Element: "None" | "Fire" | "Water" | "Thunder" | "Ice" | "Dragon" | "Poison" | "Paralysis" | "Sleep" | "Blast";
+        CreateSkillRollBody: {
+            groupSkill: string;
+            seriesSkill: string;
+        };
+        UpdateSkillRollBody: {
+            groupSkill?: string;
+            seriesSkill?: string;
+        };
+        ImportSkillRollsBody: {
+            selectedIndex: number;
+            rolls: {
+                attemptNum: number;
+                groupSkill: string;
+                seriesSkill: string;
+            }[];
+        };
+        CreateBonusRollBody: {
+            bonus1: string;
+            bonus2: string;
+            bonus3: string;
+            bonus4: string;
+            bonus5: string;
+        };
+        UpdateBonusRollBody: {
+            bonus1?: string;
+            bonus2?: string;
+            bonus3?: string;
+            bonus4?: string;
+            bonus5?: string;
+        };
+        ImportBonusRollsBody: {
+            selectedIndex: number;
+            rolls: {
+                attemptNum: number;
+                bonus1: string;
+                bonus2: string;
+                bonus3: string;
+                bonus4: string;
+                bonus5: string;
+            }[];
         };
         /**
          * Health Check Response
@@ -283,52 +405,51 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-02-01T14:07:42.545Z */
+            /** @example 2026-03-23T21:35:20.120Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
         };
-        /**
-         * Auth Response
-         * @description Authentication response with user data and JWT token
-         */
-        AuthResponse: {
-            user: {
-                id: string;
-                email: string;
-                name: string | null;
-            };
-            token: string;
-        };
-        /**
-         * User Response
-         * @description User profile data
-         */
-        UserResponse: {
+        /** Tracker */
+        Tracker: {
             id: string;
-            email: string;
-            name: string | null;
-            createdAt: string;
+            name: string;
+            skillIndex: number;
+            bonusIndex: number;
+            createdAt: number;
+            updatedAt: number;
         };
-        /**
-         * Todo Item
-         * @description Schema representing a todo item
-         */
-        Todo: {
-            /** @example 1 */
+        /** Weapon */
+        Weapon: {
             id: string;
-            /** @example user-123 */
-            userId: string;
-            /** @example Buy groceries */
-            title: string;
-            /** @example Milk, Bread, Eggs */
-            description: string | null;
-            /** @example false */
-            completed: boolean;
-            /** @example 2026-02-01T14:07:42.551Z */
-            createdAt: string;
-            /** @example 2026-02-01T14:07:42.551Z */
-            updatedAt: string;
+            trackerId: string;
+            weaponType: components["schemas"]["WeaponType"];
+            element: components["schemas"]["Element"];
+            createdAt: number;
+            updatedAt: number;
+        };
+        /** Skill Roll */
+        SkillRoll: {
+            id: string;
+            index: number;
+            weaponId: string;
+            groupSkill: string;
+            seriesSkill: string;
+            createdAt: number;
+            updatedAt: number;
+        };
+        /** Bonus Roll */
+        BonusRoll: {
+            id: string;
+            index: number;
+            weaponId: string;
+            bonus1: string;
+            bonus2: string;
+            bonus3: string;
+            bonus4: string;
+            bonus5: string;
+            createdAt: number;
+            updatedAt: number;
         };
         /** @description Bad Request Error Response */
         BadRequestErrorResponse: {
@@ -343,41 +464,6 @@ export interface components {
                 /** @description Validation error message */
                 message: string;
             }[];
-        };
-        /** @description Unauthorized Error Response */
-        UnauthorizedErrorResponse: {
-            /** @description Error message */
-            message: string;
-            /** @constant */
-            code: "UNAUTHORIZED";
-            /** @description Additional error details */
-            details?: unknown;
-        };
-        /** @description Conflict Error Response */
-        ConflictErrorResponse: {
-            /** @description Error message */
-            message: string;
-            /** @constant */
-            code: "CONFLICT";
-            /** @description Conflict details */
-            details?: string | Record<string, never>;
-        };
-        /** @description Internal Server Error Response */
-        InternalServerErrorResponse: {
-            /** @description Error message */
-            message: string;
-            /** @constant */
-            code: "INTERNAL_ERROR";
-            /** @description Internal error details (for debugging) */
-            details?: string;
-        };
-        ErrorResponse: {
-            /** @description Error message */
-            message: string;
-            /** @description Error code */
-            code: string;
-            /** @description Additional error details */
-            details?: unknown;
         };
         /** @description Forbidden Error Response */
         ForbiddenErrorResponse: {
@@ -396,6 +482,41 @@ export interface components {
             code: "NOT_FOUND";
             /** @description Additional error details */
             details?: unknown;
+        };
+        /** @description Internal Server Error Response */
+        InternalServerErrorResponse: {
+            /** @description Error message */
+            message: string;
+            /** @constant */
+            code: "INTERNAL_ERROR";
+            /** @description Internal error details (for debugging) */
+            details?: string;
+        };
+        ErrorResponse: {
+            /** @description Error message */
+            message: string;
+            /** @description Error code */
+            code: string;
+            /** @description Additional error details */
+            details?: unknown;
+        };
+        /** @description Unauthorized Error Response */
+        UnauthorizedErrorResponse: {
+            /** @description Error message */
+            message: string;
+            /** @constant */
+            code: "UNAUTHORIZED";
+            /** @description Additional error details */
+            details?: unknown;
+        };
+        /** @description Conflict Error Response */
+        ConflictErrorResponse: {
+            /** @description Error message */
+            message: string;
+            /** @constant */
+            code: "CONFLICT";
+            /** @description Conflict details */
+            details?: string | Record<string, never>;
         };
     };
     responses: never;
@@ -561,7 +682,7 @@ export interface operations {
             };
         };
     };
-    register: {
+    createTracker: {
         parameters: {
             query?: never;
             header?: never;
@@ -570,17 +691,17 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RegisterBody"];
+                "application/json": components["schemas"]["CreateTrackerBody"];
             };
         };
         responses: {
-            /** @description 200 response */
-            200: {
+            /** @description 201 response */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AuthResponse"];
+                    "application/json": components["schemas"]["Tracker"];
                 };
             };
             /** @description Bad Request - Invalid input or validation failed */
@@ -606,22 +727,6 @@ export interface operations {
                     "application/json": components["schemas"]["BadRequestErrorResponse"];
                 };
             };
-            /** @description Conflict - Resource already exists or state conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Resource already exists",
-                     *       "code": "CONFLICT",
-                     *       "details": "A user with this email already exists"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ConflictErrorResponse"];
-                };
-            };
             /** @description Internal Server Error - Unexpected server error */
             500: {
                 headers: {
@@ -640,287 +745,7 @@ export interface operations {
             };
         };
     };
-    login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginBody"];
-            };
-        };
-        responses: {
-            /** @description 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuthResponse"];
-                };
-            };
-            /** @description Bad Request - Invalid input or validation failed */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Validation failed",
-                     *       "code": "BAD_REQUEST",
-                     *       "details": [
-                     *         {
-                     *           "path": [
-                     *             "email"
-                     *           ],
-                     *           "message": "Invalid email format"
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["BadRequestErrorResponse"];
-                };
-            };
-            /** @description Invalid credentials */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
-                };
-            };
-            /** @description Internal Server Error - Unexpected server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Internal server error",
-                     *       "code": "INTERNAL_ERROR",
-                     *       "details": "Stack trace or error details for debugging"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
-    getCurrentUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Unauthorized - Invalid or missing token hahah */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication required",
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
-                };
-            };
-            /** @description Internal Server Error - Unexpected server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Internal server error",
-                     *       "code": "INTERNAL_ERROR",
-                     *       "details": "Stack trace or error details for debugging"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
-    listTodos: {
-        parameters: {
-            query?: {
-                /** @description Filter todos by completion status */
-                completed?: string;
-                /** @description Maximum number of todos to return */
-                limit?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Todo"][];
-                };
-            };
-            /** @description Bad Request - Invalid input or validation failed */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Validation failed",
-                     *       "code": "BAD_REQUEST",
-                     *       "details": [
-                     *         {
-                     *           "path": [
-                     *             "email"
-                     *           ],
-                     *           "message": "Invalid email format"
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["BadRequestErrorResponse"];
-                };
-            };
-            /** @description Unauthorized - Authentication required or failed */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication required",
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
-                };
-            };
-            /** @description Internal Server Error - Unexpected server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Internal server error",
-                     *       "code": "INTERNAL_ERROR",
-                     *       "details": "Stack trace or error details for debugging"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
-    createTodo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateTodoBody"];
-            };
-        };
-        responses: {
-            /** @description 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Todo"];
-                };
-            };
-            /** @description Bad Request - Invalid input or validation failed */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Validation failed",
-                     *       "code": "BAD_REQUEST",
-                     *       "details": [
-                     *         {
-                     *           "path": [
-                     *             "email"
-                     *           ],
-                     *           "message": "Invalid email format"
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["BadRequestErrorResponse"];
-                };
-            };
-            /** @description Unauthorized - Authentication required or failed */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication required",
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
-                };
-            };
-            /** @description Internal Server Error - Unexpected server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Internal server error",
-                     *       "code": "INTERNAL_ERROR",
-                     *       "details": "Stack trace or error details for debugging"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
-    getTodo: {
+    getTracker: {
         parameters: {
             query?: never;
             header?: never;
@@ -937,22 +762,22 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Todo"];
+                    "application/json": components["schemas"]["Tracker"];
                 };
             };
-            /** @description Unauthorized - Authentication required or failed */
-            401: {
+            /** @description Not Found - Resource does not exist */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication required",
-                     *       "code": "UNAUTHORIZED"
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
                      *     }
                      */
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */
@@ -973,7 +798,7 @@ export interface operations {
             };
         };
     };
-    updateTodo: {
+    updateTracker: {
         parameters: {
             query?: never;
             header?: never;
@@ -984,7 +809,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateTodoBody"];
+                "application/json": components["schemas"]["UpdateTrackerBody"];
             };
         };
         responses: {
@@ -994,7 +819,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Todo"];
+                    "application/json": components["schemas"]["Tracker"];
                 };
             };
             /** @description Bad Request - Invalid input or validation failed */
@@ -1020,19 +845,19 @@ export interface operations {
                     "application/json": components["schemas"]["BadRequestErrorResponse"];
                 };
             };
-            /** @description Unauthorized - Authentication required or failed */
-            401: {
+            /** @description Not Found - Resource does not exist */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication required",
-                     *       "code": "UNAUTHORIZED"
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
                      *     }
                      */
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */
@@ -1053,12 +878,12 @@ export interface operations {
             };
         };
     };
-    deleteTodo: {
+    listWeapons: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                trackerId: string;
             };
             cookie?: never;
         };
@@ -1070,24 +895,970 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        message: string;
-                    };
+                    "application/json": components["schemas"]["Weapon"][];
                 };
             };
-            /** @description Unauthorized - Authentication required or failed */
-            401: {
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication required",
-                     *       "code": "UNAUTHORIZED"
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
                      *     }
                      */
-                    "application/json": components["schemas"]["UnauthorizedErrorResponse"];
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    findOrCreateWeapon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWeaponBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Weapon"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteWeapon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    listSkillRolls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRoll"][];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    createSkillRoll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSkillRollBody"];
+            };
+        };
+        responses: {
+            /** @description 201 response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRoll"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteSkillRoll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    updateSkillRoll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSkillRollBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRoll"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    importSkillRolls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportSkillRollsBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRoll"][];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    listBonusRolls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BonusRoll"][];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    createBonusRoll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBonusRollBody"];
+            };
+        };
+        responses: {
+            /** @description 201 response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BonusRoll"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteBonusRoll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    updateBonusRoll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateBonusRollBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BonusRoll"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    importBonusRolls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                weaponId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportBonusRollsBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BonusRoll"][];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */

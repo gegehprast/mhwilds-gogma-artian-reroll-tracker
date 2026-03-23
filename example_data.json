@@ -1,0 +1,443 @@
+{
+    "lastUpdated": "2026-03-24 01:15:48",
+    "totalWeapons": 2,
+    "weapons": [
+        {
+            "attempts": [
+                {
+                    "attemptNum": 1,
+                    "skills": {
+                        "group": "Rey Dau's Voltage",
+                        "series": "Lord's Favor"
+                    },
+                    "timestamp": "2026-03-24 01:05:45"
+                },
+                {
+                    "attemptNum": 2,
+                    "skills": {
+                        "group": "Seregios's Tenacity",
+                        "series": "Buttery Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:05:51"
+                },
+                {
+                    "attemptNum": 3,
+                    "skills": {
+                        "group": "Arkveld's Hunger",
+                        "series": "Neopteron Camouflage"
+                    },
+                    "timestamp": "2026-03-24 01:05:55"
+                },
+                {
+                    "attemptNum": 4,
+                    "skills": {
+                        "group": "Arkveld's Hunger",
+                        "series": "Fortifying Pelt"
+                    },
+                    "timestamp": "2026-03-24 01:05:59"
+                },
+                {
+                    "attemptNum": 5,
+                    "skills": {
+                        "group": "Blangonga's Spirit",
+                        "series": "Lord's Fury"
+                    },
+                    "timestamp": "2026-03-24 01:06:02"
+                },
+                {
+                    "attemptNum": 6,
+                    "skills": {
+                        "group": "Fulgur Anjanath's Will",
+                        "series": "Lord's Favor"
+                    },
+                    "timestamp": "2026-03-24 01:06:05"
+                },
+                {
+                    "attemptNum": 7,
+                    "skills": {
+                        "group": "Omega Resonance",
+                        "series": "Lord's Fury"
+                    },
+                    "timestamp": "2026-03-24 01:06:08"
+                },
+                {
+                    "attemptNum": 8,
+                    "skills": {
+                        "group": "Guardian Arkveld's Vitality",
+                        "series": "Buttery Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:06:12"
+                },
+                {
+                    "attemptNum": 9,
+                    "skills": {
+                        "group": "Mizutsune's Prowess",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:06:25"
+                },
+                {
+                    "attemptNum": 10,
+                    "skills": {
+                        "group": "Rathalos's Flare",
+                        "series": "Fortifying Pelt"
+                    },
+                    "timestamp": "2026-03-24 01:06:28"
+                },
+                {
+                    "attemptNum": 11,
+                    "skills": {
+                        "group": "Fulgur Anjanath's Will",
+                        "series": "Flexible Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:06:33"
+                },
+                {
+                    "attemptNum": 12,
+                    "skills": {
+                        "group": "Gore Magala's Tyranny",
+                        "series": "Alluring Pelt"
+                    },
+                    "timestamp": "2026-03-24 01:06:35"
+                },
+                {
+                    "attemptNum": 13,
+                    "skills": {
+                        "group": "Blangonga's Spirit",
+                        "series": "Lord's Favor"
+                    },
+                    "timestamp": "2026-03-24 01:06:37"
+                },
+                {
+                    "attemptNum": 14,
+                    "skills": {
+                        "group": "Blangonga's Spirit",
+                        "series": "Neopteron Camouflage"
+                    },
+                    "timestamp": "2026-03-24 01:06:40"
+                },
+                {
+                    "attemptNum": 15,
+                    "skills": {
+                        "group": "Gogmapocalypse",
+                        "series": "Guardian's Protection"
+                    },
+                    "timestamp": "2026-03-24 01:06:42"
+                },
+                {
+                    "attemptNum": 16,
+                    "skills": {
+                        "group": "Doshaguma's Might",
+                        "series": "Lord's Favor"
+                    },
+                    "timestamp": "2026-03-24 01:06:44"
+                },
+                {
+                    "attemptNum": 17,
+                    "skills": {
+                        "group": "Rathalos's Flare",
+                        "series": "Imparted Wisdom"
+                    },
+                    "timestamp": "2026-03-24 01:06:46"
+                },
+                {
+                    "attemptNum": 18,
+                    "skills": {
+                        "group": "Seregios's Tenacity",
+                        "series": "Fortifying Pelt"
+                    },
+                    "timestamp": "2026-03-24 01:06:48"
+                },
+                {
+                    "attemptNum": 19,
+                    "skills": {
+                        "group": "Nu Udra's Mutiny",
+                        "series": "Flexible Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:06:50"
+                },
+                {
+                    "attemptNum": 20,
+                    "skills": {
+                        "group": "Mizutsune's Prowess",
+                        "series": "Imparted Wisdom"
+                    },
+                    "timestamp": "2026-03-24 01:06:52"
+                },
+                {
+                    "attemptNum": 21,
+                    "skills": {
+                        "group": "Xu Wu's Vigor",
+                        "series": "Scaling Prowess"
+                    },
+                    "timestamp": "2026-03-24 01:06:54"
+                },
+                {
+                    "attemptNum": 22,
+                    "skills": {
+                        "group": "Leviathan's Fury",
+                        "series": "Imparted Wisdom"
+                    },
+                    "timestamp": "2026-03-24 01:06:56"
+                },
+                {
+                    "attemptNum": 23,
+                    "skills": {
+                        "group": "Ebony Odogaron's Power",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:06:58"
+                },
+                {
+                    "attemptNum": 24,
+                    "skills": {
+                        "group": "Arkveld's Hunger",
+                        "series": "Guardian's Pulse"
+                    },
+                    "timestamp": "2026-03-24 01:07:00"
+                },
+                {
+                    "attemptNum": 25,
+                    "skills": {
+                        "group": "Soul of the Dark Knight",
+                        "series": "Guardian's Pulse"
+                    },
+                    "timestamp": "2026-03-24 01:07:02"
+                },
+                {
+                    "attemptNum": 26,
+                    "skills": {
+                        "group": "Jin Dahaad's Revolt",
+                        "series": "Lord's Fury"
+                    },
+                    "timestamp": "2026-03-24 01:07:04"
+                },
+                {
+                    "attemptNum": 27,
+                    "skills": {
+                        "group": "Jin Dahaad's Revolt",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:07:06"
+                },
+                {
+                    "attemptNum": 28,
+                    "skills": {
+                        "group": "Doshaguma's Might",
+                        "series": "Neopteron Camouflage"
+                    },
+                    "timestamp": "2026-03-24 01:07:09"
+                },
+                {
+                    "attemptNum": 29,
+                    "skills": {
+                        "group": "Gravios's Protection",
+                        "series": "Fortifying Pelt"
+                    },
+                    "timestamp": "2026-03-24 01:07:11"
+                },
+                {
+                    "attemptNum": 30,
+                    "skills": {
+                        "group": "Leviathan's Fury",
+                        "series": "Guardian's Pulse"
+                    },
+                    "timestamp": "2026-03-24 01:07:14"
+                },
+                {
+                    "attemptNum": 31,
+                    "skills": {
+                        "group": "Gogmapocalypse",
+                        "series": "Flexible Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:07:16"
+                },
+                {
+                    "attemptNum": 32,
+                    "skills": {
+                        "group": "Omega Resonance",
+                        "series": "Fortifying Pelt"
+                    },
+                    "timestamp": "2026-03-24 01:07:19"
+                },
+                {
+                    "attemptNum": 33,
+                    "skills": {
+                        "group": "Gore Magala's Tyranny",
+                        "series": "Flexible Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:07:21"
+                },
+                {
+                    "attemptNum": 34,
+                    "skills": {
+                        "group": "Fulgur Anjanath's Will",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:07:23"
+                },
+                {
+                    "attemptNum": 35,
+                    "skills": {
+                        "group": "Seregios's Tenacity",
+                        "series": "Lord's Favor"
+                    },
+                    "timestamp": "2026-03-24 01:07:26"
+                },
+                {
+                    "attemptNum": 36,
+                    "skills": {
+                        "group": "Uth Duna's Cover",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:07:29"
+                },
+                {
+                    "attemptNum": 37,
+                    "skills": {
+                        "group": "Guardian Arkveld's Vitality",
+                        "series": "Neopteron Camouflage"
+                    },
+                    "timestamp": "2026-03-24 01:07:31"
+                },
+                {
+                    "attemptNum": 38,
+                    "skills": {
+                        "group": "Rey Dau's Voltage",
+                        "series": "Flexible Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:07:33"
+                },
+                {
+                    "attemptNum": 39,
+                    "skills": {
+                        "group": "Uth Duna's Cover",
+                        "series": "Lord's Soul"
+                    },
+                    "timestamp": "2026-03-24 01:07:35"
+                },
+                {
+                    "attemptNum": 40,
+                    "skills": {
+                        "group": "Seregios's Tenacity",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:07:38"
+                },
+                {
+                    "attemptNum": 41,
+                    "skills": {
+                        "group": "Nu Udra's Mutiny",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:07:41"
+                },
+                {
+                    "attemptNum": 42,
+                    "skills": {
+                        "group": "Rey Dau's Voltage",
+                        "series": "Buttery Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:07:45"
+                },
+                {
+                    "attemptNum": 43,
+                    "skills": {
+                        "group": "Omega Resonance",
+                        "series": "Buttery Leathercraft"
+                    },
+                    "timestamp": "2026-03-24 01:07:48"
+                },
+                {
+                    "attemptNum": 44,
+                    "skills": {
+                        "group": "Gravios's Protection",
+                        "series": "Lord's Fury"
+                    },
+                    "timestamp": "2026-03-24 01:07:50"
+                },
+                {
+                    "attemptNum": 45,
+                    "skills": {
+                        "group": "Blangonga's Spirit",
+                        "series": "Guardian's Protection"
+                    },
+                    "timestamp": "2026-03-24 01:07:53"
+                },
+                {
+                    "attemptNum": 46,
+                    "skills": {
+                        "group": "Mizutsune's Prowess",
+                        "series": "Neopteron Camouflage"
+                    },
+                    "timestamp": "2026-03-24 01:07:56"
+                },
+                {
+                    "attemptNum": 47,
+                    "skills": {
+                        "group": "Zoh Shia's Pulse",
+                        "series": "Scale Layering"
+                    },
+                    "timestamp": "2026-03-24 01:07:59"
+                },
+                {
+                    "attemptNum": 48,
+                    "skills": {
+                        "group": "Rathalos's Flare",
+                        "series": "Guardian's Pulse"
+                    },
+                    "timestamp": "2026-03-24 01:08:02"
+                },
+                {
+                    "attemptNum": 49,
+                    "skills": {
+                        "group": "Mizutsune's Prowess",
+                        "series": "Neopteron Camouflage"
+                    },
+                    "timestamp": "2026-03-24 01:08:05"
+                }
+            ],
+            "attribute": "Blast",
+            "endTime": "2026-03-24 01:15:19",
+            "mode": "lottery",
+            "nickname": "Blast Charge Blade",
+            "startTime": "2026-03-24 01:05:25",
+            "totalAttempts": 49,
+            "weaponType": 9,
+            "weaponTypeName": "Charge Blade"
+        },
+        {
+            "attempts": [
+                {
+                    "attemptNum": 1,
+                    "bonuses": [
+                        "Affinity Boost EX",
+                        "Element Boost EX",
+                        "Affinity Boost EX",
+                        "Attack Boost II",
+                        "Affinity Boost III"
+                    ],
+                    "timestamp": "2026-03-24 01:15:19"
+                },
+                {
+                    "attemptNum": 2,
+                    "bonuses": [
+                        "Attack Boost III",
+                        "Sharpness/Ammo Boost EX",
+                        "Sharpness/Ammo Boost I",
+                        "Attack Boost III",
+                        "Affinity Boost III"
+                    ],
+                    "timestamp": "2026-03-24 01:15:48"
+                }
+            ],
+            "attribute": "Fire",
+            "isCurrent": true,
+            "mode": "grinding",
+            "nickname": "Fire Charge Blade",
+            "startTime": "2026-03-24 01:15:19",
+            "weaponType": 9,
+            "weaponTypeName": "Charge Blade"
+        }
+    ]
+}

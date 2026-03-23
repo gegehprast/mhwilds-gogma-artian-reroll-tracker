@@ -1,67 +1,123 @@
 {
-    "id": "4e8b8140-0372-4b44-8032-0a30552ff566",
+    "version": "6",
+    "dialect": "sqlite",
+    "id": "c8dad2be-aee4-4e28-b398-365cef50842b",
     "prevId": "00000000-0000-0000-0000-000000000000",
-    "version": "7",
-    "dialect": "postgresql",
     "tables": {
-        "public.todos": {
-            "name": "todos",
-            "schema": "",
+        "trackers": {
+            "name": "trackers",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "uuid",
+                    "type": "text",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "gen_random_uuid()"
+                    "autoincrement": false
                 },
-                "user_id": {
-                    "name": "user_id",
-                    "type": "uuid",
-                    "primaryKey": false,
-                    "notNull": true
-                },
-                "title": {
-                    "name": "title",
+                "name": {
+                    "name": "name",
                     "type": "text",
-                    "primaryKey": false,
-                    "notNull": true
-                },
-                "description": {
-                    "name": "description",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "completed": {
-                    "name": "completed",
-                    "type": "boolean",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": false
+                    "autoincrement": false,
+                    "default": "'My Tracker'"
+                },
+                "skill_index": {
+                    "name": "skill_index",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": 1
+                },
+                "bonus_index": {
+                    "name": "bonus_index",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": 1
                 },
                 "created_at": {
                     "name": "created_at",
-                    "type": "timestamp",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "now()"
+                    "autoincrement": false
                 },
                 "updated_at": {
                     "name": "updated_at",
-                    "type": "timestamp",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "now()"
+                    "autoincrement": false
                 }
             },
             "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "weapons": {
+            "name": "weapons",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "tracker_id": {
+                    "name": "tracker_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "weapon_type": {
+                    "name": "weapon_type",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "element": {
+                    "name": "element",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "weapons_tracker_type_element_idx": {
+                    "name": "weapons_tracker_type_element_idx",
+                    "columns": ["tracker_id", "weapon_type", "element"],
+                    "isUnique": true
+                }
+            },
             "foreignKeys": {
-                "todos_user_id_users_id_fk": {
-                    "name": "todos_user_id_users_id_fk",
-                    "tableFrom": "todos",
-                    "tableTo": "users",
-                    "columnsFrom": ["user_id"],
+                "weapons_tracker_id_trackers_id_fk": {
+                    "name": "weapons_tracker_id_trackers_id_fk",
+                    "tableFrom": "weapons",
+                    "tableTo": "trackers",
+                    "columnsFrom": ["tracker_id"],
                     "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
@@ -69,78 +125,188 @@
             },
             "compositePrimaryKeys": {},
             "uniqueConstraints": {},
-            "policies": {},
-            "checkConstraints": {},
-            "isRLSEnabled": false
+            "checkConstraints": {}
         },
-        "public.users": {
-            "name": "users",
-            "schema": "",
+        "skill_rolls": {
+            "name": "skill_rolls",
             "columns": {
                 "id": {
                     "name": "id",
-                    "type": "uuid",
+                    "type": "text",
                     "primaryKey": true,
                     "notNull": true,
-                    "default": "gen_random_uuid()"
+                    "autoincrement": false
                 },
-                "email": {
-                    "name": "email",
+                "index": {
+                    "name": "index",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "weapon_id": {
+                    "name": "weapon_id",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true
+                    "notNull": true,
+                    "autoincrement": false
                 },
-                "password_hash": {
-                    "name": "password_hash",
+                "group_skill": {
+                    "name": "group_skill",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true
+                    "notNull": true,
+                    "autoincrement": false
                 },
-                "name": {
-                    "name": "name",
+                "series_skill": {
+                    "name": "series_skill",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": false
+                    "notNull": true,
+                    "autoincrement": false
                 },
                 "created_at": {
                     "name": "created_at",
-                    "type": "timestamp",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "now()"
+                    "autoincrement": false
                 },
                 "updated_at": {
                     "name": "updated_at",
-                    "type": "timestamp",
+                    "type": "integer",
                     "primaryKey": false,
                     "notNull": true,
-                    "default": "now()"
+                    "autoincrement": false
                 }
             },
-            "indexes": {},
-            "foreignKeys": {},
+            "indexes": {
+                "skill_rolls_weapon_index_idx": {
+                    "name": "skill_rolls_weapon_index_idx",
+                    "columns": ["weapon_id", "index"],
+                    "isUnique": true
+                }
+            },
+            "foreignKeys": {
+                "skill_rolls_weapon_id_weapons_id_fk": {
+                    "name": "skill_rolls_weapon_id_weapons_id_fk",
+                    "tableFrom": "skill_rolls",
+                    "tableTo": "weapons",
+                    "columnsFrom": ["weapon_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {
-                "users_email_unique": {
-                    "name": "users_email_unique",
-                    "nullsNotDistinct": false,
-                    "columns": ["email"]
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "bonus_rolls": {
+            "name": "bonus_rolls",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "index": {
+                    "name": "index",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "weapon_id": {
+                    "name": "weapon_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "bonus_1": {
+                    "name": "bonus_1",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "bonus_2": {
+                    "name": "bonus_2",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "bonus_3": {
+                    "name": "bonus_3",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "bonus_4": {
+                    "name": "bonus_4",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "bonus_5": {
+                    "name": "bonus_5",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "updated_at": {
+                    "name": "updated_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
                 }
             },
-            "policies": {},
-            "checkConstraints": {},
-            "isRLSEnabled": false
+            "indexes": {
+                "bonus_rolls_weapon_index_idx": {
+                    "name": "bonus_rolls_weapon_index_idx",
+                    "columns": ["weapon_id", "index"],
+                    "isUnique": true
+                }
+            },
+            "foreignKeys": {
+                "bonus_rolls_weapon_id_weapons_id_fk": {
+                    "name": "bonus_rolls_weapon_id_weapons_id_fk",
+                    "tableFrom": "bonus_rolls",
+                    "tableTo": "weapons",
+                    "columnsFrom": ["weapon_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
         }
     },
-    "enums": {},
-    "schemas": {},
-    "sequences": {},
-    "roles": {},
-    "policies": {},
     "views": {},
+    "enums": {},
     "_meta": {
-        "columns": {},
         "schemas": {},
-        "tables": {}
+        "tables": {},
+        "columns": {}
+    },
+    "internal": {
+        "indexes": {}
     }
 }

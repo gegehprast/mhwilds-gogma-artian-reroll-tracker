@@ -221,15 +221,15 @@ No URL routing — uses simple in-page tab/view state.
 
 ## Implementation Steps
 
-### Phase 1 — Backend Infrastructure
-1. **Switch database to SQLite**
+### Phase 1 — Backend Infrastructure ✅
+1. ✅ **Switch database to SQLite**
    - Update `drizzle.config.ts`: `dialect: "sqlite"`, `dbCredentials.url: "./data/tracker.db"`
    - Rewrite `apps/backend/src/db/client.ts` using `bun:sqlite` + `drizzle-orm/bun-sqlite`
    - Rewrite `apps/backend/src/db/schemas/_helpers.ts` for SQLite types (`integer`, `text` instead of pg `uuid`, `timestamp`)
    - Update `apps/backend/src/config/index.ts`: replace `DATABASE_URL` default, strip JWT/auth config
    - Remove `postgres` and `jose` dev dependencies from `apps/backend/package.json`
 
-2. **Remove unused template code**
+2. ✅ **Remove unused template code**
    - Delete auth service, middleware, routes (`auth.*`)
    - Delete todos schema, repository, routes
    - Delete users schema, repository
@@ -237,68 +237,68 @@ No URL routing — uses simple in-page tab/view state.
    - Remove JWT/auth error types and constants
    - Clear the existing Drizzle migrations (`drizzle/` folder) — starting fresh with new schemas
 
-3. **Create new schemas**
+3. ✅ **Create new schemas**
    - `trackers.schema.ts`
    - `weapons.schema.ts`
    - `skill-rolls.schema.ts`
    - `bonus-rolls.schema.ts`
    - Update `schemas/index.ts`
 
-4. **Generate and apply migrations**
+4. ✅ **Generate and apply migrations**
    - `bun run backend:db:generate`
    - `bun run backend:db:migrate`
 
-### Phase 2 — Backend Business Logic
-5. **Create repositories**
+### Phase 2 — Backend Business Logic ✅
+5. ✅ **Create repositories**
    - `trackers.repository.ts` — `findById`, `create`
    - `weapons.repository.ts` — `findAllByTracker`, `findById`, `create`, `delete`, `getGlobalIndices`
    - `skill-rolls.repository.ts` — `findByWeapon`, `findById`, `create`, `update`, `delete`, `deleteFromRank`
    - `bonus-rolls.repository.ts` — same shape
 
-6. **Create services**
+6. ✅ **Create services**
    - `trackers.service.ts` — create + verify tracker
    - `weapons.service.ts` — CRUD, attach global index metadata to list response
    - `skill-rolls.service.ts` — read `skill_index` from tracker, insert roll, increment counter (transaction); delegate corrections to repo
    - `bonus-rolls.service.ts` — same with `bonus_index`
    - `import.service.ts` — parse and validate incoming attempts array, orchestrate delete+insert in a transaction
 
-7. **Create Tracker ID middleware**
+7. ✅ **Create Tracker ID middleware**
    - Reads `X-Tracker-Id` header, looks up tracker, attaches to request context; returns 401 if absent/invalid
 
-8. **Create routes**
+8. ✅ **Create routes**
    - `trackers.routes.ts`
    - `weapons.routes.ts`
    - `skill-rolls.routes.ts`
    - `bonus-rolls.routes.ts`
    - Update `routes/index.ts`
 
-### Phase 3 — Frontend
-9. **Scaffold frontend**
-   - Strip auth, chat, todos from `App.tsx` and `components/`
-   - Install React Router is **not** needed — use `useState` view switching
-   - Set up TanStack Query provider in `main.tsx`
-   - Create `src/lib/api.ts` — `ky` instance with `X-Tracker-Id` header injected from localStorage
-   - Create `src/hooks/useTracker.ts` — read/write tracker ID in localStorage, expose `isReady`
-   - Create `src/lib/constants.ts` — weapon type and element enums (shared by all forms)
+### Phase 3 — Frontend 🔄
+9. ✅ **Scaffold frontend**
+   - ✅ Strip auth, chat, todos from `App.tsx` and `components/`
+   - ✅ Install React Router is **not** needed — use `useState` view switching
+   - ✅ Set up TanStack Query provider in `main.tsx`
+   - ✅ Create `src/lib/api-client.ts` — openapi-fetch instance with `X-Tracker-Id` header injected from localStorage (used openapi-fetch instead of ky)
+   - ✅ Create `src/hooks/useTracker.ts` — read/write tracker ID in localStorage, expose query + mutations
+   - ✅ Create `src/lib/constants.ts` — weapon type and element enums (shared by all forms)
 
-10. **Generate OpenAPI types and sync to frontend**
+10. ✅ **Generate OpenAPI types and sync to frontend**
     - `bun run backend:openapi:generate` → writes to `apps/frontend/src/generated/`
 
-11. **Implement views and components**
-    - `TrackerSetup.tsx` — shown when no tracker ID stored
-    - `HomeView.tsx` — summary + weapon card list
-    - `WeaponDetailView.tsx` — tabs + roll tables
-    - `SkillRollsTab.tsx`, `BonusRollsTab.tsx`
-    - `AddWeaponModal.tsx`
-    - `AddSkillRollModal.tsx`, `AddBonusRollModal.tsx`
-    - `EditSkillRollModal.tsx`, `EditBonusRollModal.tsx`
-    - `ImportModal.tsx`
-    - `TrackerHeader.tsx` — tracker ID display, copy, switch
+11. ✅ **Implement views and components**
+    - ✅ `TrackerSetup.tsx` — shown when no tracker ID stored
+    - ❌ `HomeView.tsx` — summary + weapon card list (currently a single combined `App.tsx` view)
+    - ❌ `WeaponDetailView.tsx` — tabs + roll tables (currently inline in `App.tsx`)
+    - ✅ `SkillRollsTab.tsx`, `BonusRollsTab.tsx`
+    - ❌ `AddWeaponModal.tsx` (inline form inside `WeaponSelector.tsx` instead)
+    - ❌ `AddSkillRollModal.tsx`, `AddBonusRollModal.tsx` (inline forms in tabs instead)
+    - ✅ `EditSkillRollModal.tsx`, `EditBonusRollModal.tsx`
+    - ✅ `ImportModal.tsx`
+    - ✅ `TrackerHeader.tsx` — tracker name edit, ID copy, Switch button, index counter edit
 
-### Phase 4 — Validation & Polish
-12. **Zod validation** on all route inputs (body, params, query)
-13. **Error handling** — consistent API error shape surfaced in the UI (toast or inline)
-14. **Enum constants** — weapon types and elements defined once in backend constants, exported via OpenAPI; frontend imports from generated types
+### Phase 4 — Validation & Polish ✅
+12. ✅ **Zod validation** on all route inputs (body, params, query) — implemented in all route files
+13. ✅ **Error handling** — `MutationCache` + `addToast()` in `main.tsx`; `lib/toast.ts` (useSyncExternalStore store); `ToastContainer.tsx` (auto-dismiss, bottom-right stack)
+14. ✅ **Enum constants** — `game-constants.ts` in backend; `WeaponType`/`Element` exported as named OpenAPI schemas; `lib/constants.ts` in frontend derives types from generated spec
 
 ---
 

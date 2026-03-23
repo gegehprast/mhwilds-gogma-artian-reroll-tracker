@@ -1,35 +1,20 @@
-import { createServer, SecuritySchemes } from "@bunkit/server"
+import { createServer } from "@bunkit/server"
 import { config } from "@/config"
 import { loggingMiddleware } from "@/middlewares/logging.middleware"
+import { trackerMiddleware } from "@/middlewares/tracker.middleware"
 
 export const server = createServer({
   port: config.PORT,
   host: config.HOST,
   maxRequestBodySize: config.HTTP_MAX_REQUEST_BODY_SIZE,
-  globalMiddlewares: [loggingMiddleware()],
+  globalMiddlewares: [loggingMiddleware(), trackerMiddleware()],
   openapi: {
-    title: "BunKit API",
+    title: "Gogma Reroll Tracker API",
     version: "1.0.0",
-    description: "Production-ready HTTP API built with BunKit",
-    securitySchemes: {
-      bearerAuth: SecuritySchemes.bearerAuth(),
-      basicAuth: SecuritySchemes.basicAuth(), // Example only, not used
-      cookieAuth: SecuritySchemes.apiKeyCookie(
-        "access_token",
-        "HTTP-only cookie authentication",
-      ), // Example only, not used
-    },
+    description: "API for tracking MHWilds Gogma reroll results",
     servers: [
       {
         url: `http://localhost:${config.PORT}`,
-        description: "Development server",
-      },
-      {
-        url: `http://0.0.0.0:${config.PORT}`,
-        description: "Development server",
-      },
-      {
-        url: `http://127.0.0.1:${config.PORT}`,
         description: "Development server",
       },
       {
@@ -43,6 +28,7 @@ export const server = createServer({
       const allowedOrigins = config.CORS_ORIGIN.split(",").map((o) => o.trim())
       return allowedOrigins.includes(origin)
     },
+    allowedHeaders: ["Content-Type", "Authorization", "X-Tracker-Id"],
     credentials: true,
   },
 })

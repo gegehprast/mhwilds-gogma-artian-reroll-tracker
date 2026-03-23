@@ -1,70 +1,239 @@
 import type { components } from "../generated/openapi"
-import { apiClient } from "./api-client"
+import { apiClient, setTrackerId } from "./api-client"
 
-// Type aliases for convenience
-export type User = components["schemas"]["AuthResponse"]["user"]
-export type Todo = components["schemas"]["Todo"]
-export type CreateTodoInput = components["schemas"]["CreateTodoBody"]
-export type UpdateTodoInput = components["schemas"]["UpdateTodoBody"]
+// Domain type aliases
+export type Tracker = components["schemas"]["Tracker"]
+export type Weapon = components["schemas"]["Weapon"]
+export type SkillRoll = components["schemas"]["SkillRoll"]
+export type BonusRoll = components["schemas"]["BonusRoll"]
+export type WeaponType = components["schemas"]["WeaponType"]
+export type Element = components["schemas"]["Element"]
 
-export const authService = {
-  async register(email: string, password: string, name: string) {
-    const { data, error } = await apiClient.POST("/auth/register", {
-      body: { email, password, name },
+export const trackerService = {
+  async getOrCreate(id?: string | null): Promise<Tracker> {
+    if (id) {
+      const { data, error } = await apiClient.GET("/api/trackers/{id}", {
+        params: { path: { id } },
+      })
+      if (!data) throw new Error(String(error))
+      return data
+    }
+    const { data, error } = await apiClient.POST("/api/trackers", { body: {} })
+    if (!data) throw new Error(String(error))
+    setTrackerId(data.id)
+    return data
+  },
+
+  async updateName(id: string, name: string): Promise<Tracker> {
+    const { data, error } = await apiClient.PATCH("/api/trackers/{id}", {
+      params: { path: { id } },
+      body: { name },
     })
-    return { data, error }
+    if (!data) throw new Error(String(error))
+    return data
   },
 
-  async login(email: string, password: string) {
-    const { data, error } = await apiClient.POST("/auth/login", {
-      body: { email, password },
+  async setSkillIndex(id: string, skillIndex: number): Promise<Tracker> {
+    const { data, error } = await apiClient.PATCH("/api/trackers/{id}", {
+      params: { path: { id } },
+      body: { skillIndex },
     })
-    return { data, error }
+    if (!data) throw new Error(String(error))
+    return data
   },
 
-  async getCurrentUser() {
-    const { data, error } = await apiClient.GET("/auth/me")
-    return { data, error }
-  },
-
-  async logout() {
-    // Clear token and optionally call backend logout endpoint
-    return { success: true }
+  async setBonusIndex(id: string, bonusIndex: number): Promise<Tracker> {
+    const { data, error } = await apiClient.PATCH("/api/trackers/{id}", {
+      params: { path: { id } },
+      body: { bonusIndex },
+    })
+    if (!data) throw new Error(String(error))
+    return data
   },
 }
 
-export const todoService = {
-  async list() {
-    const { data, error } = await apiClient.GET("/api/todos")
-    return { data, error }
+export const weaponService = {
+  async list(trackerId: string): Promise<Weapon[]> {
+    const { data, error } = await apiClient.GET(
+      "/api/trackers/{trackerId}/weapons",
+      {
+        params: { path: { trackerId } },
+      },
+    )
+    if (!data) throw new Error(String(error))
+    return data
   },
 
-  async getById(id: string) {
-    const { data, error } = await apiClient.GET("/api/todos/{id}", {
-      params: { path: { id } },
-    })
-    return { data, error }
+  async findOrCreate(
+    trackerId: string,
+    weaponType: WeaponType,
+    element: Element,
+  ): Promise<Weapon> {
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons",
+      {
+        params: { path: { trackerId } },
+        body: { weaponType, element },
+      },
+    )
+    if (!data) throw new Error(String(error))
+    return data
   },
 
-  async create(input: CreateTodoInput) {
-    const { data, error } = await apiClient.POST("/api/todos", {
-      body: input,
+  async delete(trackerId: string, id: string): Promise<void> {
+    await apiClient.DELETE("/api/trackers/{trackerId}/weapons/{id}", {
+      params: { path: { trackerId, id } },
     })
-    return { data, error }
+  },
+}
+
+export const skillRollService = {
+  async list(trackerId: string, weaponId: string): Promise<SkillRoll[]> {
+    const { data, error } = await apiClient.GET(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls",
+      { params: { path: { trackerId, weaponId } } },
+    )
+    if (!data) throw new Error(String(error))
+    return data
   },
 
-  async update(id: string, input: UpdateTodoInput) {
-    const { data, error } = await apiClient.PUT("/api/todos/{id}", {
-      params: { path: { id } },
-      body: input,
-    })
-    return { data, error }
+  async create(
+    trackerId: string,
+    weaponId: string,
+    groupSkill: string,
+    seriesSkill: string,
+  ): Promise<SkillRoll> {
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls",
+      {
+        params: { path: { trackerId, weaponId } },
+        body: { groupSkill, seriesSkill },
+      },
+    )
+    if (!data) throw new Error(String(error))
+    return data
   },
 
-  async delete(id: string) {
-    const { data, error } = await apiClient.DELETE("/api/todos/{id}", {
-      params: { path: { id } },
-    })
-    return { data, error }
+  async delete(trackerId: string, weaponId: string, id: string): Promise<void> {
+    await apiClient.DELETE(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/{id}",
+      { params: { path: { trackerId, weaponId, id } } },
+    )
+  },
+
+  async update(
+    trackerId: string,
+    weaponId: string,
+    id: string,
+    data: { groupSkill?: string; seriesSkill?: string },
+  ): Promise<SkillRoll> {
+    const { data: result, error } = await apiClient.PATCH(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/{id}",
+      { params: { path: { trackerId, weaponId, id } }, body: data },
+    )
+    if (!result) throw new Error(String(error))
+    return result
+  },
+
+  async import(
+    trackerId: string,
+    weaponId: string,
+    selectedIndex: number,
+    rolls: Array<{
+      attemptNum: number
+      groupSkill: string
+      seriesSkill: string
+    }>,
+  ): Promise<SkillRoll[]> {
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import",
+      {
+        params: { path: { trackerId, weaponId } },
+        body: { selectedIndex, rolls },
+      },
+    )
+    if (!data) throw new Error(String(error))
+    return data
+  },
+}
+
+export const bonusRollService = {
+  async list(trackerId: string, weaponId: string): Promise<BonusRoll[]> {
+    const { data, error } = await apiClient.GET(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls",
+      { params: { path: { trackerId, weaponId } } },
+    )
+    if (!data) throw new Error(String(error))
+    return data
+  },
+
+  async create(
+    trackerId: string,
+    weaponId: string,
+    bonuses: {
+      bonus1: string
+      bonus2: string
+      bonus3: string
+      bonus4: string
+      bonus5: string
+    },
+  ): Promise<BonusRoll> {
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls",
+      { params: { path: { trackerId, weaponId } }, body: bonuses },
+    )
+    if (!data) throw new Error(String(error))
+    return data
+  },
+
+  async delete(trackerId: string, weaponId: string, id: string): Promise<void> {
+    await apiClient.DELETE(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/{id}",
+      { params: { path: { trackerId, weaponId, id } } },
+    )
+  },
+
+  async update(
+    trackerId: string,
+    weaponId: string,
+    id: string,
+    data: {
+      bonus1?: string
+      bonus2?: string
+      bonus3?: string
+      bonus4?: string
+      bonus5?: string
+    },
+  ): Promise<BonusRoll> {
+    const { data: result, error } = await apiClient.PATCH(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/{id}",
+      { params: { path: { trackerId, weaponId, id } }, body: data },
+    )
+    if (!result) throw new Error(String(error))
+    return result
+  },
+
+  async import(
+    trackerId: string,
+    weaponId: string,
+    selectedIndex: number,
+    rolls: Array<{
+      attemptNum: number
+      bonus1: string
+      bonus2: string
+      bonus3: string
+      bonus4: string
+      bonus5: string
+    }>,
+  ): Promise<BonusRoll[]> {
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import",
+      {
+        params: { path: { trackerId, weaponId } },
+        body: { selectedIndex, rolls },
+      },
+    )
+    if (!data) throw new Error(String(error))
+    return data
   },
 }

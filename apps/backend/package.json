@@ -22,15 +22,15 @@
         "@bunkit/result": "workspace:*",
         "@bunkit/server": "workspace:*",
         "drizzle-orm": "catalog:",
+        "nanoid": "^5.1.7",
         "zod": "catalog:",
-        "zod-openapi": "catalog:",
-        "jose": "catalog:"
+        "zod-openapi": "catalog:"
     },
     "devDependencies": {
         "@types/bun": "catalog:",
-        "drizzle-kit": "catalog:",
-        "postgres": "catalog:",
-        "concurrently": "catalog:"
+        "better-sqlite3": "^12.8.0",
+        "concurrently": "catalog:",
+        "drizzle-kit": "catalog:"
     },
     "peerDependencies": {
         "typescript": "^5"

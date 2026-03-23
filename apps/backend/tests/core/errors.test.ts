@@ -15,11 +15,8 @@ import {
   RateLimitError,
   ResourceExistsError,
   ServiceUnavailableError,
-  TokenExpiredError,
   toAppError,
   ValidationError,
-  WsHandlerNotFoundError,
-  WsMessageInvalidError,
 } from "@/core/errors"
 
 describe("Core Errors", () => {
@@ -103,17 +100,6 @@ describe("Core Errors", () => {
       expect(error).toBeInstanceOf(AppError)
       expect(error.message).toBe("Invalid credentials")
       expect(error.code).toBe(ERROR_CODES.INVALID_CREDENTIALS)
-      expect(error.statusCode).toBe(401)
-    })
-  })
-
-  describe("TokenExpiredError", () => {
-    test("should create token expired error", () => {
-      const error = new TokenExpiredError()
-
-      expect(error).toBeInstanceOf(AppError)
-      expect(error.message).toBe("Token has expired")
-      expect(error.code).toBe(ERROR_CODES.TOKEN_EXPIRED)
       expect(error.statusCode).toBe(401)
     })
   })
@@ -251,31 +237,6 @@ describe("Core Errors", () => {
     })
   })
 
-  describe("WsMessageInvalidError", () => {
-    test("should create websocket message invalid error", () => {
-      const error = new WsMessageInvalidError("Invalid message format", {
-        type: "unknown",
-      })
-
-      expect(error).toBeInstanceOf(AppError)
-      expect(error.message).toBe("Invalid message format")
-      expect(error.code).toBe(ERROR_CODES.WS_MESSAGE_INVALID)
-      expect(error.statusCode).toBe(400)
-      expect(error.details).toEqual({ type: "unknown" })
-    })
-  })
-
-  describe("WsHandlerNotFoundError", () => {
-    test("should create websocket handler not found error", () => {
-      const error = new WsHandlerNotFoundError("Handler not registered")
-
-      expect(error).toBeInstanceOf(AppError)
-      expect(error.message).toBe("Handler not registered")
-      expect(error.code).toBe(ERROR_CODES.WS_HANDLER_NOT_FOUND)
-      expect(error.statusCode).toBe(404)
-    })
-  })
-
   describe("Error hierarchy", () => {
     test("all custom errors should extend AppError", () => {
       const errors = [
@@ -283,7 +244,6 @@ describe("Core Errors", () => {
         new AuthRequiredError(),
         new AuthInvalidError(),
         new InvalidCredentialsError(),
-        new TokenExpiredError(),
         new ForbiddenError(),
         new NotFoundError(),
         new ConflictError("test"),
@@ -292,8 +252,6 @@ describe("Core Errors", () => {
         new DatabaseError("test"),
         new RateLimitError(),
         new ServiceUnavailableError(),
-        new WsMessageInvalidError("test"),
-        new WsHandlerNotFoundError("test"),
       ]
 
       for (const error of errors) {

@@ -1,120 +1,96 @@
 import { useState } from "react"
-import { Auth } from "./components/Auth"
-import { Chat } from "./components/Chat"
-import { TodoList } from "./components/TodoList"
-import { AuthProvider, useAuth } from "./hooks/useAuth"
-import { ChatProvider } from "./hooks/useChat"
+import { TrackerHeader } from "./components/TrackerHeader"
+import { TrackerSetup } from "./components/TrackerSetup"
+import { WeaponPanel } from "./components/WeaponPanel"
+import { WeaponSelector } from "./components/WeaponSelector"
+import { useTracker } from "./hooks/useTracker"
+import { getTrackerId } from "./lib/api-client"
 
-const AppContent = () => {
-  const { user, isLoading, isAuthenticated, logout } = useAuth()
-  const [activeTab, setActiveTab] = useState<"todos" | "chat">("todos")
+export default function App() {
+  const [initialized, setInitialized] = useState(() => !!getTrackerId())
+  if (!initialized) return <TrackerSetup onReady={() => setInitialized(true)} />
+  return <MainApp />
+}
 
-  if (isLoading) {
+function MainApp() {
+  const { query } = useTracker()
+  const [selectedWeaponId, setSelectedWeaponId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<"skills" | "bonuses">("skills")
+
+  const tracker = query.data
+
+  function handleSwitchTracker() {
+    localStorage.removeItem("tracker_id")
+    window.location.reload()
+  }
+
+  if (query.isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-950">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#ff73a8]" />
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400" />
       </div>
     )
   }
 
-  if (!isAuthenticated) {
-    return <Auth />
+  if (query.isError || !tracker) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-950 gap-4">
+        <p className="text-red-400 text-lg">Failed to load tracker.</p>
+        <button
+          type="button"
+          className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded"
+          onClick={handleSwitchTracker}
+        >
+          Start Over
+        </button>
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-950">
-      <header className="bg-gray-900 shadow-sm border-b border-gray-800 shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <h1 className="text-2xl font-bold text-white">BunKit Frontend</h1>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-300">
-                Welcome,{" "}
-                <span className="font-semibold text-[#ff73a8]">
-                  {user?.name || user?.email}
-                </span>
-                !
-              </span>
-              <button
-                type="button"
-                onClick={logout}
-                className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-semibold px-4 py-2 rounded-lg transition duration-200"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+    <div className="flex flex-col min-h-screen bg-gray-950 text-gray-100">
+      <TrackerHeader tracker={tracker} onSwitchTracker={handleSwitchTracker} />
 
-          {/* Tabs */}
-          <div className="flex gap-4 mt-4">
-            <button
-              type="button"
-              onClick={() => setActiveTab("todos")}
-              className={`px-4 py-2 font-medium transition-colors border-b-2 ${
-                activeTab === "todos"
-                  ? "border-[#ff73a8] text-[#ff73a8]"
-                  : "border-transparent text-gray-400 hover:text-gray-200"
-              }`}
-            >
-              Todos
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("chat")}
-              className={`px-4 py-2 font-medium transition-colors border-b-2 ${
-                activeTab === "chat"
-                  ? "border-[#ff73a8] text-[#ff73a8]"
-                  : "border-transparent text-gray-400 hover:text-gray-200"
-              }`}
-            >
-              Chat
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Roll type tabs */}
+      <div className="bg-gray-900 border-b border-gray-800 px-4 flex gap-4">
+        {(["skills", "bonuses"] as const).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={`py-3 px-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab
+                ? "border-amber-400 text-amber-400"
+                : "border-transparent text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            {tab === "skills" ? "Skill Rolls" : "Bonus Rolls"}
+          </button>
+        ))}
+      </div>
 
-      {activeTab === "todos" ? (
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <TodoList />
-          </div>
-        </main>
-      ) : (
-        <main className="flex-1 overflow-hidden">
-          <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <Chat />
-          </div>
-        </main>
-      )}
+      {/* Body */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Weapon list sidebar */}
+        <WeaponSelector
+          trackerId={tracker.id}
+          selectedWeaponId={selectedWeaponId}
+          onSelect={setSelectedWeaponId}
+        />
 
-      <footer className="bg-gray-900 border-t border-gray-800 shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-400">
-          <p>
-            Built with{" "}
-            <a
-              href="https://github.com/gegehprast/bunkit"
-              className="font-semibold text-[#ff73a8]"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              BunKit
-            </a>{" "}
-            - Type-safe API client demo
-          </p>
-        </div>
-      </footer>
+        {/* Roll panel */}
+        {selectedWeaponId ? (
+          <WeaponPanel
+            tracker={tracker}
+            weaponId={selectedWeaponId}
+            tab={activeTab}
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-600">
+            Select or create a weapon on the left to start tracking.
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-
-function App() {
-  return (
-    <AuthProvider>
-      <ChatProvider>
-        <AppContent />
-      </ChatProvider>
-    </AuthProvider>
-  )
-}
-
-export default App

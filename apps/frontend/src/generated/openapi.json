@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "BunKit API",
+    "title": "Gogma Reroll Tracker API",
     "version": "1.0.0",
-    "description": "Production-ready HTTP API built with BunKit"
+    "description": "API for tracking MHWilds Gogma reroll results"
   },
   "servers": [
     {
@@ -11,15 +11,7 @@
       "description": "Development server"
     },
     {
-      "url": "http://0.0.0.0:3001",
-      "description": "Development server"
-    },
-    {
-      "url": "http://127.0.0.1:3001",
-      "description": "Development server"
-    },
-    {
-      "url": "https://bunkit.dev",
+      "url": "http://localhost:3001",
       "description": "Production server"
     }
   ],
@@ -188,31 +180,31 @@
         }
       }
     },
-    "/auth/register": {
+    "/api/trackers": {
       "post": {
-        "operationId": "register",
-        "summary": "Register new user",
-        "description": "Create a new user account with email and password",
+        "operationId": "createTracker",
+        "summary": "Create tracker",
+        "description": "Creates a new tracker and returns it with its generated ID.",
         "tags": [
-          "Authentication"
+          "Trackers"
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterBody"
+                "$ref": "#/components/schemas/CreateTrackerBody"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "200 response",
+          "201": {
+            "description": "201 response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/Tracker"
                 }
               }
             }
@@ -239,21 +231,6 @@
               }
             }
           },
-          "409": {
-            "description": "Conflict - Resource already exists or state conflict",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Resource already exists",
-                  "code": "CONFLICT",
-                  "details": "A user with this email already exists"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ConflictErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Internal Server Error - Unexpected server error",
             "content": {
@@ -272,174 +249,174 @@
         }
       }
     },
-    "/auth/login": {
-      "post": {
-        "operationId": "login",
-        "summary": "Login user",
-        "description": "Authenticate user with email and password",
-        "tags": [
-          "Authentication"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "200 response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input or validation failed",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Validation failed",
-                  "code": "BAD_REQUEST",
-                  "details": [
-                    {
-                      "path": [
-                        "email"
-                      ],
-                      "message": "Invalid email format"
-                    }
-                  ]
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - Unexpected server error",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Internal server error",
-                  "code": "INTERNAL_ERROR",
-                  "details": "Stack trace or error details for debugging"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/InternalServerErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/me": {
+    "/api/trackers/{id}": {
       "get": {
-        "operationId": "getCurrentUser",
-        "summary": "Get current user",
-        "description": "Get the authenticated user's profile (requires Bearer token)",
+        "operationId": "getTracker",
+        "summary": "Get tracker",
+        "description": "Returns a tracker by its ID.",
         "tags": [
-          "Authentication"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "200 response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Invalid or missing token hahah",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Authentication required",
-                  "code": "UNAUTHORIZED"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - Unexpected server error",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Internal server error",
-                  "code": "INTERNAL_ERROR",
-                  "details": "Stack trace or error details for debugging"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/InternalServerErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/todos": {
-      "get": {
-        "operationId": "listTodos",
-        "summary": "List todos",
-        "description": "Lists all todo items for the authenticated user (requires Bearer token)",
-        "tags": [
-          "Todos"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
+          "Trackers"
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "completed",
+            "in": "path",
+            "name": "id",
+            "required": true,
             "schema": {
-              "example": "true",
-              "description": "Filter todos by completion status",
               "type": "string"
-            },
-            "description": "Filter todos by completion status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tracker"
+                }
+              }
+            }
           },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateTracker",
+        "summary": "Update tracker",
+        "description": "Update the tracker's name or skill/bonus index counters.",
+        "tags": [
+          "Trackers"
+        ],
+        "parameters": [
           {
-            "in": "query",
-            "name": "limit",
+            "in": "path",
+            "name": "id",
+            "required": true,
             "schema": {
-              "example": "10",
-              "description": "Maximum number of todos to return",
               "type": "string"
-            },
-            "description": "Maximum number of todos to return"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrackerBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tracker"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons": {
+      "get": {
+        "operationId": "listWeapons",
+        "summary": "List weapons",
+        "description": "Returns all weapons for a tracker.",
+        "tags": [
+          "Weapons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -450,7 +427,626 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Todo"
+                    "$ref": "#/components/schemas/Weapon"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "findOrCreateWeapon",
+        "summary": "Find or create weapon",
+        "description": "Returns an existing weapon matching the type+element within the tracker, or creates one.",
+        "tags": [
+          "Weapons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWeaponBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Weapon"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{id}": {
+      "delete": {
+        "operationId": "deleteWeapon",
+        "summary": "Delete weapon",
+        "description": "Deletes a weapon and all its rolls.",
+        "tags": [
+          "Weapons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls": {
+      "get": {
+        "operationId": "listSkillRolls",
+        "summary": "List skill rolls",
+        "description": "Returns all skill rolls for a weapon, ordered by index.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SkillRoll"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSkillRoll",
+        "summary": "Create skill roll",
+        "description": "Creates a new skill roll at the tracker's current skill index, then increments the counter.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSkillRollBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillRoll"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/{id}": {
+      "patch": {
+        "operationId": "updateSkillRoll",
+        "summary": "Update skill roll",
+        "description": "Correct group_skill or series_skill. The index is not editable.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSkillRollBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillRoll"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSkillRoll",
+        "summary": "Delete skill roll",
+        "description": "Deletes a single skill roll by ID.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
+      "post": {
+        "operationId": "importSkillRolls",
+        "summary": "Import skill rolls",
+        "description": "Replaces a range of skill rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's skill index counter.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportSkillRollsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SkillRoll"
                   }
                 }
               }
@@ -478,102 +1074,30 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - Authentication required or failed",
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
             "content": {
               "application/json": {
                 "example": {
-                  "message": "Authentication required",
-                  "code": "UNAUTHORIZED"
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
                 }
               }
             }
           },
-          "500": {
-            "description": "Internal Server Error - Unexpected server error",
+          "404": {
+            "description": "Not Found - Resource does not exist",
             "content": {
               "application/json": {
                 "example": {
-                  "message": "Internal server error",
-                  "code": "INTERNAL_ERROR",
-                  "details": "Stack trace or error details for debugging"
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/InternalServerErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "createTodo",
-        "summary": "Create a new todo",
-        "description": "Creates a new todo for the authenticated user (requires Bearer token)",
-        "tags": [
-          "Todos"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTodoBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "200 response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Todo"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input or validation failed",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Validation failed",
-                  "code": "BAD_REQUEST",
-                  "details": [
-                    {
-                      "path": [
-                        "email"
-                      ],
-                      "message": "Invalid email format"
-                    }
-                  ]
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Authentication required or failed",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Authentication required",
-                  "code": "UNAUTHORIZED"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
                 }
               }
             }
@@ -596,23 +1120,26 @@
         }
       }
     },
-    "/api/todos/{id}": {
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls": {
       "get": {
-        "operationId": "getTodo",
-        "summary": "Get a todo by ID",
-        "description": "Retrieves a specific todo item by its ID (requires Bearer token)",
+        "operationId": "listBonusRolls",
+        "summary": "List bonus rolls",
+        "description": "Returns all bonus rolls for a weapon, ordered by index.",
         "tags": [
-          "Todos"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
+          "Bonus Rolls"
         ],
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
             "required": true,
             "schema": {
               "type": "string"
@@ -625,21 +1152,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Todo"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BonusRoll"
+                  }
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - Authentication required or failed",
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
             "content": {
               "application/json": {
                 "example": {
-                  "message": "Authentication required",
-                  "code": "UNAUTHORIZED"
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
                 }
               }
             }
@@ -661,22 +1205,25 @@
           }
         }
       },
-      "put": {
-        "operationId": "updateTodo",
-        "summary": "Update a todo",
-        "description": "Updates a todo item by its ID (requires Bearer token)",
+      "post": {
+        "operationId": "createBonusRoll",
+        "summary": "Create bonus roll",
+        "description": "Creates a new bonus roll at the tracker's current bonus index, then increments the counter.",
         "tags": [
-          "Todos"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
+          "Bonus Rolls"
         ],
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
             "required": true,
             "schema": {
               "type": "string"
@@ -688,18 +1235,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTodoBody"
+                "$ref": "#/components/schemas/CreateBonusRollBody"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "200 response",
+          "201": {
+            "description": "201 response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Todo"
+                  "$ref": "#/components/schemas/BonusRoll"
                 }
               }
             }
@@ -726,16 +1273,153 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - Authentication required or failed",
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
             "content": {
               "application/json": {
                 "example": {
-                  "message": "Authentication required",
-                  "code": "UNAUTHORIZED"
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/{id}": {
+      "patch": {
+        "operationId": "updateBonusRoll",
+        "summary": "Update bonus roll",
+        "description": "Correct any of the five bonus stat columns. The index is not editable.",
+        "tags": [
+          "Bonus Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBonusRollBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BonusRoll"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
                 }
               }
             }
@@ -758,18 +1442,29 @@
         }
       },
       "delete": {
-        "operationId": "deleteTodo",
-        "summary": "Delete a todo",
-        "description": "Deletes a todo item by its ID (requires Bearer token)",
+        "operationId": "deleteBonusRoll",
+        "summary": "Delete bonus roll",
+        "description": "Deletes a single bonus roll by ID.",
         "tags": [
-          "Todos"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
+          "Bonus Rolls"
         ],
         "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "in": "path",
             "name": "id",
@@ -780,35 +1475,148 @@
           }
         ],
         "responses": {
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
+      "post": {
+        "operationId": "importBonusRolls",
+        "summary": "Import bonus rolls",
+        "description": "Replaces a range of bonus rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's bonus index counter.",
+        "tags": [
+          "Bonus Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportBonusRollsBody"
+              }
+            }
+          }
+        },
+        "responses": {
           "200": {
             "description": "200 response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ],
-                  "additionalProperties": false
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BonusRoll"
+                  }
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - Authentication required or failed",
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
             "content": {
               "application/json": {
                 "example": {
-                  "message": "Authentication required",
-                  "code": "UNAUTHORIZED"
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
                 }
               }
             }
@@ -834,103 +1642,265 @@
   },
   "components": {
     "schemas": {
-      "RegisterBody": {
+      "CreateTrackerBody": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
-            "example": "john@doe.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 8,
-            "maxLength": 128,
-            "allOf": [
-              {
-                "pattern": "[a-z]"
-              },
-              {
-                "pattern": "[0-9]"
-              }
-            ],
-            "description": "User password (min 12 characters, must include uppercase, lowercase, number, and special character)",
-            "example": "qwer1234"
-          },
           "name": {
-            "example": "John Doe",
             "type": "string"
+          }
+        }
+      },
+      "UpdateTrackerBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "skillIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "bonusIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "CreateWeaponBody": {
+        "type": "object",
+        "properties": {
+          "weaponType": {
+            "$ref": "#/components/schemas/WeaponType"
+          },
+          "element": {
+            "$ref": "#/components/schemas/Element"
           }
         },
         "required": [
-          "email",
-          "password"
-        ],
-        "title": "Register Request",
-        "description": "User registration data"
+          "weaponType",
+          "element"
+        ]
       },
-      "LoginBody": {
+      "WeaponType": {
+        "type": "string",
+        "enum": [
+          "Great Sword",
+          "Sword & Shield",
+          "Dual Blades",
+          "Long Sword",
+          "Hammer",
+          "Hunting Horn",
+          "Lance",
+          "Gunlance",
+          "Switch Axe",
+          "Charge Blade",
+          "Insect Glaive",
+          "Light Bowgun",
+          "Heavy Bowgun",
+          "Bow"
+        ],
+        "title": "WeaponType"
+      },
+      "Element": {
+        "type": "string",
+        "enum": [
+          "None",
+          "Fire",
+          "Water",
+          "Thunder",
+          "Ice",
+          "Dragon",
+          "Poison",
+          "Paralysis",
+          "Sleep",
+          "Blast"
+        ],
+        "title": "Element"
+      },
+      "CreateSkillRollBody": {
         "type": "object",
         "properties": {
-          "email": {
+          "groupSkill": {
             "type": "string",
-            "format": "email",
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
-            "example": "john@doe.com"
+            "minLength": 1
           },
-          "password": {
+          "seriesSkill": {
             "type": "string",
-            "example": "qwer1234"
+            "minLength": 1
           }
         },
         "required": [
-          "email",
-          "password"
-        ],
-        "title": "Login Request",
-        "description": "User login credentials"
+          "groupSkill",
+          "seriesSkill"
+        ]
       },
-      "CreateTodoBody": {
+      "UpdateSkillRollBody": {
         "type": "object",
         "properties": {
-          "title": {
+          "groupSkill": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 100,
-            "example": "Buy groceries"
+            "minLength": 1
           },
-          "description": {
-            "example": "Milk, Bread, Eggs",
-            "type": "string"
+          "seriesSkill": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ImportSkillRollsBody": {
+        "type": "object",
+        "properties": {
+          "selectedIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "rolls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "attemptNum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "groupSkill": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "seriesSkill": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "attemptNum",
+                "groupSkill",
+                "seriesSkill"
+              ]
+            }
           }
         },
         "required": [
-          "title"
-        ],
-        "title": "Create Todo Body",
-        "description": "Schema for creating a new todo item"
+          "selectedIndex",
+          "rolls"
+        ]
       },
-      "UpdateTodoBody": {
+      "CreateBonusRollBody": {
         "type": "object",
         "properties": {
-          "title": {
-            "example": "Buy groceries",
+          "bonus1": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 100
+            "minLength": 1
           },
-          "description": {
-            "example": "Milk, Bread, Eggs",
-            "type": "string"
+          "bonus2": {
+            "type": "string",
+            "minLength": 1
           },
-          "completed": {
-            "example": false,
-            "type": "boolean"
+          "bonus3": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bonus4": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bonus5": {
+            "type": "string",
+            "minLength": 1
           }
         },
-        "title": "Update Todo Body",
-        "description": "Schema for updating a todo item"
+        "required": [
+          "bonus1",
+          "bonus2",
+          "bonus3",
+          "bonus4",
+          "bonus5"
+        ]
+      },
+      "UpdateBonusRollBody": {
+        "type": "object",
+        "properties": {
+          "bonus1": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bonus2": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bonus3": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bonus4": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bonus5": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ImportBonusRollsBody": {
+        "type": "object",
+        "properties": {
+          "selectedIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "rolls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "attemptNum": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "bonus1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bonus2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bonus3": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bonus4": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bonus5": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "attemptNum",
+                "bonus1",
+                "bonus2",
+                "bonus3",
+                "bonus4",
+                "bonus5"
+              ]
+            }
+          }
+        },
+        "required": [
+          "selectedIndex",
+          "rolls"
+        ]
       },
       "HealthResponse": {
         "type": "object",
@@ -942,7 +1912,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-02-01T14:07:42.545Z"
+            "example": "2026-03-23T21:35:20.120Z"
           },
           "uptime": {
             "type": "number",
@@ -958,132 +1928,181 @@
         "title": "Health Check Response",
         "description": "Health check response indicating service status"
       },
-      "AuthResponse": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              }
-            },
-            "required": [
-              "id",
-              "email",
-              "name"
-            ],
-            "additionalProperties": false
-          },
-          "token": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "user",
-          "token"
-        ],
-        "additionalProperties": false,
-        "title": "Auth Response",
-        "description": "Authentication response with user data and JWT token"
-      },
-      "UserResponse": {
+      "Tracker": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
-          },
-          "email": {
             "type": "string"
           },
           "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdAt": {
             "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "name",
-          "createdAt"
-        ],
-        "additionalProperties": false,
-        "title": "User Response",
-        "description": "User profile data"
-      },
-      "Todo": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "1"
           },
-          "userId": {
-            "type": "string",
-            "example": "user-123"
+          "skillIndex": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           },
-          "title": {
-            "type": "string",
-            "example": "Buy groceries"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "example": "Milk, Bread, Eggs"
-          },
-          "completed": {
-            "type": "boolean",
-            "example": false
+          "bonusIndex": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           },
           "createdAt": {
-            "type": "string",
-            "example": "2026-02-01T14:07:42.551Z"
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           },
           "updatedAt": {
-            "type": "string",
-            "example": "2026-02-01T14:07:42.551Z"
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           }
         },
         "required": [
           "id",
-          "userId",
-          "title",
-          "description",
-          "completed",
+          "name",
+          "skillIndex",
+          "bonusIndex",
           "createdAt",
           "updatedAt"
         ],
         "additionalProperties": false,
-        "title": "Todo Item",
-        "description": "Schema representing a todo item"
+        "title": "Tracker"
+      },
+      "Weapon": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trackerId": {
+            "type": "string"
+          },
+          "weaponType": {
+            "$ref": "#/components/schemas/WeaponType"
+          },
+          "element": {
+            "$ref": "#/components/schemas/Element"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "trackerId",
+          "weaponType",
+          "element",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "title": "Weapon"
+      },
+      "SkillRoll": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "weaponId": {
+            "type": "string"
+          },
+          "groupSkill": {
+            "type": "string"
+          },
+          "seriesSkill": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "index",
+          "weaponId",
+          "groupSkill",
+          "seriesSkill",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "title": "Skill Roll"
+      },
+      "BonusRoll": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "weaponId": {
+            "type": "string"
+          },
+          "bonus1": {
+            "type": "string"
+          },
+          "bonus2": {
+            "type": "string"
+          },
+          "bonus3": {
+            "type": "string"
+          },
+          "bonus4": {
+            "type": "string"
+          },
+          "bonus5": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "index",
+          "weaponId",
+          "bonus1",
+          "bonus2",
+          "bonus3",
+          "bonus4",
+          "bonus5",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "title": "Bonus Roll"
       },
       "BadRequestErrorResponse": {
         "type": "object",
@@ -1126,6 +2145,94 @@
         ],
         "additionalProperties": false,
         "description": "Bad Request Error Response"
+      },
+      "ForbiddenErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "code": {
+            "type": "string",
+            "const": "FORBIDDEN"
+          },
+          "details": {
+            "description": "Additional error details"
+          }
+        },
+        "required": [
+          "message",
+          "code"
+        ],
+        "additionalProperties": false,
+        "description": "Forbidden Error Response"
+      },
+      "NotFoundErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "code": {
+            "type": "string",
+            "const": "NOT_FOUND"
+          },
+          "details": {
+            "description": "Additional error details"
+          }
+        },
+        "required": [
+          "message",
+          "code"
+        ],
+        "additionalProperties": false,
+        "description": "Not Found Error Response"
+      },
+      "InternalServerErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "code": {
+            "type": "string",
+            "const": "INTERNAL_ERROR"
+          },
+          "details": {
+            "description": "Internal error details (for debugging)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "code"
+        ],
+        "additionalProperties": false,
+        "description": "Internal Server Error Response"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "details": {
+            "description": "Additional error details"
+          }
+        },
+        "required": [
+          "message",
+          "code"
+        ],
+        "additionalProperties": false
       },
       "UnauthorizedErrorResponse": {
         "type": "object",
@@ -1180,113 +2287,6 @@
         ],
         "additionalProperties": false,
         "description": "Conflict Error Response"
-      },
-      "InternalServerErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Error message"
-          },
-          "code": {
-            "type": "string",
-            "const": "INTERNAL_ERROR"
-          },
-          "details": {
-            "description": "Internal error details (for debugging)",
-            "type": "string"
-          }
-        },
-        "required": [
-          "message",
-          "code"
-        ],
-        "additionalProperties": false,
-        "description": "Internal Server Error Response"
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Error message"
-          },
-          "code": {
-            "type": "string",
-            "description": "Error code"
-          },
-          "details": {
-            "description": "Additional error details"
-          }
-        },
-        "required": [
-          "message",
-          "code"
-        ],
-        "additionalProperties": false
-      },
-      "ForbiddenErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Error message"
-          },
-          "code": {
-            "type": "string",
-            "const": "FORBIDDEN"
-          },
-          "details": {
-            "description": "Additional error details"
-          }
-        },
-        "required": [
-          "message",
-          "code"
-        ],
-        "additionalProperties": false,
-        "description": "Forbidden Error Response"
-      },
-      "NotFoundErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Error message"
-          },
-          "code": {
-            "type": "string",
-            "const": "NOT_FOUND"
-          },
-          "details": {
-            "description": "Additional error details"
-          }
-        },
-        "required": [
-          "message",
-          "code"
-        ],
-        "additionalProperties": false,
-        "description": "Not Found Error Response"
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "JWT authorization token"
-      },
-      "basicAuth": {
-        "type": "http",
-        "scheme": "basic",
-        "description": "HTTP Basic authentication"
-      },
-      "cookieAuth": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "access_token",
-        "description": "HTTP-only cookie authentication"
       }
     }
   }
