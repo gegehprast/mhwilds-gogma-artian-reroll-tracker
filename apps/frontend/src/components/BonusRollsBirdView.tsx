@@ -372,6 +372,9 @@ export function BonusRollsBirdView({ tracker }: Props) {
     ),
   ).sort((a, b) => a - b)
 
+  const nextIndex =
+    allIndices.length > 0 ? allIndices[allIndices.length - 1] + 1 : 1
+
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -479,7 +482,7 @@ export function BonusRollsBirdView({ tracker }: Props) {
           {/* ── Add row ── */}
           <tr className="border-b border-gray-700 bg-gray-900/50">
             <td className="sticky left-0 z-10 bg-gray-900 px-4 py-2 font-mono text-sm text-amber-400 border-r border-gray-700 text-center align-top">
-              {tracker.bonusIndex}
+              {nextIndex}
             </td>
             {weapons.map((w) => (
               <td

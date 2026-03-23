@@ -7,10 +7,6 @@ import {
   type SkillRollRepository,
 } from "@/db/repositories/skill-rolls.repository"
 import {
-  getTrackerRepository,
-  type TrackerRepository,
-} from "@/db/repositories/trackers.repository"
-import {
   getWeaponRepository,
   type WeaponRepository,
 } from "@/db/repositories/weapons.repository"
@@ -25,12 +21,10 @@ export interface ImportSkillRollEntry {
 export class SkillRollService {
   private readonly repo: SkillRollRepository
   private readonly weaponRepo: WeaponRepository
-  private readonly trackerRepo: TrackerRepository
 
   public constructor() {
     this.repo = getSkillRollRepository()
     this.weaponRepo = getWeaponRepository()
-    this.trackerRepo = getTrackerRepository()
   }
 
   private async assertWeaponOwnership(
@@ -68,22 +62,16 @@ export class SkillRollService {
     const check = await this.assertWeaponOwnership(weaponId, trackerId)
     if (check.isErr()) return err(check.error)
 
-    const tracker = await this.trackerRepo.findById(trackerId)
-    if (tracker.isErr()) return err(tracker.error)
-    if (!tracker.value)
-      return err(new NotFoundError(`Tracker '${trackerId}' not found`))
+    const maxIndex = await this.repo.findMaxIndexByTrackerId(trackerId)
+    if (maxIndex.isErr()) return err(maxIndex.error)
 
-    const currentIndex = tracker.value.skillIndex
     const created = await this.repo.create({
       weaponId,
-      index: currentIndex,
+      index: maxIndex.value + 1,
       groupSkill,
       seriesSkill,
     })
     if (created.isErr()) return err(created.error)
-
-    // Best-effort increment — if this fails, the roll still exists; client can reconcile
-    await this.trackerRepo.incrementSkillIndex(trackerId)
 
     return ok(created.value)
   }

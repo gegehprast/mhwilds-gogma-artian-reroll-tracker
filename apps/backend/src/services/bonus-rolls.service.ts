@@ -7,10 +7,6 @@ import {
   getBonusRollRepository,
 } from "@/db/repositories/bonus-rolls.repository"
 import {
-  getTrackerRepository,
-  type TrackerRepository,
-} from "@/db/repositories/trackers.repository"
-import {
   getWeaponRepository,
   type WeaponRepository,
 } from "@/db/repositories/weapons.repository"
@@ -28,12 +24,10 @@ export interface ImportBonusRollEntry {
 export class BonusRollService {
   private readonly repo: BonusRollRepository
   private readonly weaponRepo: WeaponRepository
-  private readonly trackerRepo: TrackerRepository
 
   public constructor() {
     this.repo = getBonusRollRepository()
     this.weaponRepo = getWeaponRepository()
-    this.trackerRepo = getTrackerRepository()
   }
 
   private async assertWeaponOwnership(
@@ -74,15 +68,12 @@ export class BonusRollService {
     const check = await this.assertWeaponOwnership(weaponId, trackerId)
     if (check.isErr()) return err(check.error)
 
-    const tracker = await this.trackerRepo.findById(trackerId)
-    if (tracker.isErr()) return err(tracker.error)
-    if (!tracker.value)
-      return err(new NotFoundError(`Tracker '${trackerId}' not found`))
+    const maxIndex = await this.repo.findMaxIndexByTrackerId(trackerId)
+    if (maxIndex.isErr()) return err(maxIndex.error)
 
-    const currentIndex = tracker.value.bonusIndex
     const created = await this.repo.create({
       weaponId,
-      index: currentIndex,
+      index: maxIndex.value + 1,
       bonus1,
       bonus2,
       bonus3,
@@ -90,9 +81,6 @@ export class BonusRollService {
       bonus5,
     })
     if (created.isErr()) return err(created.error)
-
-    // Best-effort increment — if this fails, the roll still exists; client can reconcile
-    await this.trackerRepo.incrementBonusIndex(trackerId)
 
     return ok(created.value)
   }

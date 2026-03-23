@@ -1,7 +1,8 @@
 import type { Result } from "@bunkit/result"
-import { and, asc, eq, gt, lte } from "drizzle-orm"
+import { and, asc, eq, gt, lte, max } from "drizzle-orm"
 import type { DatabaseError } from "@/core/errors"
 import { type BonusRoll, bonusRolls, type NewBonusRoll } from "@/db/schemas"
+import { weapons } from "@/db/schemas/weapons.schema"
 import { BaseRepository } from "./base-repository"
 
 export class BonusRollRepository extends BaseRepository {
@@ -14,6 +15,20 @@ export class BonusRollRepository extends BaseRepository {
         null,
       "Failed to find bonus roll by ID",
     )
+  }
+
+  public async findMaxIndexByTrackerId(
+    trackerId: string,
+  ): Promise<Result<number, DatabaseError>> {
+    return this.wrapQuery(async () => {
+      const row = this.db
+        .select({ maxIndex: max(bonusRolls.index) })
+        .from(bonusRolls)
+        .innerJoin(weapons, eq(bonusRolls.weaponId, weapons.id))
+        .where(eq(weapons.trackerId, trackerId))
+        .get()
+      return row?.maxIndex ?? 0
+    }, "Failed to find max bonus roll index")
   }
 
   public async findByWeaponId(
