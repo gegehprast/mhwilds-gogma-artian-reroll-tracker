@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useAllSkillRolls } from "../hooks/useAllSkillRolls"
 import { useWeapons } from "../hooks/useWeapons"
 import type { SkillRoll, Tracker, Weapon } from "../lib/api-service"
@@ -91,101 +91,39 @@ function EditableSkillCell({
   deleteRoll,
   updating,
 }: EditableCellProps) {
-  const [editing, setEditing] = useState(false)
   const [groupSkill, setGroupSkill] = useState(roll.groupSkill)
   const [seriesSkill, setSeriesSkill] = useState(roll.seriesSkill)
   const seriesRef = useRef<HTMLInputElement>(null)
 
-  function startEdit() {
+  useEffect(() => {
     setGroupSkill(roll.groupSkill)
     setSeriesSkill(roll.seriesSkill)
-    setEditing(true)
-  }
+  }, [roll.groupSkill, roll.seriesSkill])
 
   function save() {
     const g = groupSkill.trim()
     const s = seriesSkill.trim()
     if (!g || !s) {
-      cancel()
+      setGroupSkill(roll.groupSkill)
+      setSeriesSkill(roll.seriesSkill)
       return
     }
     if (g !== roll.groupSkill || s !== roll.seriesSkill) {
       updateRoll(weapon.id, roll.id, { groupSkill: g, seriesSkill: s })
     }
-    setEditing(false)
   }
 
-  function cancel() {
+  function reset() {
     setGroupSkill(roll.groupSkill)
     setSeriesSkill(roll.seriesSkill)
-    setEditing(false)
-  }
-
-  if (editing) {
-    return (
-      <div className="flex flex-col gap-1 py-1">
-        <input
-          autoFocus
-          className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-amber-500 outline-none"
-          value={groupSkill}
-          onChange={(e) => setGroupSkill(e.target.value)}
-          placeholder="Group skill"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault()
-              seriesRef.current?.focus()
-            }
-            if (e.key === "Escape") cancel()
-          }}
-        />
-        <input
-          ref={seriesRef}
-          className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-amber-500 outline-none"
-          value={seriesSkill}
-          onChange={(e) => setSeriesSkill(e.target.value)}
-          placeholder="Series skill"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault()
-              save()
-            }
-            if (e.key === "Escape") cancel()
-          }}
-          onBlur={save}
-        />
-        {updating && (
-          <span className="text-[10px] text-gray-500 text-center">saving…</span>
-        )}
-      </div>
-    )
   }
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      className="group/cell relative py-1 cursor-text"
-      onClick={startEdit}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") startEdit()
-      }}
-      title="Click to edit"
-    >
-      <div className="text-center min-h-10 flex flex-col justify-center">
-        <div className="text-gray-200 text-xs leading-snug">
-          {roll.groupSkill}
-        </div>
-        <div className="text-gray-500 text-xs leading-snug">
-          {roll.seriesSkill}
-        </div>
-      </div>
-      <div className="absolute top-0.5 right-0.5 hidden group-hover/cell:flex gap-0.5">
+    <div className="flex flex-col gap-1 py-1">
+      <div className="flex justify-end gap-0.5 mb-0.5">
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            onImport(roll, weapon)
-          }}
+          onClick={() => onImport(roll, weapon)}
           className="text-gray-500 hover:text-blue-400 text-[10px] px-0.5 leading-none"
           title="Import from here"
         >
@@ -193,16 +131,44 @@ function EditableSkillCell({
         </button>
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            deleteRoll(weapon.id, roll.id)
-          }}
+          onClick={() => deleteRoll(weapon.id, roll.id)}
           className="text-gray-500 hover:text-red-400 text-[10px] px-0.5 leading-none"
           title="Delete"
         >
           ✕
         </button>
       </div>
+      <input
+        className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none"
+        value={groupSkill}
+        onChange={(e) => setGroupSkill(e.target.value)}
+        placeholder="Group skill"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault()
+            seriesRef.current?.focus()
+          }
+          if (e.key === "Escape") reset()
+        }}
+      />
+      <input
+        ref={seriesRef}
+        className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none"
+        value={seriesSkill}
+        onChange={(e) => setSeriesSkill(e.target.value)}
+        placeholder="Series skill"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault()
+            save()
+          }
+          if (e.key === "Escape") reset()
+        }}
+        onBlur={save}
+      />
+      {updating && (
+        <span className="text-[10px] text-gray-500 text-center">saving…</span>
+      )}
     </div>
   )
 }
@@ -367,7 +333,7 @@ export function SkillRollsBirdView({ tracker }: Props) {
 
   return (
     <div className="flex-1 overflow-auto">
-      <table className="border-collapse text-sm min-w-max w-full">
+      <table className="border-collapse text-sm min-w-max">
         {/* ── Header ── */}
         <thead className="sticky top-0 z-10">
           <tr className="bg-gray-900 border-b-2 border-gray-700">
@@ -377,7 +343,7 @@ export function SkillRollsBirdView({ tracker }: Props) {
             {weapons.map((w) => (
               <th
                 key={w.id}
-                className="px-4 py-3 border-r border-gray-700 min-w-52 text-center"
+                className="px-4 py-3 border-r border-gray-700 w-52 text-center"
               >
                 <div className="font-semibold text-gray-100 text-sm">
                   {w.weaponType}
@@ -387,7 +353,7 @@ export function SkillRollsBirdView({ tracker }: Props) {
                 </div>
               </th>
             ))}
-            <th className="px-3 py-3 border-gray-700 relative w-10">
+            <th className="sticky right-0 z-20 bg-gray-900 px-3 py-3 border-l border-gray-700 w-10">
               <button
                 type="button"
                 onClick={() => setAddingWeapon(!addingWeapon)}
@@ -424,7 +390,7 @@ export function SkillRollsBirdView({ tracker }: Props) {
                 return (
                   <td
                     key={w.id}
-                    className="px-3 border-r border-gray-800 align-middle"
+                    className="px-3 border-r border-gray-800 align-top w-52"
                   >
                     {roll ? (
                       <EditableSkillCell
@@ -461,7 +427,7 @@ export function SkillRollsBirdView({ tracker }: Props) {
             {weapons.map((w) => (
               <td
                 key={w.id}
-                className="px-3 py-1 border-r border-gray-700 align-top"
+                className="px-3 py-1 border-r border-gray-700 align-top w-52"
               >
                 <AddSkillCell weapon={w} trackerId={tracker.id} />
               </td>
