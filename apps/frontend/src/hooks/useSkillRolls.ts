@@ -65,24 +65,5 @@ export function useSkillRolls(
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
   })
 
-  const importRolls = useMutation({
-    mutationFn: ({
-      selectedIndex,
-      rolls,
-    }: {
-      selectedIndex: number
-      rolls: Array<{
-        attemptNum: number
-        groupSkill: string
-        seriesSkill: string
-      }>
-    }) => {
-      if (!trackerId || !weaponId)
-        throw new Error("trackerId and weaponId required")
-      return skillRollService.import(trackerId, weaponId, selectedIndex, rolls)
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: key }),
-  })
-
-  return { query, create, remove, update, importRolls }
+  return { query, create, remove, update }
 }

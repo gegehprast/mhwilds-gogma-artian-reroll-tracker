@@ -3,11 +3,10 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import { useAllSkillRolls } from "../hooks/useAllSkillRolls"
 import { useWeapons } from "../hooks/useWeapons"
-import type { SkillRoll, Tracker, Weapon } from "../lib/api-service"
+import type { Tracker, Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
 import { addToast } from "../lib/toast"
 import { AddSkillCell } from "./AddSkillCell"
-import { ImportModal } from "./ImportModal"
 import { SkillDataCell } from "./SkillDataCell"
 import { WeaponColumnHeader } from "./WeaponColumnHeader"
 
@@ -25,10 +24,6 @@ export function SkillRollsView({ tracker }: Props) {
     tracker.id,
     weapons,
   )
-  const [importTarget, setImportTarget] = useState<{
-    roll: SkillRoll
-    weapon: Weapon
-  } | null>(null)
 
   const updateRollMutation = useMutation({
     mutationFn: ({
@@ -43,26 +38,6 @@ export function SkillRollsView({ tracker }: Props) {
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
       addToast("Roll updated", "success")
-    },
-  })
-
-  const importRollsMutation = useMutation({
-    mutationFn: ({
-      weaponId,
-      selectedIndex,
-      rolls,
-    }: {
-      weaponId: string
-      selectedIndex: number
-      rolls: Array<{
-        attemptNum: number
-        groupSkill: string
-        seriesSkill: string
-      }>
-    }) => skillRollService.import(tracker.id, weaponId, selectedIndex, rolls),
-    onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
-      addToast("Rolls imported", "success")
     },
   })
 
@@ -210,29 +185,6 @@ export function SkillRollsView({ tracker }: Props) {
           </tr>
         </tbody>
       </table>
-
-      {importTarget && (
-        <ImportModal
-          type="skills"
-          selectedIndex={importTarget.roll.index}
-          onClose={() => setImportTarget(null)}
-          onImport={(idx, rawRows) => {
-            const rows = rawRows as Array<{
-              attemptNum: number
-              groupSkill: string
-              seriesSkill: string
-            }>
-            importRollsMutation.mutate(
-              {
-                weaponId: importTarget.weapon.id,
-                selectedIndex: idx,
-                rolls: rows,
-              },
-              { onSuccess: () => setImportTarget(null) },
-            )
-          }}
-        />
-      )}
     </div>
   )
 }

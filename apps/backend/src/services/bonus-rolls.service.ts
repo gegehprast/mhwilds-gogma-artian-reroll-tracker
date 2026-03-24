@@ -10,16 +10,7 @@ import {
   getWeaponRepository,
   type WeaponRepository,
 } from "@/db/repositories/weapons.repository"
-import type { BonusRoll, NewBonusRoll } from "@/db/schemas"
-
-export interface ImportBonusRollEntry {
-  readonly attemptNum: number
-  readonly bonus1: string
-  readonly bonus2: string
-  readonly bonus3: string
-  readonly bonus4: string
-  readonly bonus5: string
-}
+import type { BonusRoll } from "@/db/schemas"
 
 export class BonusRollService {
   private readonly repo: BonusRollRepository
@@ -137,48 +128,6 @@ export class BonusRollService {
       )
 
     return this.repo.delete(id)
-  }
-
-  /**
-   * Import rolls into a weapon at a specific position.
-   *
-   * Deletes existing rolls where index > selectedIndex AND index <= selectedIndex + entries.length,
-   * then inserts new rolls starting at selectedIndex + 1.
-   *
-   * The tracker's bonusIndex counter is NOT modified.
-   */
-  public async importRolls(
-    trackerId: string,
-    weaponId: string,
-    selectedIndex: number,
-    entries: ImportBonusRollEntry[],
-  ): Promise<
-    Result<BonusRoll[], NotFoundError | ForbiddenError | DatabaseError>
-  > {
-    const check = await this.assertWeaponOwnership(weaponId, trackerId)
-    if (check.isErr()) return err(check.error)
-
-    const toIndex = selectedIndex + entries.length
-    const deleteResult = await this.repo.deleteRange(
-      weaponId,
-      selectedIndex,
-      toIndex,
-    )
-    if (deleteResult.isErr()) return err(deleteResult.error)
-
-    const sorted = [...entries].sort((a, b) => a.attemptNum - b.attemptNum)
-    const newRolls: NewBonusRoll[] = sorted.map((entry, i) => ({
-      weaponId,
-      index: selectedIndex + 1 + i,
-      bonus1: entry.bonus1,
-      bonus2: entry.bonus2,
-      bonus3: entry.bonus3,
-      bonus4: entry.bonus4,
-      bonus5: entry.bonus5,
-    }))
-
-    if (newRolls.length === 0) return ok([])
-    return this.repo.bulkCreate(newRolls)
   }
 }
 

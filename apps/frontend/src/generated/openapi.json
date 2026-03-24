@@ -1002,124 +1002,6 @@
         }
       }
     },
-    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
-      "post": {
-        "operationId": "importSkillRolls",
-        "summary": "Import skill rolls",
-        "description": "Replaces a range of skill rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's skill index counter.",
-        "tags": [
-          "Skill Rolls"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "trackerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "weaponId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ImportSkillRollsBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "200 response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SkillRoll"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input or validation failed",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Validation failed",
-                  "code": "BAD_REQUEST",
-                  "details": [
-                    {
-                      "path": [
-                        "email"
-                      ],
-                      "message": "Invalid email format"
-                    }
-                  ]
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Insufficient permissions",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Insufficient permissions",
-                  "code": "FORBIDDEN"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found - Resource does not exist",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Resource not found",
-                  "code": "NOT_FOUND"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - Unexpected server error",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Internal server error",
-                  "code": "INTERNAL_ERROR",
-                  "details": "Stack trace or error details for debugging"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/InternalServerErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls": {
       "get": {
         "operationId": "listBonusRolls",
@@ -1520,124 +1402,6 @@
           }
         }
       }
-    },
-    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
-      "post": {
-        "operationId": "importBonusRolls",
-        "summary": "Import bonus rolls",
-        "description": "Replaces a range of bonus rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's bonus index counter.",
-        "tags": [
-          "Bonus Rolls"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "trackerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "weaponId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ImportBonusRollsBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "200 response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BonusRoll"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Invalid input or validation failed",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Validation failed",
-                  "code": "BAD_REQUEST",
-                  "details": [
-                    {
-                      "path": [
-                        "email"
-                      ],
-                      "message": "Invalid email format"
-                    }
-                  ]
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Insufficient permissions",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Insufficient permissions",
-                  "code": "FORBIDDEN"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found - Resource does not exist",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Resource not found",
-                  "code": "NOT_FOUND"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - Unexpected server error",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Internal server error",
-                  "code": "INTERNAL_ERROR",
-                  "details": "Stack trace or error details for debugging"
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/InternalServerErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1724,12 +1488,15 @@
         "type": "object",
         "properties": {
           "groupSkill": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "seriesSkill": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
+          },
+          "atIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -1741,77 +1508,35 @@
         "type": "object",
         "properties": {
           "groupSkill": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "seriesSkill": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           }
         }
-      },
-      "ImportSkillRollsBody": {
-        "type": "object",
-        "properties": {
-          "selectedIndex": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "rolls": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "attemptNum": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 9007199254740991
-                },
-                "groupSkill": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "seriesSkill": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": [
-                "attemptNum",
-                "groupSkill",
-                "seriesSkill"
-              ]
-            }
-          }
-        },
-        "required": [
-          "selectedIndex",
-          "rolls"
-        ]
       },
       "CreateBonusRollBody": {
         "type": "object",
         "properties": {
           "bonus1": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus2": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus3": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus4": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus5": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
+          },
+          "atIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -1826,81 +1551,21 @@
         "type": "object",
         "properties": {
           "bonus1": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus2": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus3": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus4": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "bonus5": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           }
         }
-      },
-      "ImportBonusRollsBody": {
-        "type": "object",
-        "properties": {
-          "selectedIndex": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "rolls": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "attemptNum": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 9007199254740991
-                },
-                "bonus1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "bonus2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "bonus3": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "bonus4": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "bonus5": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": [
-                "attemptNum",
-                "bonus1",
-                "bonus2",
-                "bonus3",
-                "bonus4",
-                "bonus5"
-              ]
-            }
-          }
-        },
-        "required": [
-          "selectedIndex",
-          "rolls"
-        ]
       },
       "HealthResponse": {
         "type": "object",
@@ -1912,7 +1577,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-23T21:35:20.120Z"
+            "example": "2026-03-24T02:34:31.740Z"
           },
           "uptime": {
             "type": "number",

@@ -29,22 +29,6 @@ const CreateBonusRollBodySchema = z
   })
   .meta({ id: "CreateBonusRollBody" })
 
-const ImportBonusRollsBodySchema = z
-  .object({
-    selectedIndex: z.number().int().min(0),
-    rolls: z.array(
-      z.object({
-        attemptNum: z.number().int().min(1),
-        bonus1: z.string(),
-        bonus2: z.string(),
-        bonus3: z.string(),
-        bonus4: z.string(),
-        bonus5: z.string(),
-      }),
-    ),
-  })
-  .meta({ id: "ImportBonusRollsBody" })
-
 const UpdateBonusRollBodySchema = z
   .object({
     bonus1: z.string().optional(),
@@ -140,27 +124,4 @@ createRoute("DELETE", `${BASE}/:id`)
     )
     if (result.isErr()) return mapError(result.error, res)
     return res.noContent()
-  })
-
-createRoute("POST", `${BASE}/import`)
-  .openapi({
-    operationId: "importBonusRolls",
-    summary: "Import bonus rolls",
-    description:
-      "Replaces a range of bonus rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's bonus index counter.",
-    tags: ["Bonus Rolls"],
-  })
-  .body(ImportBonusRollsBodySchema)
-  .response(z.array(BonusRollSchema))
-  .errors([400, 403, 404])
-  .handler(async ({ params, body, res }) => {
-    const service = getBonusRollService()
-    const result = await service.importRolls(
-      params.trackerId,
-      params.weaponId,
-      body.selectedIndex,
-      body.rolls,
-    )
-    if (result.isErr()) return mapError(result.error, res)
-    return res.ok(result.value)
   })

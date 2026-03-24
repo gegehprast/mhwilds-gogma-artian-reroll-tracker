@@ -8,14 +8,14 @@ declare module "@bunkit/server" {
     "/": Record<string, never>
     "/:path*": { path: string }
     "/api/health": Record<string, never>
-    "/api/redirect-external": Record<string, never>
-    "/api/redirect-internal": Record<string, never>
-    "/api/redirect-to-todo": Record<string, never>
-    "/api/todos": Record<string, never>
-    "/api/todos/:id": { id: string }
-    "/auth/login": Record<string, never>
-    "/auth/me": Record<string, never>
-    "/auth/register": Record<string, never>
+    "/api/trackers": Record<string, never>
+    "/api/trackers/:id": { id: string }
+    "/api/trackers/:trackerId/weapons": { trackerId: string }
+    "/api/trackers/:trackerId/weapons/:id": { trackerId: string; id: string }
+    "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls": { trackerId: string; weaponId: string }
+    "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls/:id": { trackerId: string; weaponId: string; id: string }
+    "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls": { trackerId: string; weaponId: string }
+    "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls/:id": { trackerId: string; weaponId: string; id: string }
     "/docs": Record<string, never>
     "/openapi.json": Record<string, never>
     "/openapi/refresh": Record<string, never>

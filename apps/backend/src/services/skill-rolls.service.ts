@@ -10,13 +10,7 @@ import {
   getWeaponRepository,
   type WeaponRepository,
 } from "@/db/repositories/weapons.repository"
-import type { NewSkillRoll, SkillRoll } from "@/db/schemas"
-
-export interface ImportSkillRollEntry {
-  readonly attemptNum: number
-  readonly groupSkill: string
-  readonly seriesSkill: string
-}
+import type { SkillRoll } from "@/db/schemas"
 
 export class SkillRollService {
   private readonly repo: SkillRollRepository
@@ -110,45 +104,6 @@ export class SkillRollService {
     _trackerId: string,
   ): Promise<Result<void, NotFoundError | ForbiddenError | DatabaseError>> {
     return this.repo.delete(id)
-  }
-
-  /**
-   * Import rolls into a weapon at a specific position.
-   *
-   * Deletes existing rolls where index > selectedIndex AND index <= selectedIndex + entries.length,
-   * then inserts new rolls starting at selectedIndex + 1.
-   *
-   * The tracker's skillIndex counter is NOT modified.
-   */
-  public async importRolls(
-    trackerId: string,
-    weaponId: string,
-    selectedIndex: number,
-    entries: ImportSkillRollEntry[],
-  ): Promise<
-    Result<SkillRoll[], NotFoundError | ForbiddenError | DatabaseError>
-  > {
-    const check = await this.assertWeaponOwnership(weaponId, trackerId)
-    if (check.isErr()) return err(check.error)
-
-    const toIndex = selectedIndex + entries.length
-    const deleteResult = await this.repo.deleteRange(
-      weaponId,
-      selectedIndex,
-      toIndex,
-    )
-    if (deleteResult.isErr()) return err(deleteResult.error)
-
-    const sorted = [...entries].sort((a, b) => a.attemptNum - b.attemptNum)
-    const newRolls: NewSkillRoll[] = sorted.map((entry, i) => ({
-      weaponId,
-      index: selectedIndex + 1 + i,
-      groupSkill: entry.groupSkill,
-      seriesSkill: entry.seriesSkill,
-    }))
-
-    if (newRolls.length === 0) return ok([])
-    return this.repo.bulkCreate(newRolls)
   }
 }
 

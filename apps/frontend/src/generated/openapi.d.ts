@@ -240,26 +240,6 @@ export interface paths {
         patch: operations["updateSkillRoll"];
         trace?: never;
     };
-    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Import skill rolls
-         * @description Replaces a range of skill rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's skill index counter.
-         */
-        post: operations["importSkillRolls"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls": {
         parameters: {
             query?: never;
@@ -308,26 +288,6 @@ export interface paths {
         patch: operations["updateBonusRoll"];
         trace?: never;
     };
-    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Import bonus rolls
-         * @description Replaces a range of bonus rolls starting at selectedIndex+1 with the provided entries. Does not affect the tracker's bonus index counter.
-         */
-        post: operations["importBonusRolls"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -363,14 +323,6 @@ export interface components {
             groupSkill?: string;
             seriesSkill?: string;
         };
-        ImportSkillRollsBody: {
-            selectedIndex: number;
-            rolls: {
-                attemptNum: number;
-                groupSkill: string;
-                seriesSkill: string;
-            }[];
-        };
         CreateBonusRollBody: {
             bonus1: string;
             bonus2: string;
@@ -386,17 +338,6 @@ export interface components {
             bonus4?: string;
             bonus5?: string;
         };
-        ImportBonusRollsBody: {
-            selectedIndex: number;
-            rolls: {
-                attemptNum: number;
-                bonus1: string;
-                bonus2: string;
-                bonus3: string;
-                bonus4: string;
-                bonus5: string;
-            }[];
-        };
         /**
          * Health Check Response
          * @description Health check response indicating service status
@@ -407,7 +348,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-23T21:35:20.120Z */
+            /** @example 2026-03-24T02:34:31.740Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -1366,102 +1307,6 @@ export interface operations {
             };
         };
     };
-    importSkillRolls: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                trackerId: string;
-                weaponId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ImportSkillRollsBody"];
-            };
-        };
-        responses: {
-            /** @description 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SkillRoll"][];
-                };
-            };
-            /** @description Bad Request - Invalid input or validation failed */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Validation failed",
-                     *       "code": "BAD_REQUEST",
-                     *       "details": [
-                     *         {
-                     *           "path": [
-                     *             "email"
-                     *           ],
-                     *           "message": "Invalid email format"
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["BadRequestErrorResponse"];
-                };
-            };
-            /** @description Forbidden - Insufficient permissions */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Insufficient permissions",
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
-                };
-            };
-            /** @description Not Found - Resource does not exist */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Resource not found",
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["NotFoundErrorResponse"];
-                };
-            };
-            /** @description Internal Server Error - Unexpected server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Internal server error",
-                     *       "code": "INTERNAL_ERROR",
-                     *       "details": "Stack trace or error details for debugging"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
     listBonusRolls: {
         parameters: {
             query?: never;
@@ -1712,102 +1557,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BonusRoll"];
-                };
-            };
-            /** @description Bad Request - Invalid input or validation failed */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Validation failed",
-                     *       "code": "BAD_REQUEST",
-                     *       "details": [
-                     *         {
-                     *           "path": [
-                     *             "email"
-                     *           ],
-                     *           "message": "Invalid email format"
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["BadRequestErrorResponse"];
-                };
-            };
-            /** @description Forbidden - Insufficient permissions */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Insufficient permissions",
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
-                };
-            };
-            /** @description Not Found - Resource does not exist */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Resource not found",
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["NotFoundErrorResponse"];
-                };
-            };
-            /** @description Internal Server Error - Unexpected server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Internal server error",
-                     *       "code": "INTERNAL_ERROR",
-                     *       "details": "Stack trace or error details for debugging"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
-    importBonusRolls: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                trackerId: string;
-                weaponId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ImportBonusRollsBody"];
-            };
-        };
-        responses: {
-            /** @description 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BonusRoll"][];
                 };
             };
             /** @description Bad Request - Invalid input or validation failed */

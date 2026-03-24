@@ -139,27 +139,6 @@ export const skillRollService = {
     if (!result) throw new Error(String(error))
     return result
   },
-
-  async import(
-    trackerId: string,
-    weaponId: string,
-    selectedIndex: number,
-    rolls: Array<{
-      attemptNum: number
-      groupSkill: string
-      seriesSkill: string
-    }>,
-  ): Promise<SkillRoll[]> {
-    const { data, error } = await apiClient.POST(
-      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import",
-      {
-        params: { path: { trackerId, weaponId } },
-        body: { selectedIndex, rolls },
-      },
-    )
-    if (!data) throw new Error(String(error))
-    return data
-  },
 }
 
 export const bonusRollService = {
@@ -220,29 +199,5 @@ export const bonusRollService = {
     )
     if (!result) throw new Error(String(error))
     return result
-  },
-
-  async import(
-    trackerId: string,
-    weaponId: string,
-    selectedIndex: number,
-    rolls: Array<{
-      attemptNum: number
-      bonus1: string
-      bonus2: string
-      bonus3: string
-      bonus4: string
-      bonus5: string
-    }>,
-  ): Promise<BonusRoll[]> {
-    const { data, error } = await apiClient.POST(
-      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import",
-      {
-        params: { path: { trackerId, weaponId } },
-        body: { selectedIndex, rolls },
-      },
-    )
-    if (!data) throw new Error(String(error))
-    return data
   },
 }

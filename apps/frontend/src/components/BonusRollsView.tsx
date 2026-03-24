@@ -3,13 +3,12 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import { useAllBonusRolls } from "../hooks/useAllBonusRolls"
 import { useWeapons } from "../hooks/useWeapons"
-import type { BonusRoll, Tracker, Weapon } from "../lib/api-service"
+import type { Tracker, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
 import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { AddBonusCell } from "./AddBonusCell"
 import { BonusDataCell } from "./BonusDataCell"
-import { ImportModal } from "./ImportModal"
 import { WeaponColumnHeader } from "./WeaponColumnHeader"
 
 interface Props {
@@ -26,10 +25,6 @@ export function BonusRollsView({ tracker }: Props) {
     tracker.id,
     weapons,
   )
-  const [importTarget, setImportTarget] = useState<{
-    roll: BonusRoll
-    weapon: Weapon
-  } | null>(null)
 
   const updateRollMutation = useMutation({
     mutationFn: ({
@@ -44,22 +39,6 @@ export function BonusRollsView({ tracker }: Props) {
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
       addToast("Roll updated", "success")
-    },
-  })
-
-  const importRollsMutation = useMutation({
-    mutationFn: ({
-      weaponId,
-      selectedIndex,
-      rolls,
-    }: {
-      weaponId: string
-      selectedIndex: number
-      rolls: Array<{ attemptNum: number } & BonusData>
-    }) => bonusRollService.import(tracker.id, weaponId, selectedIndex, rolls),
-    onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
-      addToast("Rolls imported", "success")
     },
   })
 
@@ -207,25 +186,6 @@ export function BonusRollsView({ tracker }: Props) {
           </tr>
         </tbody>
       </table>
-
-      {importTarget && (
-        <ImportModal
-          type="bonuses"
-          selectedIndex={importTarget.roll.index}
-          onClose={() => setImportTarget(null)}
-          onImport={(idx, rawRows) => {
-            const rows = rawRows as Array<{ attemptNum: number } & BonusData>
-            importRollsMutation.mutate(
-              {
-                weaponId: importTarget.weapon.id,
-                selectedIndex: idx,
-                rolls: rows,
-              },
-              { onSuccess: () => setImportTarget(null) },
-            )
-          }}
-        />
-      )}
     </div>
   )
 }
