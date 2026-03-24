@@ -25,7 +25,6 @@ export function SkillDataCell({
   weapon,
   trackerId,
   updateRoll,
-  updating,
 }: SkillDataCellProps) {
   const qc = useQueryClient()
   const [groupSkill, setGroupSkill] = useState(roll?.groupSkill ?? "")
@@ -60,7 +59,6 @@ export function SkillDataCell({
     }
   }
 
-  const isPending = roll ? updating : createMutation.isPending
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
   return (
@@ -98,9 +96,6 @@ export function SkillDataCell({
           inputBg={inputBg}
         />
       </div>
-      {isPending && (
-        <span className="text-[10px] text-gray-500 text-center">saving…</span>
-      )}
     </div>
   )
 }

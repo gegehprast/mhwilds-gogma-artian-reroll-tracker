@@ -27,7 +27,6 @@ export function BonusDataCell({
   weapon,
   trackerId,
   updateRoll,
-  updating,
 }: BonusDataCellProps) {
   const qc = useQueryClient()
   const emptyValues: BonusData = {
@@ -105,7 +104,6 @@ export function BonusDataCell({
     }
   }
 
-  const isPending = roll ? updating : createMutation.isPending
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
   return (
@@ -139,9 +137,6 @@ export function BonusDataCell({
           />
         </div>
       ))}
-      {isPending && (
-        <span className="text-[10px] text-gray-500 text-center">saving…</span>
-      )}
     </div>
   )
 }
