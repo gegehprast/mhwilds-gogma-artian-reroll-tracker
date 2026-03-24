@@ -2,7 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import type { SkillRoll, Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
+import { GROUP_SKILLS, SERIES_SKILLS } from "../lib/constants"
 import { addToast } from "../lib/toast"
+import { ComboBox } from "./ComboBox"
 
 export interface SkillDataCellProps {
   roll: SkillRoll | null
@@ -28,7 +30,7 @@ export function SkillDataCell({
   const qc = useQueryClient()
   const [groupSkill, setGroupSkill] = useState(roll?.groupSkill ?? "")
   const [seriesSkill, setSeriesSkill] = useState(roll?.seriesSkill ?? "")
-  const seriesRef = useRef<HTMLInputElement>(null)
+  const groupContainerRef = useRef<HTMLDivElement>(null)
 
   const createMutation = useMutation({
     mutationFn: ({ g, s, idx }: { g: string; s: string; idx: number }) =>
@@ -47,9 +49,7 @@ export function SkillDataCell({
     setSeriesSkill(roll?.seriesSkill ?? "")
   }, [roll?.groupSkill, roll?.seriesSkill])
 
-  function save() {
-    const g = groupSkill.trim()
-    const s = seriesSkill.trim()
+  function save(g: string, s: string) {
     if (!g && !s) return
     if (roll) {
       if (g !== roll.groupSkill || s !== roll.seriesSkill) {
@@ -60,11 +60,6 @@ export function SkillDataCell({
     }
   }
 
-  function reset() {
-    setGroupSkill(roll?.groupSkill ?? "")
-    setSeriesSkill(roll?.seriesSkill ?? "")
-  }
-
   const isPending = roll ? updating : createMutation.isPending
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
@@ -73,40 +68,36 @@ export function SkillDataCell({
       className="flex flex-col gap-1 py-1"
       data-skill-row={`${weapon.id}-${index}`}
     >
-      <input
-        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600`}
-        value={groupSkill}
-        onChange={(e) => setGroupSkill(e.target.value)}
-        placeholder="Group skill"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault()
-            save()
-            seriesRef.current?.focus()
-          }
-          if (e.key === "Escape") reset()
-        }}
-      />
-      <input
-        ref={seriesRef}
-        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600`}
+      <ComboBox
         value={seriesSkill}
-        onChange={(e) => setSeriesSkill(e.target.value)}
+        onCommit={(value) => {
+          setSeriesSkill(value)
+          save(groupSkill.trim(), value.trim())
+          groupContainerRef.current
+            ?.querySelector<HTMLInputElement>("input")
+            ?.focus()
+        }}
+        options={SERIES_SKILLS}
         placeholder="Series skill"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault()
-            save()
+        inputBg={inputBg}
+      />
+      <div ref={groupContainerRef}>
+        <ComboBox
+          value={groupSkill}
+          onCommit={(value) => {
+            setGroupSkill(value)
+            save(value.trim(), seriesSkill.trim())
             document
               .querySelector<HTMLInputElement>(
                 `[data-skill-row="${weapon.id}-${index + 1}"] input`,
               )
               ?.focus()
-          }
-          if (e.key === "Escape") reset()
-        }}
-        onBlur={roll ? save : undefined}
-      />
+          }}
+          options={GROUP_SKILLS}
+          placeholder="Group skill"
+          inputBg={inputBg}
+        />
+      </div>
       {isPending && (
         <span className="text-[10px] text-gray-500 text-center">saving…</span>
       )}

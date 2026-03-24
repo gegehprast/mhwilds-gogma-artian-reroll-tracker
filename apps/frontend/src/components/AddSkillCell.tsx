@@ -2,7 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useState } from "react"
 import type { Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
+import { GROUP_SKILLS, SERIES_SKILLS } from "../lib/constants"
 import { addToast } from "../lib/toast"
+import { ComboBox } from "./ComboBox"
 
 interface Props {
   weapon: Weapon
@@ -13,7 +15,7 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
   const qc = useQueryClient()
   const [groupSkill, setGroupSkill] = useState("")
   const [seriesSkill, setSeriesSkill] = useState("")
-  const seriesRef = useRef<HTMLInputElement>(null)
+  const groupContainerRef = useRef<HTMLDivElement>(null)
 
   const create = useMutation({
     mutationFn: ({ g, s }: { g: string; s: string }) =>
@@ -36,31 +38,26 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
 
   return (
     <div className="flex flex-col gap-1 py-1">
-      <input
-        className="w-full bg-gray-800 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600"
-        value={groupSkill}
-        onChange={(e) => setGroupSkill(e.target.value)}
-        placeholder="Group skill"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault()
-            seriesRef.current?.focus()
-          }
-        }}
-      />
-      <input
-        ref={seriesRef}
-        className="w-full bg-gray-800 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600"
+      <ComboBox
         value={seriesSkill}
-        onChange={(e) => setSeriesSkill(e.target.value)}
+        onChange={setSeriesSkill}
+        options={SERIES_SKILLS}
         placeholder="Series skill"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault()
-            submit()
-          }
-        }}
+        onNextFocus={() =>
+          groupContainerRef.current
+            ?.querySelector<HTMLInputElement>("input")
+            ?.focus()
+        }
       />
+      <div ref={groupContainerRef}>
+        <ComboBox
+          value={groupSkill}
+          onChange={setGroupSkill}
+          options={GROUP_SKILLS}
+          placeholder="Group skill"
+          onNextFocus={submit}
+        />
+      </div>
       <button
         type="button"
         onClick={submit}

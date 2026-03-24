@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useState } from "react"
 import type { Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
+import { BONUSES } from "../lib/constants"
 import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { BONUS_KEYS } from "../types/bonus-roll-types"
+import { ComboBox } from "./ComboBox"
 
 interface Props {
   weapon: Weapon
@@ -21,12 +23,12 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
     bonus5: "",
   }
   const [values, setValues] = useState<BonusData>(emptyBonuses)
-  const inputRefs = [
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
+  const comboRefs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
   ]
 
   const create = useMutation({
@@ -54,21 +56,21 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
   return (
     <div className="flex flex-col gap-1 py-1">
       {BONUS_KEYS.map((key, i) => (
-        <input
-          key={key}
-          ref={inputRefs[i]}
-          className="w-full bg-gray-800 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600"
-          value={values[key]}
-          onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
-          placeholder={`Bonus ${i + 1}`}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault()
-              if (i < 4) inputRefs[i + 1].current?.focus()
+        <div key={key} ref={comboRefs[i]}>
+          <ComboBox
+            value={values[key]}
+            onChange={(v) => setValues((prev) => ({ ...prev, [key]: v }))}
+            onNextFocus={() => {
+              if (i < 4)
+                comboRefs[i + 1].current
+                  ?.querySelector<HTMLInputElement>("input")
+                  ?.focus()
               else submit()
-            }
-          }}
-        />
+            }}
+            options={BONUSES}
+            placeholder={`Bonus ${i + 1}`}
+          />
+        </div>
       ))}
       <button
         type="button"

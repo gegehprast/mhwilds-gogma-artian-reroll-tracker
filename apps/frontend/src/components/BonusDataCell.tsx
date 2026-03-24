@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import type { BonusRoll, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
+import { BONUSES } from "../lib/constants"
 import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { BONUS_KEYS } from "../types/bonus-roll-types"
+import { ComboBox } from "./ComboBox"
 
 export interface BonusDataCellProps {
   roll: BonusRoll | null
@@ -46,12 +48,12 @@ export function BonusDataCell({
         }
       : emptyValues,
   )
-  const inputRefs = [
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
+  const comboRefs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
   ]
 
   const createMutation = useMutation({
@@ -79,12 +81,12 @@ export function BonusDataCell({
     )
   }, [roll?.bonus1, roll?.bonus2, roll?.bonus3, roll?.bonus4, roll?.bonus5])
 
-  function save() {
-    if (BONUS_KEYS.every((k) => !values[k].trim())) return
+  function save(latest: BonusData) {
+    if (BONUS_KEYS.every((k) => !latest[k].trim())) return
     if (roll) {
       const changed: Partial<BonusData> = {}
       for (const key of BONUS_KEYS) {
-        if (values[key].trim() !== roll[key]) changed[key] = values[key].trim()
+        if (latest[key].trim() !== roll[key]) changed[key] = latest[key].trim()
       }
       if (Object.keys(changed).length > 0) {
         updateRoll(weapon.id, roll.id, changed)
@@ -92,29 +94,15 @@ export function BonusDataCell({
     } else {
       createMutation.mutate({
         bonuses: {
-          bonus1: values.bonus1.trim(),
-          bonus2: values.bonus2.trim(),
-          bonus3: values.bonus3.trim(),
-          bonus4: values.bonus4.trim(),
-          bonus5: values.bonus5.trim(),
+          bonus1: latest.bonus1.trim(),
+          bonus2: latest.bonus2.trim(),
+          bonus3: latest.bonus3.trim(),
+          bonus4: latest.bonus4.trim(),
+          bonus5: latest.bonus5.trim(),
         },
         idx: index,
       })
     }
-  }
-
-  function reset() {
-    setValues(
-      roll
-        ? {
-            bonus1: roll.bonus1,
-            bonus2: roll.bonus2,
-            bonus3: roll.bonus3,
-            bonus4: roll.bonus4,
-            bonus5: roll.bonus5,
-          }
-        : emptyValues,
-    )
   }
 
   const isPending = roll ? updating : createMutation.isPending
@@ -126,29 +114,30 @@ export function BonusDataCell({
       data-bonus-row={`${weapon.id}-${index}`}
     >
       {BONUS_KEYS.map((key, i) => (
-        <input
-          key={key}
-          ref={inputRefs[i]}
-          className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600`}
-          value={values[key]}
-          onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
-          placeholder={`Bonus ${i + 1}`}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault()
-              save()
-              if (i < 4) inputRefs[i + 1].current?.focus()
-              else
+        <div key={key} ref={comboRefs[i]}>
+          <ComboBox
+            value={values[key]}
+            onCommit={(value) => {
+              const newValues = { ...values, [key]: value }
+              setValues(newValues)
+              save(newValues)
+              if (i < 4) {
+                comboRefs[i + 1].current
+                  ?.querySelector<HTMLInputElement>("input")
+                  ?.focus()
+              } else {
                 document
                   .querySelector<HTMLInputElement>(
                     `[data-bonus-row="${weapon.id}-${index + 1}"] input`,
                   )
                   ?.focus()
-            }
-            if (e.key === "Escape") reset()
-          }}
-          onBlur={roll && i === 4 ? save : undefined}
-        />
+              }
+            }}
+            options={BONUSES}
+            placeholder={`Bonus ${i + 1}`}
+            inputBg={inputBg}
+          />
+        </div>
       ))}
       {isPending && (
         <span className="text-[10px] text-gray-500 text-center">saving…</span>
