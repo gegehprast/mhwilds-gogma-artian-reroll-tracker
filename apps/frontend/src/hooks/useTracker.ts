@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getTrackerId } from "../lib/api-client"
 import { trackerService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 
 export function useTracker() {
   const qc = useQueryClient()
@@ -14,7 +15,10 @@ export function useTracker() {
   const updateName = useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) =>
       trackerService.updateName(id, name),
-    onSuccess: (data) => qc.setQueryData(["tracker"], data),
+    onSuccess: (data) => {
+      qc.setQueryData(["tracker"], data)
+      addToast("Tracker name updated", "success")
+    },
   })
 
   const setSkillIndex = useMutation({

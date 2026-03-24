@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useTracker } from "../hooks/useTracker"
 import type { Tracker } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 
 interface Props {
   tracker: Tracker
@@ -8,17 +9,13 @@ interface Props {
 }
 
 export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
-  const { updateName, setSkillIndex, setBonusIndex } = useTracker()
+  const { updateName } = useTracker()
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState(tracker.name)
-  const [skillIdxInput, setSkillIdxInput] = useState(String(tracker.skillIndex))
-  const [bonusIdxInput, setBonusIdxInput] = useState(String(tracker.bonusIndex))
-  const [copied, setCopied] = useState(false)
 
   function handleCopyId() {
     navigator.clipboard.writeText(tracker.id)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    addToast("Tracker ID copied to clipboard", "success")
   }
 
   function handleNameSave() {
@@ -29,33 +26,21 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
     setEditingName(false)
   }
 
-  function handleSkillIdxSave() {
-    const v = Number.parseInt(skillIdxInput, 10)
-    if (!Number.isNaN(v) && v >= 1 && v !== tracker.skillIndex) {
-      setSkillIndex.mutate({ id: tracker.id, skillIndex: v })
-    }
-  }
-
-  function handleBonusIdxSave() {
-    const v = Number.parseInt(bonusIdxInput, 10)
-    if (!Number.isNaN(v) && v >= 1 && v !== tracker.bonusIndex) {
-      setBonusIndex.mutate({ id: tracker.id, bonusIndex: v })
-    }
-  }
-
   return (
-    <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
-      <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-xl font-bold text-red-400 shrink-0">
-          🦎 Gogma Reroll Tracker
-        </h1>
+    <header className="flex flex-col md:flex-row md:justify-between bg-gray-900 border-b border-gray-800 px-2 md:px-4 py-2">
+      {/* Row 1: title */}
+      <h1 className="text-lg font-bold text-red-400 mb-1">
+        🦎 Gogma Reroll Tracker
+      </h1>
 
-        {/* Tracker name — click to edit */}
-        <div className="flex items-center gap-1 min-w-0 ml-auto">
+      {/* Row 2: name · id · copy · switch — all one line */}
+      <div className="flex items-center gap-2 min-w-0 ml-auto mt-2 md:mt-0">
+        {/* Tracker name */}
+        <div className="flex items-center min-w-0 shrink">
           {editingName ? (
             <input
               autoFocus
-              className="bg-gray-800 text-gray-100 text-sm rounded px-2 py-1 border border-red-500 w-44"
+              className="bg-gray-800 text-gray-100 text-xs rounded px-2 py-1 border border-red-500 w-32"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
               onBlur={handleNameSave}
@@ -71,7 +56,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
                 setNameInput(tracker.name)
                 setEditingName(true)
               }}
-              className="text-sm font-medium text-gray-200 hover:text-red-300 truncate max-w-48"
+              className="text-xs font-medium text-gray-200 hover:text-red-300 truncate max-w-28"
               title="Click to rename"
             >
               {tracker.name} ✎
@@ -79,69 +64,24 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
           )}
         </div>
 
-        {/* Index counters */}
-        <div className="flex items-center gap-3 shrink-0 ml-2">
-          <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-3 py-1 min-w-18">
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
-              Skill Idx
-            </span>
-            <input
-              autoFocus
-              type="number"
-              min={1}
-              className="bg-transparent text-red-300 font-mono text-sm rounded w-14 text-center border-b border-red-500 outline-none"
-              value={skillIdxInput}
-              onChange={(e) => setSkillIdxInput(e.target.value)}
-              onBlur={handleSkillIdxSave}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSkillIdxSave()
-                if (e.key === "Escape") handleSkillIdxSave()
-              }}
-            />
-          </div>
-          <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-3 py-1 min-w-18">
-            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
-              Bonus Idx
-            </span>
-            <input
-              autoFocus
-              type="number"
-              min={1}
-              className="bg-transparent text-red-300 font-mono text-sm rounded w-14 text-center border-b border-red-500 outline-none"
-              value={bonusIdxInput}
-              onChange={(e) => setBonusIdxInput(e.target.value)}
-              onBlur={handleBonusIdxSave}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleBonusIdxSave()
-                if (e.key === "Escape") handleBonusIdxSave()
-              }}
-            />
-          </div>
-        </div>
+        {/* ID */}
+        <button
+          type="button"
+          className="font-mono text-xs text-red-300 select-all bg-gray-800 px-2 py-0.5 rounded truncate"
+          onClick={handleCopyId}
+          title="Click to copy to clipboard"
+        >
+          {tracker.id}
+        </button>
 
-        {/* Tracker ID + copy + switch */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs text-gray-500">ID:</span>
-          <span className="font-mono text-xs text-red-300 select-all bg-gray-800 px-2 py-1 rounded">
-            {tracker.id}
-          </span>
-          <button
-            type="button"
-            onClick={handleCopyId}
-            className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition-colors"
-            title="Copy tracker ID to clipboard"
-          >
-            {copied ? "✓ Copied" : "Copy"}
-          </button>
-          <button
-            type="button"
-            onClick={onSwitchTracker}
-            className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition-colors"
-            title="Switch to a different tracker"
-          >
-            Switch
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onSwitchTracker}
+          className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-0.5 rounded transition-colors shrink-0"
+          title="Switch to a different tracker"
+        >
+          Switch
+        </button>
       </div>
     </header>
   )

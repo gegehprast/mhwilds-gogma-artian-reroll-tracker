@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { AddWeaponButton } from "./components/AddWeaponButton"
 import { BonusRollsView } from "./components/BonusRollsView"
+import { IndexControl } from "./components/IndexControl"
 import { SkillRollsView } from "./components/SkillRollsView"
 import { TrackerHeader } from "./components/TrackerHeader"
 import { TrackerSetup } from "./components/TrackerSetup"
@@ -58,29 +59,36 @@ function MainApp() {
       <TrackerHeader tracker={tracker} onSwitchTracker={handleSwitchTracker} />
 
       {/* Roll type tabs */}
-      <div className="bg-gray-900 border-b border-gray-800 px-4 flex gap-4">
-        {(
-          [
-            ["skills-bird", "Skills"],
-            ["bonuses-bird", "Bonuses"],
-          ] as const
-        ).map(([tab, label]) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`py-3 px-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab
-                ? "border-red-400 text-red-400"
-                : "border-transparent text-gray-500 hover:text-gray-300"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="bg-gray-900 border-b border-gray-800 px-4 flex items-center gap-1">
+        <div className="flex gap-1">
+          {(
+            [
+              ["skills-bird", "Skills"],
+              ["bonuses-bird", "Bonuses"],
+            ] as const
+          ).map(([tab, label]) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`py-3 px-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab
+                  ? "border-red-400 text-red-400"
+                  : "border-transparent text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-        {/* add weapon button — shown in bird views */}
-        {isBirdView && <AddWeaponButton trackerId={tracker.id} />}
+        {/* Index input + add weapon — shown in bird views */}
+        {isBirdView && (
+          <div className="flex items-center gap-2 ml-auto">
+            <IndexControl tracker={tracker} activeTab={activeTab} />
+            <AddWeaponButton trackerId={tracker.id} />
+          </div>
+        )}
       </div>
 
       {/* Body */}
