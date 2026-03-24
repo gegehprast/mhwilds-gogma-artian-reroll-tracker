@@ -131,13 +131,15 @@ export function BonusRollsView({ tracker }: Props) {
             return (
               <tr
                 key={idx}
-                className={`group/row border-b transition-colors border-gray-800/60`}
+                className={`group/row border-b transition-colors border-gray-800/60 ${
+                  idx % 2 === 0 ? "bg-gray-800/20" : ""
+                }`}
               >
                 <td
                   className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm text-center align-middle transition-colors ${
                     isCurrentIndex
                       ? "bg-red-500/30 group-hover/row:bg-red-500/50 group-focus-within/row:bg-red-500/50 text-red-400 border-r border-red-500/30"
-                      : "bg-gray-950 group-hover/row:bg-gray-900 group-focus-within/row:bg-gray-900 text-gray-400 border-r border-gray-800"
+                      : "bg-inherit group-hover/row:bg-gray-800/50 group-focus-within/row:bg-gray-800/50 text-gray-400 border-r border-gray-800"
                   }`}
                 >
                   {idx}
