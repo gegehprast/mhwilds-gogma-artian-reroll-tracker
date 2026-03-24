@@ -93,8 +93,8 @@ export function VirtualizedTrackerTable({
                 <td
                   className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm text-center align-middle transition-colors ${
                     isCurrentIndex
-                      ? "bg-red-500/30 group-hover/row:bg-red-500/50 group-focus-within/row:bg-red-500/50 text-red-400 border-r border-red-500/30"
-                      : "bg-inherit group-hover/row:bg-gray-800/50 group-focus-within/row:bg-gray-800/50 text-gray-400 border-r border-gray-800"
+                      ? "bg-red-950 group-hover/row:bg-red-800 group-focus-within/row:bg-red-800 text-red-300 border-r border-red-800"
+                      : "bg-gray-950 group-hover/row:bg-gray-800 group-focus-within/row:bg-gray-800 text-gray-300 border-r border-gray-800"
                   }`}
                 >
                   {idx}
