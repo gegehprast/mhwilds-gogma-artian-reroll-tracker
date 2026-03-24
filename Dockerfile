@@ -1,7 +1,7 @@
 # ============================================================================
 # Stage 1: Install all monorepo dependencies
 # ============================================================================
-FROM oven/bun:1.3.5-alpine AS deps
+FROM oven/bun:1.3.10-alpine AS deps
 WORKDIR /app
 
 COPY package.json bun.lock ./
@@ -16,7 +16,7 @@ RUN bun install --frozen-lockfile
 # ============================================================================
 # Stage 2: Build the React/Vite frontend
 # ============================================================================
-FROM oven/bun:1.3.5-alpine AS frontend-builder
+FROM oven/bun:1.3.10-alpine AS frontend-builder
 WORKDIR /app
 
 # VITE_API_URL is baked into the JS bundle at build time.
@@ -38,7 +38,7 @@ RUN bun run build
 # ============================================================================
 # Stage 3: Production image — Bun backend + nginx
 # ============================================================================
-FROM oven/bun:1.3.5-alpine AS runner
+FROM oven/bun:1.3.10-alpine AS runner
 WORKDIR /app
 
 # Install nginx (Alpine package)
