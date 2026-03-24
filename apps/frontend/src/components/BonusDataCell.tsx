@@ -121,7 +121,7 @@ export function BonusDataCell({
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
   return (
-    <div className="flex flex-col gap-1 py-1">
+    <div className="flex flex-col gap-1 py-1" data-bonus-row={index}>
       {BONUS_KEYS.map((key, i) => (
         <input
           key={key}
@@ -135,6 +135,12 @@ export function BonusDataCell({
               e.preventDefault()
               save()
               if (i < 4) inputRefs[i + 1].current?.focus()
+              else
+                document
+                  .querySelector<HTMLInputElement>(
+                    `[data-bonus-row="${index + 1}"] input`,
+                  )
+                  ?.focus()
             }
             if (e.key === "Escape") reset()
           }}

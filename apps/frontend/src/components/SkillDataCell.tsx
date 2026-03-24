@@ -69,7 +69,7 @@ export function SkillDataCell({
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
   return (
-    <div className="flex flex-col gap-1 py-1">
+    <div className="flex flex-col gap-1 py-1" data-skill-row={index}>
       <input
         className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
         value={groupSkill}
@@ -94,6 +94,11 @@ export function SkillDataCell({
           if (e.key === "Enter") {
             e.preventDefault()
             save()
+            document
+              .querySelector<HTMLInputElement>(
+                `[data-skill-row="${index + 1}"] input`,
+              )
+              ?.focus()
           }
           if (e.key === "Escape") reset()
         }}
