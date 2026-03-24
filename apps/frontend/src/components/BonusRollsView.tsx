@@ -127,12 +127,23 @@ export function BonusRollsView({ tracker }: Props) {
           {/* ── Data rows ── */}
           {virtualRows.map((vRow) => {
             const idx = allIndices[vRow.index]
+            const isCurrentIndex = idx === tracker.bonusIndex
             return (
               <tr
                 key={idx}
-                className="group/row border-b border-gray-800/60 hover:bg-gray-800/20 transition-colors"
+                className={`group/row border-b border-gray-800/60 transition-colors ${
+                  isCurrentIndex
+                    ? "bg-amber-400/50 hover:bg-amber-400/60 focus-within:bg-amber-400/60"
+                    : "hover:bg-gray-800/50 focus-within:bg-gray-800/50"
+                }`}
               >
-                <td className="sticky left-0 z-10 bg-gray-950 group-hover/row:bg-gray-900 px-4 py-2 font-mono text-sm text-gray-400 border-r border-gray-800 text-center align-middle transition-colors">
+                <td
+                  className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm border-r border-gray-800 text-center align-middle transition-colors ${
+                    isCurrentIndex
+                      ? "bg-amber-400/50 group-hover/row:bg-amber-400/60 group-focus-within/row:bg-amber-400/60 text-gray-800"
+                      : "bg-gray-950 group-hover/row:bg-gray-900 group-focus-within/row:bg-gray-900 text-gray-400"
+                  }`}
+                >
                   {idx}
                 </td>
                 {weapons.map((w) => {
