@@ -3,7 +3,6 @@ import { BonusRollsBirdView } from "./components/BonusRollsBirdView"
 import { SkillRollsBirdView } from "./components/SkillRollsBirdView"
 import { TrackerHeader } from "./components/TrackerHeader"
 import { TrackerSetup } from "./components/TrackerSetup"
-import { WeaponPanel } from "./components/WeaponPanel"
 import { WeaponSelector } from "./components/WeaponSelector"
 import { useTracker } from "./hooks/useTracker"
 import { useWeapons } from "./hooks/useWeapons"
@@ -83,9 +82,9 @@ function AddWeaponButton({ trackerId }: { trackerId: string }) {
 function MainApp() {
   const { query } = useTracker()
   const [selectedWeaponId, setSelectedWeaponId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<
-    "skills" | "bonuses" | "skills-bird" | "bonuses-bird"
-  >("skills-bird")
+  const [activeTab, setActiveTab] = useState<"skills-bird" | "bonuses-bird">(
+    "skills-bird",
+  )
 
   const tracker = query.data
 
@@ -161,20 +160,12 @@ function MainApp() {
         )}
 
         {/* Content area */}
-        {activeTab === "skills-bird" ? (
+        {activeTab === "skills-bird" && (
           <SkillRollsBirdView tracker={tracker} />
-        ) : activeTab === "bonuses-bird" ? (
+        )}
+
+        {activeTab === "bonuses-bird" && (
           <BonusRollsBirdView tracker={tracker} />
-        ) : selectedWeaponId ? (
-          <WeaponPanel
-            tracker={tracker}
-            weaponId={selectedWeaponId}
-            tab={activeTab}
-          />
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-600">
-            Select or create a weapon on the left to start tracking.
-          </div>
         )}
       </div>
     </div>
