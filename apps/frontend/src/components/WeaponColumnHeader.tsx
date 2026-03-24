@@ -6,7 +6,7 @@ interface Props {
 
 export function WeaponColumnHeader({ weapon }: Props) {
   return (
-    <th className="px-4 py-3 border-r border-gray-700 w-52 text-center">
+    <th className="sticky top-0 z-10 px-4 py-3 border-r border-gray-700 w-52 text-center bg-gray-900">
       <div className="font-semibold text-gray-100 text-sm">
         {weapon.weaponType}
       </div>

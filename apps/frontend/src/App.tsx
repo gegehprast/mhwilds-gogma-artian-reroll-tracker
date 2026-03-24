@@ -54,7 +54,7 @@ function MainApp() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950 text-gray-100">
+    <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
       <TrackerHeader tracker={tracker} onSwitchTracker={handleSwitchTracker} />
 
       {/* Roll type tabs */}

@@ -98,9 +98,9 @@ export function SkillRollsView({ tracker }: Props) {
     <div className="flex-1 overflow-auto">
       <table className="border-collapse text-sm min-w-max">
         {/* ── Header ── */}
-        <thead className="sticky top-0 z-10">
+        <thead>
           <tr className="bg-gray-900 border-b-2 border-gray-700">
-            <th className="sticky left-0 z-20 bg-gray-900 text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide border-r border-gray-700 w-20 min-w-20">
+            <th className="sticky top-0 left-0 z-20 bg-gray-900 text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide border-r border-gray-700 w-20 min-w-20">
               Index
             </th>
             {weapons.map((w) => (
