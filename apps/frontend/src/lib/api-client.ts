@@ -14,7 +14,7 @@ export function setTrackerId(id: string): void {
 
 /** openapi-fetch client — automatically injects X-Tracker-Id when present */
 export const apiClient = createClient<paths>({
-  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:3001",
+  baseUrl: import.meta.env.VITE_API_URL ?? "",
 })
 
 apiClient.use({

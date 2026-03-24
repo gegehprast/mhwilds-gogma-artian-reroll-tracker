@@ -2,9 +2,6 @@ import type { components } from "../generated/openapi"
 import type { Comment, CommentColor } from "../types/comment-types"
 import { apiClient, setTrackerId } from "./api-client"
 
-// ?? (not ||) so that VITE_API_URL="" (empty = same-origin via nginx) is respected
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3001"
-
 // Domain type aliases
 export type Tracker = components["schemas"]["Tracker"]
 export type Weapon = components["schemas"]["Weapon"]
@@ -137,16 +134,15 @@ export const skillRollService = {
     fromIndex: number,
     rolls: { setSkill: string; groupSkill: string }[],
   ): Promise<SkillRoll[]> {
-    const res = await fetch(
-      `${API_BASE}/api/trackers/${trackerId}/weapons/${weaponId}/skill-rolls/import`,
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import",
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fromIndex, rolls }),
+        params: { path: { trackerId, weaponId } },
+        body: { fromIndex, rolls },
       },
     )
-    if (!res.ok) throw new Error(await res.text())
-    return res.json() as Promise<SkillRoll[]>
+    if (!data) throw new Error(String(error))
+    return data
   },
 
   async update(
@@ -216,16 +212,15 @@ export const bonusRollService = {
       bonus5: string
     }[],
   ): Promise<BonusRoll[]> {
-    const res = await fetch(
-      `${API_BASE}/api/trackers/${trackerId}/weapons/${weaponId}/bonus-rolls/import`,
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import",
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fromIndex, rolls }),
+        params: { path: { trackerId, weaponId } },
+        body: { fromIndex, rolls },
       },
     )
-    if (!res.ok) throw new Error(await res.text())
-    return res.json() as Promise<BonusRoll[]>
+    if (!data) throw new Error(String(error))
+    return data
   },
 
   async update(
@@ -255,12 +250,14 @@ export const commentService = {
     rollId: string,
     rollType: "skill" | "bonus",
   ): Promise<Comment[]> {
-    const params = new URLSearchParams({ rollId, rollType })
-    const res = await fetch(
-      `${API_BASE}/api/trackers/${trackerId}/comments?${params}`,
+    const { data, error } = await apiClient.GET(
+      "/api/trackers/{trackerId}/comments",
+      {
+        params: { path: { trackerId }, query: { rollId, rollType } },
+      },
     )
-    if (!res.ok) throw new Error(await res.text())
-    return res.json() as Promise<Comment[]>
+    if (!data) throw new Error(String(error))
+    return data
   },
 
   async create(
@@ -270,13 +267,15 @@ export const commentService = {
     content: string,
     color: CommentColor,
   ): Promise<Comment> {
-    const res = await fetch(`${API_BASE}/api/trackers/${trackerId}/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rollId, rollType, content, color }),
-    })
-    if (!res.ok) throw new Error(await res.text())
-    return res.json() as Promise<Comment>
+    const { data, error } = await apiClient.POST(
+      "/api/trackers/{trackerId}/comments",
+      {
+        params: { path: { trackerId } },
+        body: { rollId, rollType, content, color },
+      },
+    )
+    if (!data) throw new Error(String(error))
+    return data
   },
 
   async update(
@@ -284,25 +283,20 @@ export const commentService = {
     id: string,
     data: { content?: string; color?: CommentColor },
   ): Promise<Comment> {
-    const res = await fetch(
-      `${API_BASE}/api/trackers/${trackerId}/comments/${id}`,
+    const { data: result, error } = await apiClient.PATCH(
+      "/api/trackers/{trackerId}/comments/{id}",
       {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        params: { path: { trackerId, id } },
+        body: data,
       },
     )
-    if (!res.ok) throw new Error(await res.text())
-    return res.json() as Promise<Comment>
+    if (!result) throw new Error(String(error))
+    return result
   },
 
   async delete(trackerId: string, id: string): Promise<void> {
-    const res = await fetch(
-      `${API_BASE}/api/trackers/${trackerId}/comments/${id}`,
-      {
-        method: "DELETE",
-      },
-    )
-    if (!res.ok) throw new Error(await res.text())
+    await apiClient.DELETE("/api/trackers/{trackerId}/comments/{id}", {
+      params: { path: { trackerId, id } },
+    })
   },
 }
