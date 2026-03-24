@@ -66,10 +66,13 @@ export function ComboBox({
         select(filtered[highlighted])
       } else {
         setOpen(false)
-        if (onCommit) {
-          onCommit(inputValue)
+        const trimmed = inputValue.trim()
+        if (!trimmed || options.includes(trimmed)) {
+          if (onCommit) onCommit(trimmed)
+          else onNextFocus?.()
         } else {
-          onNextFocus?.()
+          // Not a valid option — revert to last committed value
+          setInputValue(value)
         }
       }
     } else if (e.key === "Escape") {
@@ -84,6 +87,10 @@ export function ComboBox({
     if (!containerRef.current?.contains(e.relatedTarget as Node)) {
       setOpen(false)
       setHighlighted(-1)
+      const trimmed = inputValue.trim()
+      if (trimmed && !options.includes(trimmed)) {
+        setInputValue(value)
+      }
     }
   }
 
@@ -93,6 +100,8 @@ export function ComboBox({
       item?.scrollIntoView({ block: "nearest" })
     }
   }, [highlighted])
+
+  const hasError = !!value && !(options as readonly string[]).includes(value)
 
   return (
     <div
@@ -111,7 +120,7 @@ export function ComboBox({
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className={`w-full ${inputBg} text-gray-200 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-red-500/60 placeholder-gray-600`}
+        className={`w-full ${inputBg} text-gray-200 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-red-500/60 placeholder-gray-600${hasError ? " ring-2 ring-red-500" : ""}`}
       />
       {open && filtered.length > 0 && (
         <ul
