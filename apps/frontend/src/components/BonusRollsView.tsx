@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useVirtualizer } from "@tanstack/react-virtual"
+import { useEffect, useRef, useState } from "react"
 import { useAllBonusRolls } from "../hooks/useAllBonusRolls"
 import { useWeapons } from "../hooks/useWeapons"
 import type { BonusRoll, Tracker, Weapon } from "../lib/api-service"
@@ -70,13 +71,42 @@ export function BonusRollsView({ tracker }: Props) {
     ),
   ).sort((a, b) => a - b)
 
+  const PAGE_SIZE = 20
+  const BONUS_ROW_HEIGHT = 148
+
   const maxExisting =
     existingIndices.length > 0 ? existingIndices[existingIndices.length - 1] : 0
-  const allIndices = Array.from(
-    { length: Math.max(50, maxExisting) },
-    (_, i) => i + 1,
+  const [visibleCount, setVisibleCount] = useState(() =>
+    Math.max(PAGE_SIZE, maxExisting),
   )
-  const nextIndex = allIndices[allIndices.length - 1] + 1
+  const totalRows = Math.max(visibleCount, maxExisting)
+  const allIndices = Array.from({ length: totalRows }, (_, i) => i + 1)
+  const nextIndex = totalRows + 1
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const virtualizer = useVirtualizer({
+    count: allIndices.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => BONUS_ROW_HEIGHT,
+    overscan: 5,
+  })
+  const virtualRows = virtualizer.getVirtualItems()
+  const totalVirtualSize = virtualizer.getTotalSize()
+  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0
+  const paddingBottom =
+    virtualRows.length > 0
+      ? totalVirtualSize - virtualRows[virtualRows.length - 1].end
+      : 0
+
+  const lastVirtualRowIndex = virtualRows[virtualRows.length - 1]?.index
+  useEffect(() => {
+    if (
+      lastVirtualRowIndex !== undefined &&
+      lastVirtualRowIndex >= allIndices.length - 3
+    ) {
+      setVisibleCount((c) => c + PAGE_SIZE)
+    }
+  }, [lastVirtualRowIndex, allIndices.length])
 
   if (isLoading) {
     return (
@@ -95,7 +125,7 @@ export function BonusRollsView({ tracker }: Props) {
   }
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div ref={scrollRef} className="flex-1 overflow-auto">
       <table className="border-collapse text-sm min-w-max">
         {/* ── Header ── */}
         <thead>
@@ -110,40 +140,56 @@ export function BonusRollsView({ tracker }: Props) {
         </thead>
 
         <tbody>
-          {/* ── Data rows ── */}
-          {allIndices.map((idx) => (
-            <tr
-              key={idx}
-              className="group/row border-b border-gray-800/60 hover:bg-gray-800/20 transition-colors"
-            >
-              <td className="sticky left-0 z-10 bg-gray-950 group-hover/row:bg-gray-900 px-4 py-2 font-mono text-sm text-gray-400 border-r border-gray-800 text-center align-middle transition-colors">
-                {idx}
-              </td>
-              {weapons.map((w) => {
-                const roll =
-                  (rollsByWeapon.get(w.id) ?? []).find(
-                    (r) => r.index === idx,
-                  ) ?? null
-                return (
-                  <td
-                    key={w.id}
-                    className="px-3 border-r border-gray-800 align-top w-52"
-                  >
-                    <BonusDataCell
-                      roll={roll}
-                      index={idx}
-                      weapon={w}
-                      trackerId={tracker.id}
-                      updateRoll={(weaponId, rollId, data) =>
-                        updateRollMutation.mutate({ weaponId, rollId, data })
-                      }
-                      updating={updateRollMutation.isPending}
-                    />
-                  </td>
-                )
-              })}
+          {paddingTop > 0 && (
+            <tr>
+              <td colSpan={weapons.length + 1} style={{ height: paddingTop }} />
             </tr>
-          ))}
+          )}
+          {/* ── Data rows ── */}
+          {virtualRows.map((vRow) => {
+            const idx = allIndices[vRow.index]
+            return (
+              <tr
+                key={idx}
+                className="group/row border-b border-gray-800/60 hover:bg-gray-800/20 transition-colors"
+              >
+                <td className="sticky left-0 z-10 bg-gray-950 group-hover/row:bg-gray-900 px-4 py-2 font-mono text-sm text-gray-400 border-r border-gray-800 text-center align-middle transition-colors">
+                  {idx}
+                </td>
+                {weapons.map((w) => {
+                  const roll =
+                    (rollsByWeapon.get(w.id) ?? []).find(
+                      (r) => r.index === idx,
+                    ) ?? null
+                  return (
+                    <td
+                      key={w.id}
+                      className="px-3 border-r border-gray-800 align-top w-52"
+                    >
+                      <BonusDataCell
+                        roll={roll}
+                        index={idx}
+                        weapon={w}
+                        trackerId={tracker.id}
+                        updateRoll={(weaponId, rollId, data) =>
+                          updateRollMutation.mutate({ weaponId, rollId, data })
+                        }
+                        updating={updateRollMutation.isPending}
+                      />
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+          {paddingBottom > 0 && (
+            <tr>
+              <td
+                colSpan={weapons.length + 1}
+                style={{ height: paddingBottom }}
+              />
+            </tr>
+          )}
 
           {/* ── Add row ── */}
           <tr className="border-b border-gray-700 bg-gray-900/50">
