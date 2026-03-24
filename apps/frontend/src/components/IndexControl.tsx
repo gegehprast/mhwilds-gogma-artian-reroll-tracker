@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useDebounce } from "../hooks/useDebounce"
 import { useTracker } from "../hooks/useTracker"
 import type { Tracker } from "../lib/api-service"
 
@@ -12,6 +13,20 @@ export function IndexControl({ tracker, activeTab }: Props) {
   const [skillInput, setSkillInput] = useState(String(tracker.skillIndex))
   const [bonusInput, setBonusInput] = useState(String(tracker.bonusIndex))
 
+  const saveSkillDebounced = useDebounce((raw: string) => {
+    const v = Number.parseInt(raw, 10)
+    if (!Number.isNaN(v) && v >= 1 && v !== tracker.skillIndex) {
+      setSkillIndex.mutate({ id: tracker.id, skillIndex: v })
+    }
+  }, 200)
+
+  const saveBonusDebounced = useDebounce((raw: string) => {
+    const v = Number.parseInt(raw, 10)
+    if (!Number.isNaN(v) && v >= 1 && v !== tracker.bonusIndex) {
+      setBonusIndex.mutate({ id: tracker.id, bonusIndex: v })
+    }
+  }, 200)
+
   useEffect(() => {
     setSkillInput(String(tracker.skillIndex))
   }, [tracker.skillIndex])
@@ -20,18 +35,14 @@ export function IndexControl({ tracker, activeTab }: Props) {
     setBonusInput(String(tracker.bonusIndex))
   }, [tracker.bonusIndex])
 
-  function saveSkill() {
-    const v = Number.parseInt(skillInput, 10)
-    if (!Number.isNaN(v) && v >= 1 && v !== tracker.skillIndex) {
-      setSkillIndex.mutate({ id: tracker.id, skillIndex: v })
-    }
+  function handleSkillChange(raw: string) {
+    setSkillInput(raw)
+    saveSkillDebounced(raw)
   }
 
-  function saveBonus() {
-    const v = Number.parseInt(bonusInput, 10)
-    if (!Number.isNaN(v) && v >= 1 && v !== tracker.bonusIndex) {
-      setBonusIndex.mutate({ id: tracker.id, bonusIndex: v })
-    }
+  function handleBonusChange(raw: string) {
+    setBonusInput(raw)
+    saveBonusDebounced(raw)
   }
 
   if (activeTab === "skills-bird") {
@@ -45,11 +56,7 @@ export function IndexControl({ tracker, activeTab }: Props) {
           min={1}
           className="bg-transparent text-red-300 font-mono text-sm w-12 text-center border-b border-red-500 outline-none"
           value={skillInput}
-          onChange={(e) => setSkillInput(e.target.value)}
-          onBlur={saveSkill}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") saveSkill()
-          }}
+          onChange={(e) => handleSkillChange(e.target.value)}
         />
       </div>
     )
@@ -65,11 +72,7 @@ export function IndexControl({ tracker, activeTab }: Props) {
         min={1}
         className="bg-transparent text-red-300 font-mono text-sm w-12 text-center border-b border-red-500 outline-none"
         value={bonusInput}
-        onChange={(e) => setBonusInput(e.target.value)}
-        onBlur={saveBonus}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") saveBonus()
-        }}
+        onChange={(e) => handleBonusChange(e.target.value)}
       />
     </div>
   )

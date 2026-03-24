@@ -8,10 +8,15 @@ interface Props {
 }
 
 export function AddWeaponButton({ trackerId }: Props) {
-  const { findOrCreate } = useWeapons(trackerId)
+  const { query, findOrCreate } = useWeapons(trackerId)
   const [open, setOpen] = useState(false)
   const [weaponType, setWeaponType] = useState<WeaponType>(WEAPON_TYPES[0])
   const [element, setElement] = useState<Element>(ELEMENTS[0])
+
+  const existingWeapons = query.data ?? []
+  const isAlreadyAdded = existingWeapons.some(
+    (w) => w.weaponType === weaponType && w.element === element,
+  )
 
   return (
     <div className="relative ml-auto flex items-center">
@@ -52,10 +57,14 @@ export function AddWeaponButton({ trackerId }: Props) {
                   { onSuccess: () => setOpen(false) },
                 )
               }
-              disabled={findOrCreate.isPending}
+              disabled={findOrCreate.isPending || isAlreadyAdded}
               className="flex-1 bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white text-xs font-semibold rounded py-1.5"
             >
-              {findOrCreate.isPending ? "…" : "Add"}
+              {findOrCreate.isPending
+                ? "…"
+                : isAlreadyAdded
+                  ? "Already added"
+                  : "Add"}
             </button>
             <button
               type="button"
