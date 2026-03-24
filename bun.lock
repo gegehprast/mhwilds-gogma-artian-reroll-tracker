@@ -24,7 +24,6 @@
       },
       "devDependencies": {
         "@types/bun": "catalog:",
-        "better-sqlite3": "^12.8.0",
         "concurrently": "catalog:",
         "drizzle-kit": "catalog:",
       },

@@ -10,7 +10,7 @@ COPY apps/backend/package.json ./apps/backend/
 COPY packages/server/package.json ./packages/server/
 COPY packages/result/package.json ./packages/result/
 
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --ignore-scripts
 
 
 # ============================================================================
