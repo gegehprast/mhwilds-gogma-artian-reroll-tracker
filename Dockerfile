@@ -19,13 +19,6 @@ RUN bun install --frozen-lockfile --ignore-scripts
 FROM oven/bun:1.3.10-alpine AS frontend-builder
 WORKDIR /app
 
-# VITE_API_URL is baked into the JS bundle at build time.
-# Default "" means same-origin — nginx proxies /api/* to Bun internally.
-# Override with --build-arg VITE_API_URL=https://yourdomain.com if the API
-# is served from a different origin.
-ARG VITE_API_URL=""
-ENV VITE_API_URL=$VITE_API_URL
-
 COPY package.json bun.lock tsconfig.json ./
 COPY apps/frontend ./apps/frontend
 COPY --from=deps /app/node_modules ./node_modules
