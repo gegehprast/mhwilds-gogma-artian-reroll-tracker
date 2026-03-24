@@ -53,7 +53,7 @@ export function AddWeaponButton({ trackerId }: Props) {
                 )
               }
               disabled={findOrCreate.isPending}
-              className="flex-1 bg-red-500 hover:bg-red-400 disabled:opacity-50 text-black text-xs font-semibold rounded py-1.5"
+              className="flex-1 bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white text-xs font-semibold rounded py-1.5"
             >
               {findOrCreate.isPending ? "…" : "Add"}
             </button>
