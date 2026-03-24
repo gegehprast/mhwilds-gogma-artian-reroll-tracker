@@ -4,8 +4,6 @@ import { useAllBonusRolls } from "../hooks/useAllBonusRolls"
 import { useWeapons } from "../hooks/useWeapons"
 import type { BonusRoll, Tracker, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
-import type { Element, WeaponType } from "../lib/constants"
-import { ELEMENTS, WEAPON_TYPES } from "../lib/constants"
 import { ImportModal } from "./ImportModal"
 
 interface Props {
@@ -22,62 +20,6 @@ const BONUS_KEYS: BonusKey[] = [
   "bonus4",
   "bonus5",
 ]
-
-// ── Add weapon popover ──────────────────────────────────────────────────────
-
-function AddWeaponPopover({
-  trackerId,
-  onDone,
-}: {
-  trackerId: string
-  onDone: () => void
-}) {
-  const { findOrCreate } = useWeapons(trackerId)
-  const [weaponType, setWeaponType] = useState<WeaponType>(WEAPON_TYPES[0])
-  const [element, setElement] = useState<Element>(ELEMENTS[0])
-
-  return (
-    <div className="absolute right-0 top-full mt-1 z-30 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-3 flex flex-col gap-2 w-52">
-      <select
-        className="bg-gray-700 text-gray-100 text-xs rounded px-2 py-1.5 border border-gray-600"
-        value={weaponType}
-        onChange={(e) => setWeaponType(e.target.value as WeaponType)}
-      >
-        {WEAPON_TYPES.map((t) => (
-          <option key={t}>{t}</option>
-        ))}
-      </select>
-      <select
-        className="bg-gray-700 text-gray-100 text-xs rounded px-2 py-1.5 border border-gray-600"
-        value={element}
-        onChange={(e) => setElement(e.target.value as Element)}
-      >
-        {ELEMENTS.map((e) => (
-          <option key={e}>{e}</option>
-        ))}
-      </select>
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() =>
-            findOrCreate.mutate({ weaponType, element }, { onSuccess: onDone })
-          }
-          disabled={findOrCreate.isPending}
-          className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-xs font-semibold rounded py-1.5"
-        >
-          {findOrCreate.isPending ? "…" : "Add"}
-        </button>
-        <button
-          type="button"
-          onClick={onDone}
-          className="flex-1 bg-gray-600 hover:bg-gray-500 text-gray-200 text-xs rounded py-1.5"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  )
-}
 
 // ── Data-row cell: handles update for existing rolls, create-at-index for empty ──
 
@@ -222,8 +164,8 @@ function BonusDataCell({
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
+              save()
               if (i < 4) inputRefs[i + 1].current?.focus()
-              else save()
             }
             if (e.key === "Escape") reset()
           }}
@@ -327,7 +269,6 @@ export function BonusRollsBirdView({ tracker }: Props) {
     tracker.id,
     weapons,
   )
-  const [addingWeapon, setAddingWeapon] = useState(false)
   const [importTarget, setImportTarget] = useState<{
     roll: BonusRoll
     weapon: Weapon
@@ -363,7 +304,7 @@ export function BonusRollsBirdView({ tracker }: Props) {
     },
   })
 
-  const allIndices: number[] = Array.from(
+  const existingIndices: number[] = Array.from(
     new Set(
       Array.from(rollsByWeapon.values()).flatMap((rolls) =>
         rolls.map((r) => r.index),
@@ -371,8 +312,13 @@ export function BonusRollsBirdView({ tracker }: Props) {
     ),
   ).sort((a, b) => a - b)
 
-  const nextIndex =
-    allIndices.length > 0 ? allIndices[allIndices.length - 1] + 1 : 1
+  const maxExisting =
+    existingIndices.length > 0 ? existingIndices[existingIndices.length - 1] : 0
+  const allIndices = Array.from(
+    { length: Math.max(100, maxExisting) },
+    (_, i) => i + 1,
+  )
+  const nextIndex = allIndices[allIndices.length - 1] + 1
 
   if (isLoading) {
     return (
@@ -384,8 +330,8 @@ export function BonusRollsBirdView({ tracker }: Props) {
 
   if (weapons.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-600">
-        No weapons yet — use the Bonus Rolls tab to add one.
+      <div className="flex-1 flex items-center justify-center text-gray-600 text-sm">
+        No weapons added yet — use the button above to add one.
       </div>
     )
   }
@@ -412,22 +358,6 @@ export function BonusRollsBirdView({ tracker }: Props) {
                 </div>
               </th>
             ))}
-            <th className="sticky right-0 z-20 bg-gray-900 px-3 py-3 border-l border-gray-700 w-10">
-              <button
-                type="button"
-                onClick={() => setAddingWeapon(!addingWeapon)}
-                className="text-amber-400 hover:text-amber-300 text-xl leading-none font-bold"
-                title="Add weapon"
-              >
-                +
-              </button>
-              {addingWeapon && (
-                <AddWeaponPopover
-                  trackerId={tracker.id}
-                  onDone={() => setAddingWeapon(false)}
-                />
-              )}
-            </th>
           </tr>
         </thead>
 
@@ -464,7 +394,6 @@ export function BonusRollsBirdView({ tracker }: Props) {
                   </td>
                 )
               })}
-              <td />
             </tr>
           ))}
 
@@ -481,7 +410,6 @@ export function BonusRollsBirdView({ tracker }: Props) {
                 <AddBonusCell weapon={w} trackerId={tracker.id} />
               </td>
             ))}
-            <td />
           </tr>
         </tbody>
       </table>
