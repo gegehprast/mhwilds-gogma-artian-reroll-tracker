@@ -28,12 +28,7 @@ export function useSkillRolls(
     }) => {
       if (!trackerId || !weaponId)
         throw new Error("trackerId and weaponId required")
-      return skillRollService.create(
-        trackerId,
-        weaponId,
-        setSkill,
-        groupSkill,
-      )
+      return skillRollService.create(trackerId, weaponId, setSkill, groupSkill)
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: key })

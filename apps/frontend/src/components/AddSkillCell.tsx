@@ -61,9 +61,7 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
       <button
         type="button"
         onClick={submit}
-        disabled={
-          create.isPending || (!groupSkill.trim() && !setSkill.trim())
-        }
+        disabled={create.isPending || (!groupSkill.trim() && !setSkill.trim())}
         className="w-full bg-red-500/20 hover:bg-red-500/40 disabled:opacity-40 text-red-300 text-xs font-semibold rounded py-1 transition-colors"
       >
         {create.isPending ? "…" : "Add roll"}
