@@ -2,7 +2,8 @@ import type { components } from "../generated/openapi"
 import type { Comment, CommentColor } from "../types/comment-types"
 import { apiClient, setTrackerId } from "./api-client"
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001"
+// ?? (not ||) so that VITE_API_URL="" (empty = same-origin via nginx) is respected
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3001"
 
 // Domain type aliases
 export type Tracker = components["schemas"]["Tracker"]
