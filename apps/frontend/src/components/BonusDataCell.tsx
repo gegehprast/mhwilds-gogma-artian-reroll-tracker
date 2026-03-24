@@ -17,6 +17,7 @@ export interface BonusDataCellProps {
     data: Partial<BonusData>,
   ) => void
   updating: boolean
+  onNavigateToNext?: () => void
 }
 
 export function BonusDataCell({
@@ -26,6 +27,7 @@ export function BonusDataCell({
   trackerId,
   updateRoll,
   updating,
+  onNavigateToNext,
 }: BonusDataCellProps) {
   const qc = useQueryClient()
   const emptyValues: BonusData = {
@@ -135,12 +137,9 @@ export function BonusDataCell({
               e.preventDefault()
               save()
               if (i < 4) inputRefs[i + 1].current?.focus()
-              else
-                document
-                  .querySelector<HTMLInputElement>(
-                    `[data-bonus-row="${index + 1}"] input`,
-                  )
-                  ?.focus()
+              else {
+                onNavigateToNext?.()
+              }
             }
             if (e.key === "Escape") reset()
           }}
