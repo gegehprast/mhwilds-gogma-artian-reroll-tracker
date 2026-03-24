@@ -155,34 +155,34 @@ export function BonusDataCell({
         ))}
       </div>
 
-      {roll && (
-        <div
-          ref={pinRef}
-          className="absolute right-0 top-0 bottom-0 flex flex-col items-center py-1"
+      <div
+        ref={pinRef}
+        className="absolute right-0 top-0 bottom-0 flex flex-col items-center py-1"
+      >
+        <button
+          type="button"
+          aria-label="Upload rolls from this index"
+          title="Upload rolls from this index"
+          onClick={() => setImportOpen(true)}
+          className="transition-opacity w-3 shrink-0 text-gray-400 hover:text-gray-300 bg-transparent border-0 p-0 flex items-center justify-center cursor-pointer"
         >
-          <button
-            type="button"
-            aria-label="Upload rolls from this index"
-            title="Upload rolls from this index"
-            onClick={() => setImportOpen(true)}
-            className="transition-opacity w-3 shrink-0 text-gray-400 hover:text-gray-300 bg-transparent border-0 p-0 flex items-center justify-center cursor-pointer"
-          >
-            <span className="text-[10px] leading-none">↑</span>
-          </button>
+          <span className="text-[10px] leading-none">↑</span>
+        </button>
+        {roll && (
           <div className="flex-1 flex items-center">
             <CommentPin
               comments={comments}
               onClick={() => setPopoverOpen((v) => !v)}
             />
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {importOpen && roll && (
+      {importOpen && (
         <ImportPreviewModal
           weapon={weapon}
           rollType="bonus"
-          fromIndex={roll.index}
+          fromIndex={roll?.index ?? index}
           trackerId={trackerId}
           onClose={() => setImportOpen(false)}
         />

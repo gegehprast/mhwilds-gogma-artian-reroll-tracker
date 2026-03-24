@@ -117,7 +117,7 @@ export class SkillRollService {
     const check = await this.assertWeaponOwnership(weaponId, trackerId)
     if (check.isErr()) return err(check.error)
 
-    const toIndex = fromIndex + rolls.length
+    const toIndex = fromIndex + rolls.length - 1
     const deleted = await this.repo.deleteRange(weaponId, fromIndex, toIndex)
     if (deleted.isErr()) return err(deleted.error)
 
@@ -125,7 +125,7 @@ export class SkillRollService {
 
     const toInsert = rolls.map((r, i) => ({
       weaponId,
-      index: fromIndex + i + 1,
+      index: fromIndex + i,
       groupSkill: r.groupSkill,
       seriesSkill: r.seriesSkill,
     }))

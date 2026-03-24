@@ -147,7 +147,7 @@ export class BonusRollService {
     const check = await this.assertWeaponOwnership(weaponId, trackerId)
     if (check.isErr()) return err(check.error)
 
-    const toIndex = fromIndex + rolls.length
+    const toIndex = fromIndex + rolls.length - 1
     const deleted = await this.repo.deleteRange(weaponId, fromIndex, toIndex)
     if (deleted.isErr()) return err(deleted.error)
 
@@ -155,7 +155,7 @@ export class BonusRollService {
 
     const toInsert = rolls.map((r, i) => ({
       weaponId,
-      index: fromIndex + i + 1,
+      index: fromIndex + i,
       bonus1: r.bonus1,
       bonus2: r.bonus2,
       bonus3: r.bonus3,

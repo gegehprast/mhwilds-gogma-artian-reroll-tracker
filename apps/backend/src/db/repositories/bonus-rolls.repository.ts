@@ -1,5 +1,5 @@
 import type { Result } from "@bunkit/result"
-import { and, asc, eq, gt, lte, max } from "drizzle-orm"
+import { and, asc, eq, gte, lte, max } from "drizzle-orm"
 import type { DatabaseError } from "@/core/errors"
 import { type BonusRoll, bonusRolls, type NewBonusRoll } from "@/db/schemas"
 import { weapons } from "@/db/schemas/weapons.schema"
@@ -80,7 +80,7 @@ export class BonusRollRepository extends BaseRepository {
         .where(
           and(
             eq(bonusRolls.weaponId, weaponId),
-            gt(bonusRolls.index, fromIndex),
+            gte(bonusRolls.index, fromIndex),
             lte(bonusRolls.index, toIndex),
           ),
         )

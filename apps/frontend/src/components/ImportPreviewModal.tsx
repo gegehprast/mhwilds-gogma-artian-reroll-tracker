@@ -137,7 +137,7 @@ export function ImportPreviewModal({
               Import {rollType === "skill" ? "Skill" : "Bonus"} Rolls
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              {weapon.weaponType} · {weapon.element} · inserting after index{" "}
+              {weapon.weaponType} · {weapon.element} · inserting from index{" "}
               {fromIndex}
             </p>
           </div>
@@ -188,12 +188,12 @@ export function ImportPreviewModal({
                   Found <strong className="text-white">{rows.length}</strong>{" "}
                   attempt
                   {rows.length !== 1 ? "s" : ""} — will occupy index{" "}
-                  <strong className="text-white">{fromIndex + 1}</strong>
+                  <strong className="text-white">{fromIndex}</strong>
                   {rows.length > 1 ? (
                     <>
                       {" – "}
                       <strong className="text-white">
-                        {fromIndex + rows.length}
+                        {fromIndex + rows.length - 1}
                       </strong>
                     </>
                   ) : null}
@@ -255,7 +255,7 @@ export function ImportPreviewModal({
                         className={`border-b border-gray-800/60 ${i % 2 === 0 ? "" : "bg-gray-800/20"}`}
                       >
                         <td className="px-3 py-1.5 font-mono text-gray-400">
-                          {fromIndex + i + 1}
+                          {fromIndex + i}
                         </td>
                         {rollType === "skill" ? (
                           <>
@@ -300,7 +300,7 @@ export function ImportPreviewModal({
         {parsed && (
           <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-gray-700 shrink-0">
             <p className="text-xs text-yellow-600 mr-auto">
-              Existing rolls at index {fromIndex + 1}–{fromIndex + rows.length}{" "}
+              Existing rolls at index {fromIndex}–{fromIndex + rows.length - 1}{" "}
               will be overwritten.
             </p>
             <button
