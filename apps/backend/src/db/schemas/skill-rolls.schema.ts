@@ -18,8 +18,8 @@ export const skillRolls = sqliteTable(
     weaponId: text("weapon_id")
       .notNull()
       .references(() => weapons.id, { onDelete: "cascade" }),
+    setSkill: text("set_skill").notNull(),
     groupSkill: text("group_skill").notNull(),
-    seriesSkill: text("series_skill").notNull(),
     ...timestamps(),
   },
   (table) => [

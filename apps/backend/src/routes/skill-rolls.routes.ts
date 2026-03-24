@@ -8,8 +8,8 @@ const SkillRollSchema = z
     id: z.string(),
     index: z.number().int(),
     weaponId: z.string(),
+    setSkill: z.string(),
     groupSkill: z.string(),
-    seriesSkill: z.string(),
     createdAt: z.number().int(),
     updatedAt: z.number().int(),
   })
@@ -17,16 +17,16 @@ const SkillRollSchema = z
 
 const CreateSkillRollBodySchema = z
   .object({
+    setSkill: z.string(),
     groupSkill: z.string(),
-    seriesSkill: z.string(),
     atIndex: z.number().int().min(1).optional(),
   })
   .meta({ id: "CreateSkillRollBody" })
 
 const UpdateSkillRollBodySchema = z
   .object({
+    setSkill: z.string().optional(),
     groupSkill: z.string().optional(),
-    seriesSkill: z.string().optional(),
   })
   .meta({ id: "UpdateSkillRollBody" })
 
@@ -38,8 +38,8 @@ const ImportSkillRollsBodySchema = z
     rolls: z
       .array(
         z.object({
+          setSkill: z.string(),
           groupSkill: z.string(),
-          seriesSkill: z.string(),
         }),
       )
       .min(1),
@@ -101,8 +101,8 @@ createRoute("POST", BASE)
     const result = await service.create(
       params.trackerId,
       params.weaponId,
+      body.setSkill,
       body.groupSkill,
-      body.seriesSkill,
       body.atIndex,
     )
     if (result.isErr()) return mapError(result.error, res)
@@ -113,8 +113,7 @@ createRoute("PATCH", `${BASE}/:id`)
   .openapi({
     operationId: "updateSkillRoll",
     summary: "Update skill roll",
-    description:
-      "Correct group_skill or series_skill. The index is not editable.",
+    description: "Correct set_skill or group_skill. The index is not editable.",
     tags: ["Skill Rolls"],
   })
   .body(UpdateSkillRollBodySchema)

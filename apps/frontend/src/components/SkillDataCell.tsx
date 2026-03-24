@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { useComments } from "../hooks/useComments"
 import type { SkillRoll, Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
-import { GROUP_SKILLS, SERIES_SKILLS } from "../lib/constants"
+import { GROUP_SKILLS, SET_SKILLS } from "../lib/constants"
 import { addToast } from "../lib/toast"
 import { ComboBox } from "./ComboBox"
 import { CommentPin } from "./CommentPin"
@@ -18,7 +18,7 @@ export interface SkillDataCellProps {
   updateRoll: (
     weaponId: string,
     rollId: string,
-    data: { groupSkill?: string; seriesSkill?: string },
+    data: { setSkill?: string; groupSkill?: string },
   ) => void
   updating: boolean
 }
@@ -31,8 +31,8 @@ export function SkillDataCell({
   updateRoll,
 }: SkillDataCellProps) {
   const qc = useQueryClient()
+  const [setSkill, setSetSkill] = useState(roll?.setSkill ?? "")
   const [groupSkill, setGroupSkill] = useState(roll?.groupSkill ?? "")
-  const [seriesSkill, setSeriesSkill] = useState(roll?.seriesSkill ?? "")
   const groupContainerRef = useRef<HTMLDivElement>(null)
   const pinRef = useRef<HTMLDivElement>(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
@@ -53,21 +53,21 @@ export function SkillDataCell({
       qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setGroupSkill("")
-      setSeriesSkill("")
+      setSetSkill("")
       addToast("Roll saved", "success")
     },
   })
 
   useEffect(() => {
     setGroupSkill(roll?.groupSkill ?? "")
-    setSeriesSkill(roll?.seriesSkill ?? "")
-  }, [roll?.groupSkill, roll?.seriesSkill])
+    setSetSkill(roll?.setSkill ?? "")
+  }, [roll?.groupSkill, roll?.setSkill])
 
   function save(g: string, s: string) {
     if (!g && !s) return
     if (roll) {
-      if (g !== roll.groupSkill || s !== roll.seriesSkill) {
-        updateRoll(weapon.id, roll.id, { groupSkill: g, seriesSkill: s })
+      if (g !== roll.groupSkill || s !== roll.setSkill) {
+        updateRoll(weapon.id, roll.id, { groupSkill: g, setSkill: s })
       }
     } else {
       createMutation.mutate({ g, s, idx: index })
@@ -83,16 +83,16 @@ export function SkillDataCell({
     >
       <div className="flex-1 flex flex-col gap-1">
         <ComboBox
-          value={seriesSkill}
+          value={setSkill}
           onCommit={(value) => {
-            setSeriesSkill(value)
+            setSetSkill(value)
             save(groupSkill.trim(), value.trim())
             groupContainerRef.current
               ?.querySelector<HTMLInputElement>("input")
               ?.focus()
           }}
-          options={SERIES_SKILLS}
-          placeholder="Series skill"
+          options={SET_SKILLS}
+          placeholder="Set skill"
           inputBg={inputBg}
         />
         <div ref={groupContainerRef}>
@@ -100,7 +100,7 @@ export function SkillDataCell({
             value={groupSkill}
             onCommit={(value) => {
               setGroupSkill(value)
-              save(value.trim(), seriesSkill.trim())
+              save(value.trim(), setSkill.trim())
               document
                 .querySelector<HTMLInputElement>(
                   `[data-skill-row="${weapon.id}-${index + 1}"] input`,

@@ -104,8 +104,8 @@ export const skillRollService = {
   async create(
     trackerId: string,
     weaponId: string,
+    setSkill: string,
     groupSkill: string,
-    seriesSkill: string,
     atIndex?: number,
   ): Promise<SkillRoll> {
     const { data, error } = await apiClient.POST(
@@ -113,8 +113,8 @@ export const skillRollService = {
       {
         params: { path: { trackerId, weaponId } },
         body: {
+          setSkill,
           groupSkill,
-          seriesSkill,
           ...(atIndex !== undefined && { atIndex }),
         },
       },
@@ -134,7 +134,7 @@ export const skillRollService = {
     trackerId: string,
     weaponId: string,
     fromIndex: number,
-    rolls: { groupSkill: string; seriesSkill: string }[],
+    rolls: { setSkill: string; groupSkill: string }[],
   ): Promise<SkillRoll[]> {
     const res = await fetch(
       `${API_BASE}/api/trackers/${trackerId}/weapons/${weaponId}/skill-rolls/import`,
@@ -152,7 +152,7 @@ export const skillRollService = {
     trackerId: string,
     weaponId: string,
     id: string,
-    data: { groupSkill?: string; seriesSkill?: string },
+    data: { setSkill?: string; groupSkill?: string },
   ): Promise<SkillRoll> {
     const { data: result, error } = await apiClient.PATCH(
       "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/{id}",

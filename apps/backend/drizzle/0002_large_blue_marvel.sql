@@ -1,0 +1,1 @@
+ALTER TABLE `skill_rolls` RENAME COLUMN "series_skill" TO "set_skill";

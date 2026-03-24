@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useState } from "react"
 import type { Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
-import { GROUP_SKILLS, SERIES_SKILLS } from "../lib/constants"
+import { GROUP_SKILLS, SET_SKILLS } from "../lib/constants"
 import { addToast } from "../lib/toast"
 import { ComboBox } from "./ComboBox"
 
@@ -13,25 +13,25 @@ interface Props {
 
 export function AddSkillCell({ weapon, trackerId }: Props) {
   const qc = useQueryClient()
+  const [setSkill, setSetSkill] = useState("")
   const [groupSkill, setGroupSkill] = useState("")
-  const [seriesSkill, setSeriesSkill] = useState("")
   const groupContainerRef = useRef<HTMLDivElement>(null)
 
   const create = useMutation({
     mutationFn: ({ g, s }: { g: string; s: string }) =>
-      skillRollService.create(trackerId, weapon.id, g, s),
+      skillRollService.create(trackerId, weapon.id, s, g),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setGroupSkill("")
-      setSeriesSkill("")
+      setSetSkill("")
       addToast("Roll added", "success")
     },
   })
 
   function submit() {
     const g = groupSkill.trim()
-    const s = seriesSkill.trim()
+    const s = setSkill.trim()
     if (!g && !s) return
     create.mutate({ g, s })
   }
@@ -39,10 +39,10 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
   return (
     <div className="flex flex-col gap-1 py-1">
       <ComboBox
-        value={seriesSkill}
-        onChange={setSeriesSkill}
-        options={SERIES_SKILLS}
-        placeholder="Series skill"
+        value={setSkill}
+        onChange={setSetSkill}
+        options={SET_SKILLS}
+        placeholder="Set skill"
         onNextFocus={() =>
           groupContainerRef.current
             ?.querySelector<HTMLInputElement>("input")
@@ -62,7 +62,7 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
         type="button"
         onClick={submit}
         disabled={
-          create.isPending || (!groupSkill.trim() && !seriesSkill.trim())
+          create.isPending || (!groupSkill.trim() && !setSkill.trim())
         }
         className="w-full bg-red-500/20 hover:bg-red-500/40 disabled:opacity-40 text-red-300 text-xs font-semibold rounded py-1 transition-colors"
       >

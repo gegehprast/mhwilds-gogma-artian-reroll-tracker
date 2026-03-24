@@ -601,6 +601,124 @@
         }
       }
     },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
+      "post": {
+        "operationId": "importSkillRolls",
+        "summary": "Import skill rolls",
+        "description": "Deletes existing rolls in the target index range and inserts uploaded data starting at fromIndex + 1.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportSkillRollsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SkillRoll"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls": {
       "get": {
         "operationId": "listSkillRolls",
@@ -804,7 +922,7 @@
       "patch": {
         "operationId": "updateSkillRoll",
         "summary": "Update skill roll",
-        "description": "Correct group_skill or series_skill. The index is not editable.",
+        "description": "Correct set_skill or group_skill. The index is not editable.",
         "tags": [
           "Skill Rolls"
         ],
@@ -956,6 +1074,124 @@
           }
         ],
         "responses": {
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
+      "post": {
+        "operationId": "importBonusRolls",
+        "summary": "Import bonus rolls",
+        "description": "Deletes existing rolls in the target index range and inserts uploaded data starting at fromIndex + 1.",
+        "tags": [
+          "Bonus Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "weaponId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportBonusRollsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BonusRoll"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "Forbidden - Insufficient permissions",
             "content": {
@@ -1895,13 +2131,46 @@
         ],
         "title": "Element"
       },
+      "ImportSkillRollsBody": {
+        "type": "object",
+        "properties": {
+          "fromIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "rolls": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "setSkill": {
+                  "type": "string"
+                },
+                "groupSkill": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "setSkill",
+                "groupSkill"
+              ]
+            }
+          }
+        },
+        "required": [
+          "fromIndex",
+          "rolls"
+        ]
+      },
       "CreateSkillRollBody": {
         "type": "object",
         "properties": {
-          "groupSkill": {
+          "setSkill": {
             "type": "string"
           },
-          "seriesSkill": {
+          "groupSkill": {
             "type": "string"
           },
           "atIndex": {
@@ -1911,20 +2180,65 @@
           }
         },
         "required": [
-          "groupSkill",
-          "seriesSkill"
+          "setSkill",
+          "groupSkill"
         ]
       },
       "UpdateSkillRollBody": {
         "type": "object",
         "properties": {
-          "groupSkill": {
+          "setSkill": {
             "type": "string"
           },
-          "seriesSkill": {
+          "groupSkill": {
             "type": "string"
           }
         }
+      },
+      "ImportBonusRollsBody": {
+        "type": "object",
+        "properties": {
+          "fromIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "rolls": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bonus1": {
+                  "type": "string"
+                },
+                "bonus2": {
+                  "type": "string"
+                },
+                "bonus3": {
+                  "type": "string"
+                },
+                "bonus4": {
+                  "type": "string"
+                },
+                "bonus5": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bonus1",
+                "bonus2",
+                "bonus3",
+                "bonus4",
+                "bonus5"
+              ]
+            }
+          }
+        },
+        "required": [
+          "fromIndex",
+          "rolls"
+        ]
       },
       "CreateBonusRollBody": {
         "type": "object",
@@ -2046,7 +2360,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-24T12:02:33.574Z"
+            "example": "2026-03-24T18:58:55.090Z"
           },
           "uptime": {
             "type": "number",
@@ -2154,10 +2468,10 @@
           "weaponId": {
             "type": "string"
           },
-          "groupSkill": {
+          "setSkill": {
             "type": "string"
           },
-          "seriesSkill": {
+          "groupSkill": {
             "type": "string"
           },
           "createdAt": {
@@ -2175,8 +2489,8 @@
           "id",
           "index",
           "weaponId",
+          "setSkill",
           "groupSkill",
-          "seriesSkill",
           "createdAt",
           "updatedAt"
         ],

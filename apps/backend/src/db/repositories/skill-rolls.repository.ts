@@ -91,7 +91,7 @@ export class SkillRollRepository extends BaseRepository {
 
   public async update(
     id: string,
-    data: { groupSkill?: string; seriesSkill?: string },
+    data: { setSkill?: string; groupSkill?: string },
   ): Promise<Result<SkillRoll | null, DatabaseError>> {
     return this.wrapQuery(
       async () =>

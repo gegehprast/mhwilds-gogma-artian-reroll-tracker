@@ -49,10 +49,10 @@ export function ImportPreviewContent({
               {rollType === "skill" ? (
                 <>
                   <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                    Group Skill
+                    Set Skill
                   </th>
                   <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                    Series Skill
+                    Group Skill
                   </th>
                 </>
               ) : (
@@ -88,10 +88,10 @@ export function ImportPreviewContent({
                 {rollType === "skill" ? (
                   <>
                     <td className="px-3 py-1.5 text-gray-200">
-                      {(row as SkillImportRow).groupSkill}
+                      {(row as SkillImportRow).setSkill}
                     </td>
                     <td className="px-3 py-1.5 text-gray-200">
-                      {(row as SkillImportRow).seriesSkill}
+                      {(row as SkillImportRow).groupSkill}
                     </td>
                   </>
                 ) : (

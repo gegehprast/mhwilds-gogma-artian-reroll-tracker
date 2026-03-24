@@ -29,7 +29,7 @@ export function SkillRollsView({ tracker }: Props) {
     }: {
       weaponId: string
       rollId: string
-      data: { groupSkill?: string; seriesSkill?: string }
+      data: { setSkill?: string; groupSkill?: string }
     }) => skillRollService.update(tracker.id, weaponId, rollId, data),
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })

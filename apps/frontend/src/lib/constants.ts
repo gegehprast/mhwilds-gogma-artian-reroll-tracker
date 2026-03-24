@@ -34,7 +34,7 @@ export const ELEMENTS: Element[] = [
   "Blast",
 ]
 
-export const SERIES_SKILLS = [
+export const SET_SKILLS = [
   "Doshaguma's Might",
   "Rey Dau's Voltage",
   "Uth Duna's Cover",

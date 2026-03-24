@@ -1,8 +1,13 @@
 import type { Element, WeaponType } from "./constants"
 
+interface AttemptSkill {
+  group: string
+  series: string
+}
+
 interface RawAttempt {
   attemptNum: number
-  skills?: { group: string; series: string }
+  skills?: AttemptSkill
   bonuses?: string[]
   timestamp?: string
 }
@@ -18,7 +23,7 @@ interface RawImportFile {
 }
 
 export interface SkillImportRow {
-  seriesSkill: string
+  setSkill: string
   groupSkill: string
 }
 
@@ -94,7 +99,7 @@ export function parseImportJson(
   }
 
   type AttemptWithSkills = RawAttempt & {
-    skills: { group: string; series: string }
+    skills: AttemptSkill
   }
   type AttemptWithBonuses = RawAttempt & { bonuses: string[] }
 
@@ -112,8 +117,8 @@ export function parseImportJson(
 
   if (rollType === "skill") {
     const rows: SkillImportRow[] = allAttempts.filter(hasSkills).map((a) => ({
-      seriesSkill: a.skills.series,
-      groupSkill: a.skills.group,
+      setSkill: a.skills.group,
+      groupSkill: a.skills.series,
     }))
     if (rows.length === 0) {
       return { ok: false, error: "No skill attempts found for this weapon" }

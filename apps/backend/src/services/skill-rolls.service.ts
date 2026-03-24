@@ -48,8 +48,8 @@ export class SkillRollService {
   public async create(
     trackerId: string,
     weaponId: string,
+    setSkill: string,
     groupSkill: string,
-    seriesSkill: string,
     atIndex?: number,
   ): Promise<
     Result<SkillRoll, NotFoundError | ForbiddenError | DatabaseError>
@@ -63,8 +63,8 @@ export class SkillRollService {
     const created = await this.repo.create({
       weaponId,
       index: atIndex ?? maxIndex.value + 1,
+      setSkill,
       groupSkill,
-      seriesSkill,
     })
     if (created.isErr()) return err(created.error)
 
@@ -75,7 +75,7 @@ export class SkillRollService {
     id: string,
     weaponId: string,
     trackerId: string,
-    data: { groupSkill?: string; seriesSkill?: string },
+    data: { setSkill?: string; groupSkill?: string },
   ): Promise<
     Result<SkillRoll, NotFoundError | ForbiddenError | DatabaseError>
   > {
@@ -110,7 +110,7 @@ export class SkillRollService {
     trackerId: string,
     weaponId: string,
     fromIndex: number,
-    rolls: { groupSkill: string; seriesSkill: string }[],
+    rolls: { setSkill: string; groupSkill: string }[],
   ): Promise<
     Result<SkillRoll[], NotFoundError | ForbiddenError | DatabaseError>
   > {
@@ -126,8 +126,8 @@ export class SkillRollService {
     const toInsert = rolls.map((r, i) => ({
       weaponId,
       index: fromIndex + i,
+      setSkill: r.setSkill,
       groupSkill: r.groupSkill,
-      seriesSkill: r.seriesSkill,
     }))
 
     return this.repo.bulkCreate(toInsert)

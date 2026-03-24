@@ -20,19 +20,19 @@ export function useSkillRolls(
 
   const create = useMutation({
     mutationFn: ({
+      setSkill,
       groupSkill,
-      seriesSkill,
     }: {
+      setSkill: string
       groupSkill: string
-      seriesSkill: string
     }) => {
       if (!trackerId || !weaponId)
         throw new Error("trackerId and weaponId required")
       return skillRollService.create(
         trackerId,
         weaponId,
+        setSkill,
         groupSkill,
-        seriesSkill,
       )
     },
     onSuccess: () => {
@@ -56,7 +56,7 @@ export function useSkillRolls(
       data,
     }: {
       id: string
-      data: { groupSkill?: string; seriesSkill?: string }
+      data: { setSkill?: string; groupSkill?: string }
     }) => {
       if (!trackerId || !weaponId)
         throw new Error("trackerId and weaponId required")

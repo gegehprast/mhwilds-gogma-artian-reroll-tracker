@@ -1,20 +1,27 @@
 {
-    "version": "7",
-    "dialect": "sqlite",
-    "entries": [
-        {
-            "idx": 0,
-            "version": "6",
-            "when": 1774298758949,
-            "tag": "0000_mushy_thor",
-            "breakpoints": true
-        },
-        {
-            "idx": 1,
-            "version": "6",
-            "when": 1774353600279,
-            "tag": "0001_colorful_alex_power",
-            "breakpoints": true
-        }
-    ]
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1774298758949,
+      "tag": "0000_mushy_thor",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1774353600279,
+      "tag": "0001_colorful_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1774378561422,
+      "tag": "0002_large_blue_marvel",
+      "breakpoints": true
+    }
+  ]
 }
