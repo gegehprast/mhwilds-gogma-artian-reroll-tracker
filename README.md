@@ -242,7 +242,3 @@ bun run frontend:build   # outputs to apps/frontend/dist/
 ```
 
 Deploy `apps/frontend/dist/` to any static host (Vercel, Netlify, Cloudflare Pages, etc.).
-
-## License
-
-MIT
