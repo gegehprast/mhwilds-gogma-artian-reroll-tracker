@@ -33,7 +33,7 @@ function MainApp() {
   if (query.isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-950">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400" />
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-400" />
       </div>
     )
   }
@@ -44,7 +44,7 @@ function MainApp() {
         <p className="text-red-400 text-lg">Failed to load tracker.</p>
         <button
           type="button"
-          className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded"
+          className="bg-red-500 hover:bg-red-400 text-black font-semibold px-4 py-2 rounded"
           onClick={handleSwitchTracker}
         >
           Start Over
@@ -61,8 +61,8 @@ function MainApp() {
       <div className="bg-gray-900 border-b border-gray-800 px-4 flex gap-4">
         {(
           [
-            ["skills-bird", "Skills ↔"],
-            ["bonuses-bird", "Bonuses ↔"],
+            ["skills-bird", "Skills"],
+            ["bonuses-bird", "Bonuses"],
           ] as const
         ).map(([tab, label]) => (
           <button
@@ -71,7 +71,7 @@ function MainApp() {
             onClick={() => setActiveTab(tab)}
             className={`py-3 px-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab
-                ? "border-amber-400 text-amber-400"
+                ? "border-red-400 text-red-400"
                 : "border-transparent text-gray-500 hover:text-gray-300"
             }`}
           >

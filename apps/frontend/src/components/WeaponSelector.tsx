@@ -48,7 +48,7 @@ export function WeaponSelector({
         <button
           type="button"
           onClick={() => setAdding(!adding)}
-          className="text-amber-400 hover:text-amber-300 text-lg leading-none"
+          className="text-red-400 hover:text-red-300 text-lg leading-none"
           title="Add weapon"
         >
           +
@@ -80,7 +80,7 @@ export function WeaponSelector({
               type="button"
               onClick={handleAdd}
               disabled={findOrCreate.isPending}
-              className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-sm font-semibold rounded py-1"
+              className="flex-1 bg-red-500 hover:bg-red-400 disabled:opacity-50 text-black text-sm font-semibold rounded py-1"
             >
               {findOrCreate.isPending ? "…" : "Add"}
             </button>
@@ -106,7 +106,7 @@ export function WeaponSelector({
             key={w.id}
             className={`group flex items-center justify-between px-3 py-2 cursor-pointer transition-colors ${
               w.id === selectedWeaponId
-                ? "bg-amber-900/30 text-amber-300"
+                ? "bg-red-900/30 text-red-300"
                 : "hover:bg-gray-800 text-gray-300"
             }`}
             onClick={() => onSelect(w.id)}

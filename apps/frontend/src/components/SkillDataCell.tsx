@@ -74,7 +74,7 @@ export function SkillDataCell({
       data-skill-row={`${weapon.id}-${index}`}
     >
       <input
-        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
+        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600`}
         value={groupSkill}
         onChange={(e) => setGroupSkill(e.target.value)}
         placeholder="Group skill"
@@ -89,7 +89,7 @@ export function SkillDataCell({
       />
       <input
         ref={seriesRef}
-        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
+        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600`}
         value={seriesSkill}
         onChange={(e) => setSeriesSkill(e.target.value)}
         placeholder="Series skill"

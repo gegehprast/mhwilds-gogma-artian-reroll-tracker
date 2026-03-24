@@ -57,7 +57,7 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
         <input
           key={key}
           ref={inputRefs[i]}
-          className="w-full bg-gray-800 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600"
+          className="w-full bg-gray-800 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600"
           value={values[key]}
           onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
           placeholder={`Bonus ${i + 1}`}
@@ -76,7 +76,7 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
         disabled={
           create.isPending || BONUS_KEYS.every((k) => !values[k].trim())
         }
-        className="w-full bg-amber-500/20 hover:bg-amber-500/40 disabled:opacity-40 text-amber-300 text-xs font-semibold rounded py-1 transition-colors"
+        className="w-full bg-red-500/20 hover:bg-red-500/40 disabled:opacity-40 text-red-300 text-xs font-semibold rounded py-1 transition-colors"
       >
         {create.isPending ? "…" : "Add roll"}
       </button>

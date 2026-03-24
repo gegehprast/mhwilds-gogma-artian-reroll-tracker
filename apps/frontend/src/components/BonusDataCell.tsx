@@ -129,7 +129,7 @@ export function BonusDataCell({
         <input
           key={key}
           ref={inputRefs[i]}
-          className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
+          className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-red-500 outline-none placeholder-gray-600`}
           value={values[key]}
           onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
           placeholder={`Bonus ${i + 1}`}

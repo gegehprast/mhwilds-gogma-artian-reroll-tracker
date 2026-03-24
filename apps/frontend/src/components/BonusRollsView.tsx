@@ -90,7 +90,7 @@ export function BonusRollsView({ tracker }: Props) {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-400" />
       </div>
     )
   }
@@ -136,7 +136,7 @@ export function BonusRollsView({ tracker }: Props) {
                 <td
                   className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm text-center align-middle transition-colors ${
                     isCurrentIndex
-                      ? "bg-amber-500/30 group-hover/row:bg-amber-500/50 group-focus-within/row:bg-amber-500/50 text-amber-400 border-r border-amber-500/30"
+                      ? "bg-red-500/30 group-hover/row:bg-red-500/50 group-focus-within/row:bg-red-500/50 text-red-400 border-r border-red-500/30"
                       : "bg-gray-950 group-hover/row:bg-gray-900 group-focus-within/row:bg-gray-900 text-gray-400 border-r border-gray-800"
                   }`}
                 >
@@ -152,7 +152,7 @@ export function BonusRollsView({ tracker }: Props) {
                       key={w.id}
                       className={`px-3 align-top w-52 transition-colors border-r border-gray-800 ${
                         isCurrentIndex
-                          ? "bg-amber-500/30 group-hover/row:bg-amber-500/50 group-focus-within/row:bg-amber-500/50"
+                          ? "bg-red-500/30 group-hover/row:bg-red-500/50 group-focus-within/row:bg-red-500/50"
                           : "group-hover/row:bg-gray-800/50 group-focus-within/row:bg-gray-800/50"
                       }`}
                     >
@@ -183,7 +183,7 @@ export function BonusRollsView({ tracker }: Props) {
 
           {/* ── Add row ── */}
           <tr className="border-b border-gray-700 bg-gray-900/50">
-            <td className="sticky left-0 z-10 bg-gray-900 px-4 py-2 font-mono text-sm text-amber-400 border-r border-gray-700 text-center align-top">
+            <td className="sticky left-0 z-10 bg-gray-900 px-4 py-2 font-mono text-sm text-red-400 border-r border-gray-700 text-center align-top">
               {nextIndex}
             </td>
             {weapons.map((w) => (

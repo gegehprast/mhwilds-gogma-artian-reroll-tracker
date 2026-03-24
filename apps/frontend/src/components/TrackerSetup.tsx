@@ -50,9 +50,7 @@ export function TrackerSetup({ onReady }: Props) {
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
       <div className="bg-gray-900 rounded-xl border border-gray-800 w-full max-w-md p-8 flex flex-col gap-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-amber-400">
-            🦎 Gogma Tracker
-          </h1>
+          <h1 className="text-3xl font-bold text-red-400">🦎 Gogma Tracker</h1>
           <p className="text-gray-400 mt-2 text-sm">
             Track your Gimmick Augment reroll results
           </p>
@@ -67,7 +65,7 @@ export function TrackerSetup({ onReady }: Props) {
             }}
             className={`flex-1 py-2 text-sm font-medium transition-colors ${
               mode === "generate"
-                ? "bg-amber-500 text-black"
+                ? "bg-red-500 text-white"
                 : "bg-gray-800 text-gray-400 hover:text-gray-200"
             }`}
           >
@@ -81,7 +79,7 @@ export function TrackerSetup({ onReady }: Props) {
             }}
             className={`flex-1 py-2 text-sm font-medium transition-colors ${
               mode === "load"
-                ? "bg-amber-500 text-black"
+                ? "bg-red-500 text-white"
                 : "bg-gray-800 text-gray-400 hover:text-gray-200"
             }`}
           >
@@ -102,7 +100,7 @@ export function TrackerSetup({ onReady }: Props) {
               type="button"
               onClick={handleGenerate}
               disabled={loading}
-              className="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-bold py-3 rounded-lg transition-colors"
+              className="bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
             >
               {loading ? "Creating…" : "Create New Tracker"}
             </button>
@@ -121,7 +119,7 @@ export function TrackerSetup({ onReady }: Props) {
               type="button"
               onClick={handleLoad}
               disabled={loading || !loadId.trim()}
-              className="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-bold py-3 rounded-lg transition-colors"
+              className="bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
             >
               {loading ? "Loading…" : "Load Tracker"}
             </button>

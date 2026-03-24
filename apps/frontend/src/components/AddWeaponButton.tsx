@@ -18,7 +18,7 @@ export function AddWeaponButton({ trackerId }: Props) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black rounded px-3 py-1.5 leading-none"
+        className="text-xs font-semibold bg-red-500 hover:bg-red-400 text-white rounded px-3 py-1.5 leading-none"
       >
         + Add weapon
       </button>
@@ -52,7 +52,7 @@ export function AddWeaponButton({ trackerId }: Props) {
                 )
               }
               disabled={findOrCreate.isPending}
-              className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-xs font-semibold rounded py-1.5"
+              className="flex-1 bg-red-500 hover:bg-red-400 disabled:opacity-50 text-black text-xs font-semibold rounded py-1.5"
             >
               {findOrCreate.isPending ? "…" : "Add"}
             </button>

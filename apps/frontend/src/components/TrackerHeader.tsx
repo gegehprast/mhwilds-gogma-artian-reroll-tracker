@@ -46,7 +46,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
   return (
     <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
       <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-xl font-bold text-amber-400 shrink-0">
+        <h1 className="text-xl font-bold text-red-400 shrink-0">
           🦎 Gogma Reroll Tracker
         </h1>
 
@@ -55,7 +55,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
           {editingName ? (
             <input
               autoFocus
-              className="bg-gray-800 text-gray-100 text-sm rounded px-2 py-1 border border-amber-500 w-44"
+              className="bg-gray-800 text-gray-100 text-sm rounded px-2 py-1 border border-red-500 w-44"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
               onBlur={handleNameSave}
@@ -71,7 +71,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
                 setNameInput(tracker.name)
                 setEditingName(true)
               }}
-              className="text-sm font-medium text-gray-200 hover:text-amber-300 truncate max-w-48"
+              className="text-sm font-medium text-gray-200 hover:text-red-300 truncate max-w-48"
               title="Click to rename"
             >
               {tracker.name} ✎
@@ -89,7 +89,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
               autoFocus
               type="number"
               min={1}
-              className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
+              className="bg-transparent text-red-300 font-mono text-sm rounded w-14 text-center border-b border-red-500 outline-none"
               value={skillIdxInput}
               onChange={(e) => setSkillIdxInput(e.target.value)}
               onBlur={handleSkillIdxSave}
@@ -107,7 +107,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
               autoFocus
               type="number"
               min={1}
-              className="bg-transparent text-amber-300 font-mono text-sm rounded w-14 text-center border-b border-amber-500 outline-none"
+              className="bg-transparent text-red-300 font-mono text-sm rounded w-14 text-center border-b border-red-500 outline-none"
               value={bonusIdxInput}
               onChange={(e) => setBonusIdxInput(e.target.value)}
               onBlur={handleBonusIdxSave}
@@ -122,7 +122,7 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
         {/* Tracker ID + copy + switch */}
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-xs text-gray-500">ID:</span>
-          <span className="font-mono text-xs text-amber-300 select-all bg-gray-800 px-2 py-1 rounded">
+          <span className="font-mono text-xs text-red-300 select-all bg-gray-800 px-2 py-1 rounded">
             {tracker.id}
           </span>
           <button
