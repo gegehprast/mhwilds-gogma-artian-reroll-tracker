@@ -130,7 +130,6 @@ export function BonusDataCell({
           value={values[key]}
           onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
           placeholder={`Bonus ${i + 1}`}
-          disabled={isPending}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()

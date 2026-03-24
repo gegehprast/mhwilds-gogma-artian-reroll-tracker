@@ -61,7 +61,6 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
           value={values[key]}
           onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
           placeholder={`Bonus ${i + 1}`}
-          disabled={create.isPending}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()

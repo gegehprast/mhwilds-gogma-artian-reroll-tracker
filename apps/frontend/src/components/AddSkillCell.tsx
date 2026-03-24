@@ -41,7 +41,6 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
         value={groupSkill}
         onChange={(e) => setGroupSkill(e.target.value)}
         placeholder="Group skill"
-        disabled={create.isPending}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault()
@@ -55,7 +54,6 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
         value={seriesSkill}
         onChange={(e) => setSeriesSkill(e.target.value)}
         placeholder="Series skill"
-        disabled={create.isPending}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault()

@@ -75,7 +75,6 @@ export function SkillDataCell({
         value={groupSkill}
         onChange={(e) => setGroupSkill(e.target.value)}
         placeholder="Group skill"
-        disabled={isPending}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault()
@@ -91,7 +90,6 @@ export function SkillDataCell({
         value={seriesSkill}
         onChange={(e) => setSeriesSkill(e.target.value)}
         placeholder="Series skill"
-        disabled={isPending}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault()
