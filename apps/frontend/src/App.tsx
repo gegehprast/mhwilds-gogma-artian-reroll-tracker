@@ -1,13 +1,13 @@
 import { useState } from "react"
 import { AddWeaponButton } from "./components/AddWeaponButton"
-import { BonusRollsView } from "./components/BonusRollsView"
 import { IndexControl } from "./components/IndexControl"
-import { SkillRollsView } from "./components/SkillRollsView"
 import { TrackerHeader } from "./components/TrackerHeader"
 import { TrackerSetup } from "./components/TrackerSetup"
 import { WeaponSelector } from "./components/WeaponSelector"
 import { useTracker } from "./hooks/useTracker"
 import { getTrackerId } from "./lib/api-client"
+import { BonusRollsView } from "./pages/BonusRollsView"
+import { SkillRollsView } from "./pages/SkillRollsView"
 
 export default function App() {
   const [initialized, setInitialized] = useState(() => !!getTrackerId())

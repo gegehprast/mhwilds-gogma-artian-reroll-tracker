@@ -1,23 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useAllBonusRolls } from "../hooks/useAllBonusRolls"
+import { AddSkillCell } from "../components/AddSkillCell"
+import { SkillDataCell } from "../components/SkillDataCell"
+import { VirtualizedTrackerTable } from "../components/VirtualizedTrackerTable"
+import { useAllSkillRolls } from "../hooks/useAllSkillRolls"
 import { useWeapons } from "../hooks/useWeapons"
 import type { Tracker, Weapon } from "../lib/api-service"
-import { bonusRollService } from "../lib/api-service"
+import { skillRollService } from "../lib/api-service"
 import { addToast } from "../lib/toast"
-import type { BonusData } from "../types/bonus-roll-types"
-import { AddBonusCell } from "./AddBonusCell"
-import { BonusDataCell } from "./BonusDataCell"
-import { VirtualizedTrackerTable } from "./VirtualizedTrackerTable"
 
 interface Props {
   tracker: Tracker
 }
 
-export function BonusRollsView({ tracker }: Props) {
+export function SkillRollsView({ tracker }: Props) {
   const qc = useQueryClient()
   const { query: weaponsQuery } = useWeapons(tracker.id)
   const weapons: Weapon[] = weaponsQuery.data ?? []
-  const { data: rollsByWeapon, isLoading } = useAllBonusRolls(
+  const { data: rollsByWeapon, isLoading } = useAllSkillRolls(
     tracker.id,
     weapons,
   )
@@ -30,10 +29,10 @@ export function BonusRollsView({ tracker }: Props) {
     }: {
       weaponId: string
       rollId: string
-      data: Partial<BonusData>
-    }) => bonusRollService.update(tracker.id, weaponId, rollId, data),
+      data: { groupSkill?: string; seriesSkill?: string }
+    }) => skillRollService.update(tracker.id, weaponId, rollId, data),
     onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
+      qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
       addToast("Roll updated", "success")
     },
   })
@@ -65,14 +64,14 @@ export function BonusRollsView({ tracker }: Props) {
   return (
     <VirtualizedTrackerTable
       weapons={weapons}
-      rowHeight={148}
+      rowHeight={64}
       existingIndices={existingIndices}
-      currentIndex={tracker.bonusIndex ?? undefined}
+      currentIndex={tracker.skillIndex ?? undefined}
       renderCell={(w, idx) => {
         const roll =
           (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ?? null
         return (
-          <BonusDataCell
+          <SkillDataCell
             roll={roll}
             index={idx}
             weapon={w}
@@ -84,7 +83,7 @@ export function BonusRollsView({ tracker }: Props) {
           />
         )
       }}
-      renderAddCell={(w) => <AddBonusCell weapon={w} trackerId={tracker.id} />}
+      renderAddCell={(w) => <AddSkillCell weapon={w} trackerId={tracker.id} />}
     />
   )
 }

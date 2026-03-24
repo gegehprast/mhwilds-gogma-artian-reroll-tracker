@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { createPortal } from "react-dom"
+import { useCloseOnEscape } from "../hooks/useCloseOnEscape"
+import { useCloseOnOutsideClick } from "../hooks/useCloseOnOutsideClick"
 import type { Comment, CommentColor } from "../types/comment-types"
 import { COMMENT_COLOR_CLASSES, COMMENT_COLORS } from "../types/comment-types"
 
@@ -63,28 +65,8 @@ export function CommentPopover({
   const [editContent, setEditContent] = useState("")
   const [editColor, setEditColor] = useState<CommentColor>("red")
 
-  // Close on outside click
-  useEffect(() => {
-    function handleMouseDown(e: MouseEvent) {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node)
-      ) {
-        onClose()
-      }
-    }
-    document.addEventListener("mousedown", handleMouseDown)
-    return () => document.removeEventListener("mousedown", handleMouseDown)
-  }, [onClose])
-
-  // Close on Escape
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose()
-    }
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [onClose])
+  useCloseOnOutsideClick(popoverRef, onClose)
+  useCloseOnEscape(onClose)
 
   function handleCreate() {
     const trimmed = newContent.trim()

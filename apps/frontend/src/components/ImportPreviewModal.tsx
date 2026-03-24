@@ -1,10 +1,16 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { createPortal } from "react-dom"
+import { useCloseOnEscape } from "../hooks/useCloseOnEscape"
+import { useCloseOnOutsideClick } from "../hooks/useCloseOnOutsideClick"
 import type { Weapon } from "../lib/api-service"
 import { bonusRollService, skillRollService } from "../lib/api-service"
 import type { BonusImportRow, SkillImportRow } from "../lib/import-rolls"
 import { parseImportJson } from "../lib/import-rolls"
+import { ImportDropZone } from "./ImportDropZone"
+import { ImportPreviewContent } from "./ImportPreviewContent"
+
+// ── Types ───────────────────────────────────────────────────────────────────
 
 interface Props {
   weapon: Weapon
@@ -73,17 +79,6 @@ export function ImportPreviewModal({
     [weapon.weaponType, weapon.element, rollType],
   )
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (file) processFile(file)
-  }
-
-  function handleDrop(e: React.DragEvent<HTMLLabelElement>) {
-    e.preventDefault()
-    const file = e.dataTransfer.files[0]
-    if (file) processFile(file)
-  }
-
   async function handleConfirm() {
     if (!parsed) return
     setIsImporting(true)
@@ -120,15 +115,22 @@ export function ImportPreviewModal({
   }
 
   const rows = parsed?.rows ?? []
+  const dialogRef = useRef<HTMLDivElement | null>(null)
+
+  useCloseOnEscape(onClose, !parsed)
+  useCloseOnOutsideClick(dialogRef, onClose, !parsed)
 
   return createPortal(
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/70" />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={`Import ${rollType === "skill" ? "Skill" : "Bonus"} Rolls`}
-        className="bg-gray-900 border border-gray-700 rounded-lg w-160 max-w-full max-h-[85vh] flex flex-col shadow-2xl"
+        className="relative bg-gray-900 border border-gray-700 rounded-lg w-160 max-w-full max-h-[85vh] flex flex-col shadow-2xl"
         tabIndex={-1}
+        autoFocus
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 shrink-0">
@@ -153,140 +155,18 @@ export function ImportPreviewModal({
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 min-h-0">
-          {/* File drop zone */}
-          {!parsed ? (
-            <label
-              onDrop={handleDrop}
-              onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-gray-700 hover:border-gray-500 rounded-lg p-10 flex flex-col items-center gap-3 cursor-pointer transition-colors text-gray-400 hover:text-gray-300"
-            >
-              <span className="text-3xl">📂</span>
-              <p className="text-sm font-medium">
-                Drop your JSON file here, or click to browse
-              </p>
-              <p className="text-xs text-gray-600">
-                Only .json files are accepted
-              </p>
-              <input
-                type="file"
-                accept=".json,application/json"
-                className="sr-only"
-                onChange={handleFileChange}
-              />
-              {parseError && (
-                <p className="text-xs text-red-400 bg-red-950/50 px-3 py-2 rounded border border-red-800 mt-2">
-                  {parseError}
-                </p>
-              )}
-            </label>
+          {parsed ? (
+            <ImportPreviewContent
+              rows={rows}
+              fromIndex={fromIndex}
+              rollType={rollType}
+              onChangeFile={() => {
+                setParsed(null)
+                setParseError(null)
+              }}
+            />
           ) : (
-            <>
-              {/* Summary */}
-              <div className="bg-gray-800/50 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
-                <span className="text-green-400 font-mono">✓</span>
-                <span className="text-gray-200">
-                  Found <strong className="text-white">{rows.length}</strong>{" "}
-                  attempt
-                  {rows.length !== 1 ? "s" : ""} — will occupy index{" "}
-                  <strong className="text-white">{fromIndex}</strong>
-                  {rows.length > 1 ? (
-                    <>
-                      {" – "}
-                      <strong className="text-white">
-                        {fromIndex + rows.length - 1}
-                      </strong>
-                    </>
-                  ) : null}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setParsed(null)
-                    setParseError(null)
-                  }}
-                  className="ml-auto text-xs text-gray-500 hover:text-gray-300 transition-colors"
-                >
-                  Change file
-                </button>
-              </div>
-
-              {/* Preview table */}
-              <div className="rounded-lg border border-gray-700 overflow-hidden max-h-80 overflow-y-auto">
-                <table className="w-full text-xs border-collapse">
-                  <thead className="sticky top-0">
-                    <tr className="bg-gray-800 border-b border-gray-700">
-                      <th className="text-left px-3 py-2 text-gray-400 font-semibold w-16">
-                        Index
-                      </th>
-                      {rollType === "skill" ? (
-                        <>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Group Skill
-                          </th>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Series Skill
-                          </th>
-                        </>
-                      ) : (
-                        <>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Bonus 1
-                          </th>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Bonus 2
-                          </th>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Bonus 3
-                          </th>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Bonus 4
-                          </th>
-                          <th className="text-left px-3 py-2 text-gray-400 font-semibold">
-                            Bonus 5
-                          </th>
-                        </>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, i) => (
-                      <tr
-                        key={i}
-                        className={`border-b border-gray-800/60 ${i % 2 === 0 ? "" : "bg-gray-800/20"}`}
-                      >
-                        <td className="px-3 py-1.5 font-mono text-gray-400">
-                          {fromIndex + i}
-                        </td>
-                        {rollType === "skill" ? (
-                          <>
-                            <td className="px-3 py-1.5 text-gray-200">
-                              {(row as SkillImportRow).groupSkill}
-                            </td>
-                            <td className="px-3 py-1.5 text-gray-200">
-                              {(row as SkillImportRow).seriesSkill}
-                            </td>
-                          </>
-                        ) : (
-                          (
-                            [
-                              "bonus1",
-                              "bonus2",
-                              "bonus3",
-                              "bonus4",
-                              "bonus5",
-                            ] as const
-                          ).map((k) => (
-                            <td key={k} className="px-3 py-1.5 text-gray-200">
-                              {(row as BonusImportRow)[k]}
-                            </td>
-                          ))
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
+            <ImportDropZone onFile={processFile} parseError={parseError} />
           )}
 
           {importError && (
