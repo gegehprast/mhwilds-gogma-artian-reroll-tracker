@@ -105,6 +105,33 @@ export class SkillRollService {
   ): Promise<Result<void, NotFoundError | ForbiddenError | DatabaseError>> {
     return this.repo.delete(id)
   }
+
+  public async import(
+    trackerId: string,
+    weaponId: string,
+    fromIndex: number,
+    rolls: { groupSkill: string; seriesSkill: string }[],
+  ): Promise<
+    Result<SkillRoll[], NotFoundError | ForbiddenError | DatabaseError>
+  > {
+    const check = await this.assertWeaponOwnership(weaponId, trackerId)
+    if (check.isErr()) return err(check.error)
+
+    const toIndex = fromIndex + rolls.length
+    const deleted = await this.repo.deleteRange(weaponId, fromIndex, toIndex)
+    if (deleted.isErr()) return err(deleted.error)
+
+    if (rolls.length === 0) return ok([])
+
+    const toInsert = rolls.map((r, i) => ({
+      weaponId,
+      index: fromIndex + i + 1,
+      groupSkill: r.groupSkill,
+      seriesSkill: r.seriesSkill,
+    }))
+
+    return this.repo.bulkCreate(toInsert)
+  }
 }
 
 let instance: SkillRollService | null = null

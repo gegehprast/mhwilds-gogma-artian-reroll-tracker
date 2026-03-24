@@ -41,6 +41,46 @@ const UpdateBonusRollBodySchema = z
 
 const BASE = "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls"
 
+const ImportBonusRollsBodySchema = z
+  .object({
+    fromIndex: z.number().int().min(1),
+    rolls: z
+      .array(
+        z.object({
+          bonus1: z.string(),
+          bonus2: z.string(),
+          bonus3: z.string(),
+          bonus4: z.string(),
+          bonus5: z.string(),
+        }),
+      )
+      .min(1),
+  })
+  .meta({ id: "ImportBonusRollsBody" })
+
+createRoute("POST", `${BASE}/import`)
+  .openapi({
+    operationId: "importBonusRolls",
+    summary: "Import bonus rolls",
+    description:
+      "Deletes existing rolls in the target index range and inserts uploaded data starting at fromIndex + 1.",
+    tags: ["Bonus Rolls"],
+  })
+  .body(ImportBonusRollsBodySchema)
+  .response(z.array(BonusRollSchema), { status: 201 })
+  .errors([400, 403, 404])
+  .handler(async ({ params, body, res }) => {
+    const service = getBonusRollService()
+    const result = await service.import(
+      params.trackerId,
+      params.weaponId,
+      body.fromIndex,
+      body.rolls,
+    )
+    if (result.isErr()) return mapError(result.error, res)
+    return res.created(result.value)
+  })
+
 createRoute("GET", BASE)
   .openapi({
     operationId: "listBonusRolls",

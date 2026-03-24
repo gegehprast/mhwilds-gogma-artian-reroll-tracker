@@ -32,6 +32,43 @@ const UpdateSkillRollBodySchema = z
 
 const BASE = "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls"
 
+const ImportSkillRollsBodySchema = z
+  .object({
+    fromIndex: z.number().int().min(1),
+    rolls: z
+      .array(
+        z.object({
+          groupSkill: z.string(),
+          seriesSkill: z.string(),
+        }),
+      )
+      .min(1),
+  })
+  .meta({ id: "ImportSkillRollsBody" })
+
+createRoute("POST", `${BASE}/import`)
+  .openapi({
+    operationId: "importSkillRolls",
+    summary: "Import skill rolls",
+    description:
+      "Deletes existing rolls in the target index range and inserts uploaded data starting at fromIndex + 1.",
+    tags: ["Skill Rolls"],
+  })
+  .body(ImportSkillRollsBodySchema)
+  .response(z.array(SkillRollSchema), { status: 201 })
+  .errors([400, 403, 404])
+  .handler(async ({ params, body, res }) => {
+    const service = getSkillRollService()
+    const result = await service.import(
+      params.trackerId,
+      params.weaponId,
+      body.fromIndex,
+      body.rolls,
+    )
+    if (result.isErr()) return mapError(result.error, res)
+    return res.created(result.value)
+  })
+
 createRoute("GET", BASE)
   .openapi({
     operationId: "listSkillRolls",

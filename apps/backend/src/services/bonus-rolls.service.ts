@@ -129,6 +129,42 @@ export class BonusRollService {
 
     return this.repo.delete(id)
   }
+
+  public async import(
+    trackerId: string,
+    weaponId: string,
+    fromIndex: number,
+    rolls: {
+      bonus1: string
+      bonus2: string
+      bonus3: string
+      bonus4: string
+      bonus5: string
+    }[],
+  ): Promise<
+    Result<BonusRoll[], NotFoundError | ForbiddenError | DatabaseError>
+  > {
+    const check = await this.assertWeaponOwnership(weaponId, trackerId)
+    if (check.isErr()) return err(check.error)
+
+    const toIndex = fromIndex + rolls.length
+    const deleted = await this.repo.deleteRange(weaponId, fromIndex, toIndex)
+    if (deleted.isErr()) return err(deleted.error)
+
+    if (rolls.length === 0) return ok([])
+
+    const toInsert = rolls.map((r, i) => ({
+      weaponId,
+      index: fromIndex + i + 1,
+      bonus1: r.bonus1,
+      bonus2: r.bonus2,
+      bonus3: r.bonus3,
+      bonus4: r.bonus4,
+      bonus5: r.bonus5,
+    }))
+
+    return this.repo.bulkCreate(toInsert)
+  }
 }
 
 let instance: BonusRollService | null = null

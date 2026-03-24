@@ -130,6 +130,24 @@ export const skillRollService = {
     )
   },
 
+  async import(
+    trackerId: string,
+    weaponId: string,
+    fromIndex: number,
+    rolls: { groupSkill: string; seriesSkill: string }[],
+  ): Promise<SkillRoll[]> {
+    const res = await fetch(
+      `${API_BASE}/api/trackers/${trackerId}/weapons/${weaponId}/skill-rolls/import`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fromIndex, rolls }),
+      },
+    )
+    if (!res.ok) throw new Error(await res.text())
+    return res.json() as Promise<SkillRoll[]>
+  },
+
   async update(
     trackerId: string,
     weaponId: string,
@@ -183,6 +201,30 @@ export const bonusRollService = {
       "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/{id}",
       { params: { path: { trackerId, weaponId, id } } },
     )
+  },
+
+  async import(
+    trackerId: string,
+    weaponId: string,
+    fromIndex: number,
+    rolls: {
+      bonus1: string
+      bonus2: string
+      bonus3: string
+      bonus4: string
+      bonus5: string
+    }[],
+  ): Promise<BonusRoll[]> {
+    const res = await fetch(
+      `${API_BASE}/api/trackers/${trackerId}/weapons/${weaponId}/bonus-rolls/import`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fromIndex, rolls }),
+      },
+    )
+    if (!res.ok) throw new Error(await res.text())
+    return res.json() as Promise<BonusRoll[]>
   },
 
   async update(

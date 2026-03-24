@@ -10,6 +10,7 @@ import { BONUS_KEYS } from "../types/bonus-roll-types"
 import { ComboBox } from "./ComboBox"
 import { CommentPin } from "./CommentPin"
 import { CommentPopover } from "./CommentPopover"
+import { ImportPreviewModal } from "./ImportPreviewModal"
 
 export interface BonusDataCellProps {
   roll: BonusRoll | null
@@ -59,6 +60,7 @@ export function BonusDataCell({
   ]
   const pinRef = useRef<HTMLDivElement>(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
 
   const {
     comments,
@@ -156,13 +158,34 @@ export function BonusDataCell({
       {roll && (
         <div
           ref={pinRef}
-          className="absolute right-0 top-0 bottom-0 flex items-center py-1"
+          className="absolute right-0 top-0 bottom-0 flex flex-col items-center py-1"
         >
-          <CommentPin
-            comments={comments}
-            onClick={() => setPopoverOpen((v) => !v)}
-          />
+          <button
+            type="button"
+            aria-label="Upload rolls from this index"
+            title="Upload rolls from this index"
+            onClick={() => setImportOpen(true)}
+            className="transition-opacity w-3 shrink-0 text-gray-400 hover:text-gray-300 bg-transparent border-0 p-0 flex items-center justify-center cursor-pointer"
+          >
+            <span className="text-[10px] leading-none">↑</span>
+          </button>
+          <div className="flex-1 flex items-center">
+            <CommentPin
+              comments={comments}
+              onClick={() => setPopoverOpen((v) => !v)}
+            />
+          </div>
         </div>
+      )}
+
+      {importOpen && roll && (
+        <ImportPreviewModal
+          weapon={weapon}
+          rollType="bonus"
+          fromIndex={roll.index}
+          trackerId={trackerId}
+          onClose={() => setImportOpen(false)}
+        />
       )}
 
       {popoverOpen && roll && pinRef.current && (

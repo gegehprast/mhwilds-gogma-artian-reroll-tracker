@@ -16,8 +16,10 @@ declare module "@bunkit/server" {
     "/api/trackers/:trackerId/weapons/:id": { trackerId: string; id: string }
     "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls": { trackerId: string; weaponId: string }
     "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls/:id": { trackerId: string; weaponId: string; id: string }
+    "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls/import": { trackerId: string; weaponId: string }
     "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls": { trackerId: string; weaponId: string }
     "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls/:id": { trackerId: string; weaponId: string; id: string }
+    "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls/import": { trackerId: string; weaponId: string }
     "/docs": Record<string, never>
     "/openapi.json": Record<string, never>
     "/openapi/refresh": Record<string, never>
