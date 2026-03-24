@@ -36,7 +36,7 @@ export function IndexControl({ tracker, activeTab }: Props) {
 
   if (activeTab === "skills-bird") {
     return (
-      <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-2 py-0.5">
+      <div className="flex items-center bg-gray-800 border border-gray-700 rounded px-2 py-0.5">
         <span className="text-[9px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
           Skill IDX
         </span>
@@ -56,7 +56,7 @@ export function IndexControl({ tracker, activeTab }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center bg-gray-800 border border-gray-700 rounded px-2 py-0.5">
+    <div className="flex items-center bg-gray-800 border border-gray-700 rounded px-2 py-0.5">
       <span className="text-[9px] font-semibold text-gray-500 uppercase tracking-wide leading-none mb-0.5">
         Bonus IDX
       </span>

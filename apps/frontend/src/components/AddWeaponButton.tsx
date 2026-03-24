@@ -20,7 +20,8 @@ export function AddWeaponButton({ trackerId }: Props) {
         onClick={() => setOpen((v) => !v)}
         className="text-xs font-semibold bg-red-500 hover:bg-red-400 text-white rounded px-3 py-1.5 leading-none"
       >
-        + Add weapon
+        <span className="sm:hidden">+</span>
+        <span className="hidden sm:inline">+ Add weapon</span>
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-1 z-30 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl p-3 flex flex-col gap-2 w-52">
