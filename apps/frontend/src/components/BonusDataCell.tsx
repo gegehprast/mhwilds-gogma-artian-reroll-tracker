@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
+import { useComments } from "../hooks/useComments"
 import type { BonusRoll, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
 import { BONUSES } from "../lib/constants"
@@ -7,6 +8,8 @@ import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { BONUS_KEYS } from "../types/bonus-roll-types"
 import { ComboBox } from "./ComboBox"
+import { CommentPin } from "./CommentPin"
+import { CommentPopover } from "./CommentPopover"
 
 export interface BonusDataCellProps {
   roll: BonusRoll | null
@@ -54,6 +57,16 @@ export function BonusDataCell({
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
   ]
+  const pinRef = useRef<HTMLDivElement>(null)
+  const [popoverOpen, setPopoverOpen] = useState(false)
+
+  const {
+    comments,
+    isLoading: commentsLoading,
+    create: createComment,
+    update: updateComment,
+    remove: removeComment,
+  } = useComments(trackerId, roll?.id, "bonus")
 
   const createMutation = useMutation({
     mutationFn: ({ bonuses, idx }: { bonuses: BonusData; idx: number }) =>
@@ -108,35 +121,68 @@ export function BonusDataCell({
 
   return (
     <div
-      className="flex flex-col gap-1 py-1"
+      className="relative flex flex-row gap-1 py-1 pr-4"
       data-bonus-row={`${weapon.id}-${index}`}
     >
-      {BONUS_KEYS.map((key, i) => (
-        <div key={key} ref={comboRefs[i]}>
-          <ComboBox
-            value={values[key]}
-            onCommit={(value) => {
-              const newValues = { ...values, [key]: value }
-              setValues(newValues)
-              save(newValues)
-              if (i < 4) {
-                comboRefs[i + 1].current
-                  ?.querySelector<HTMLInputElement>("input")
-                  ?.focus()
-              } else {
-                document
-                  .querySelector<HTMLInputElement>(
-                    `[data-bonus-row="${weapon.id}-${index + 1}"] input`,
-                  )
-                  ?.focus()
-              }
-            }}
-            options={BONUSES}
-            placeholder={`Bonus ${i + 1}`}
-            inputBg={inputBg}
+      <div className="flex-1 flex flex-col gap-1">
+        {BONUS_KEYS.map((key, i) => (
+          <div key={key} ref={comboRefs[i]}>
+            <ComboBox
+              value={values[key]}
+              onCommit={(value) => {
+                const newValues = { ...values, [key]: value }
+                setValues(newValues)
+                save(newValues)
+                if (i < 4) {
+                  comboRefs[i + 1].current
+                    ?.querySelector<HTMLInputElement>("input")
+                    ?.focus()
+                } else {
+                  document
+                    .querySelector<HTMLInputElement>(
+                      `[data-bonus-row="${weapon.id}-${index + 1}"] input`,
+                    )
+                    ?.focus()
+                }
+              }}
+              options={BONUSES}
+              placeholder={`Bonus ${i + 1}`}
+              inputBg={inputBg}
+            />
+          </div>
+        ))}
+      </div>
+
+      {roll && (
+        <div
+          ref={pinRef}
+          className="absolute right-0 top-0 bottom-0 flex items-center py-1"
+        >
+          <CommentPin
+            comments={comments}
+            onClick={() => setPopoverOpen((v) => !v)}
           />
         </div>
-      ))}
+      )}
+
+      {popoverOpen && roll && pinRef.current && (
+        <CommentPopover
+          comments={comments}
+          isLoading={commentsLoading}
+          anchorRect={pinRef.current.getBoundingClientRect()}
+          onClose={() => setPopoverOpen(false)}
+          onCreate={(content, color) =>
+            createComment.mutate({ content, color })
+          }
+          onDelete={(id) => removeComment.mutate(id)}
+          onUpdate={(id, data) => updateComment.mutate({ id, data })}
+          isPending={
+            createComment.isPending ||
+            removeComment.isPending ||
+            updateComment.isPending
+          }
+        />
+      )}
     </div>
   )
 }

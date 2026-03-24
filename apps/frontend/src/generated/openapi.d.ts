@@ -288,6 +288,54 @@ export interface paths {
         patch: operations["updateBonusRoll"];
         trace?: never;
     };
+    "/api/trackers/{trackerId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List comments
+         * @description Returns all comments for a roll.
+         */
+        get: operations["listComments"];
+        put?: never;
+        /**
+         * Create comment
+         * @description Creates a new comment on a roll. Maximum 5 comments per roll.
+         */
+        post: operations["createComment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete comment
+         * @description Deletes a comment.
+         */
+        delete: operations["deleteComment"];
+        options?: never;
+        head?: never;
+        /**
+         * Update comment
+         * @description Updates the content or color of a comment.
+         */
+        patch: operations["updateComment"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -338,6 +386,19 @@ export interface components {
             bonus4?: string;
             bonus5?: string;
         };
+        CreateCommentBody: {
+            rollId: string;
+            /** @enum {string} */
+            rollType: "skill" | "bonus";
+            content: string;
+            /** @enum {string} */
+            color: "red" | "orange" | "yellow" | "green" | "blue" | "violet" | "pink";
+        };
+        UpdateCommentBody: {
+            content?: string;
+            /** @enum {string} */
+            color?: "red" | "orange" | "yellow" | "green" | "blue" | "violet" | "pink";
+        };
         /**
          * Health Check Response
          * @description Health check response indicating service status
@@ -348,7 +409,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-24T02:34:31.740Z */
+            /** @example 2026-03-24T12:02:33.574Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -391,6 +452,18 @@ export interface components {
             bonus3: string;
             bonus4: string;
             bonus5: string;
+            createdAt: number;
+            updatedAt: number;
+        };
+        /** Comment */
+        Comment: {
+            id: string;
+            rollId: string;
+            /** @enum {string} */
+            rollType: "skill" | "bonus";
+            content: string;
+            /** @enum {string} */
+            color: "red" | "orange" | "yellow" | "green" | "blue" | "violet" | "pink";
             createdAt: number;
             updatedAt: number;
         };
@@ -1557,6 +1630,351 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BonusRoll"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    listComments: {
+        parameters: {
+            query: {
+                rollId: string;
+                rollType: "skill" | "bonus";
+            };
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"][];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    createComment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentBody"];
+            };
+        };
+        responses: {
+            /** @description 201 response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteComment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    updateComment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCommentBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
                 };
             };
             /** @description Bad Request - Invalid input or validation failed */

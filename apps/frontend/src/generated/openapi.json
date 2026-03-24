@@ -1402,6 +1402,417 @@
           }
         }
       }
+    },
+    "/api/trackers/{trackerId}/comments": {
+      "get": {
+        "operationId": "listComments",
+        "summary": "List comments",
+        "description": "Returns all comments for a roll.",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "rollId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "rollType",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "skill",
+                "bonus"
+              ]
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Comment"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createComment",
+        "summary": "Create comment",
+        "description": "Creates a new comment on a roll. Maximum 5 comments per roll.",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/comments/{id}": {
+      "patch": {
+        "operationId": "updateComment",
+        "summary": "Update comment",
+        "description": "Updates the content or color of a comment.",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommentBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteComment",
+        "summary": "Delete comment",
+        "description": "Deletes a comment.",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1567,6 +1978,64 @@
           }
         }
       },
+      "CreateCommentBody": {
+        "type": "object",
+        "properties": {
+          "rollId": {
+            "type": "string"
+          },
+          "rollType": {
+            "type": "string",
+            "enum": [
+              "skill",
+              "bonus"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "red",
+              "orange",
+              "yellow",
+              "green",
+              "blue",
+              "violet",
+              "pink"
+            ]
+          }
+        },
+        "required": [
+          "rollId",
+          "rollType",
+          "content",
+          "color"
+        ]
+      },
+      "UpdateCommentBody": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "red",
+              "orange",
+              "yellow",
+              "green",
+              "blue",
+              "violet",
+              "pink"
+            ]
+          }
+        }
+      },
       "HealthResponse": {
         "type": "object",
         "properties": {
@@ -1577,7 +2046,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-24T02:34:31.740Z"
+            "example": "2026-03-24T12:02:33.574Z"
           },
           "uptime": {
             "type": "number",
@@ -1768,6 +2237,60 @@
         ],
         "additionalProperties": false,
         "title": "Bonus Roll"
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rollId": {
+            "type": "string"
+          },
+          "rollType": {
+            "type": "string",
+            "enum": [
+              "skill",
+              "bonus"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "red",
+              "orange",
+              "yellow",
+              "green",
+              "blue",
+              "violet",
+              "pink"
+            ]
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "rollId",
+          "rollType",
+          "content",
+          "color",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "title": "Comment"
       },
       "BadRequestErrorResponse": {
         "type": "object",

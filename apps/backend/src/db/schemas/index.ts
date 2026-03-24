@@ -1,5 +1,6 @@
 export * from "./_helpers"
 export * from "./bonus-rolls.schema"
+export * from "./comments.schema"
 export * from "./skill-rolls.schema"
 export * from "./trackers.schema"
 export * from "./weapons.schema"

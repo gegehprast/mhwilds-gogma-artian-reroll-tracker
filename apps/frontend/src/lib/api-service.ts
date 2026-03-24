@@ -1,5 +1,8 @@
 import type { components } from "../generated/openapi"
+import type { Comment, CommentColor } from "../types/comment-types"
 import { apiClient, setTrackerId } from "./api-client"
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
 // Domain type aliases
 export type Tracker = components["schemas"]["Tracker"]
@@ -8,6 +11,7 @@ export type SkillRoll = components["schemas"]["SkillRoll"]
 export type BonusRoll = components["schemas"]["BonusRoll"]
 export type WeaponType = components["schemas"]["WeaponType"]
 export type Element = components["schemas"]["Element"]
+export type { Comment, CommentColor }
 
 export const trackerService = {
   async getOrCreate(id?: string | null): Promise<Tracker> {
@@ -199,5 +203,63 @@ export const bonusRollService = {
     )
     if (!result) throw new Error(String(error))
     return result
+  },
+}
+
+export const commentService = {
+  async list(
+    trackerId: string,
+    rollId: string,
+    rollType: "skill" | "bonus",
+  ): Promise<Comment[]> {
+    const params = new URLSearchParams({ rollId, rollType })
+    const res = await fetch(
+      `${API_BASE}/api/trackers/${trackerId}/comments?${params}`,
+    )
+    if (!res.ok) throw new Error(await res.text())
+    return res.json() as Promise<Comment[]>
+  },
+
+  async create(
+    trackerId: string,
+    rollId: string,
+    rollType: "skill" | "bonus",
+    content: string,
+    color: CommentColor,
+  ): Promise<Comment> {
+    const res = await fetch(`${API_BASE}/api/trackers/${trackerId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rollId, rollType, content, color }),
+    })
+    if (!res.ok) throw new Error(await res.text())
+    return res.json() as Promise<Comment>
+  },
+
+  async update(
+    trackerId: string,
+    id: string,
+    data: { content?: string; color?: CommentColor },
+  ): Promise<Comment> {
+    const res = await fetch(
+      `${API_BASE}/api/trackers/${trackerId}/comments/${id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      },
+    )
+    if (!res.ok) throw new Error(await res.text())
+    return res.json() as Promise<Comment>
+  },
+
+  async delete(trackerId: string, id: string): Promise<void> {
+    const res = await fetch(
+      `${API_BASE}/api/trackers/${trackerId}/comments/${id}`,
+      {
+        method: "DELETE",
+      },
+    )
+    if (!res.ok) throw new Error(await res.text())
   },
 }

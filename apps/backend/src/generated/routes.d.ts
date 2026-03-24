@@ -10,6 +10,8 @@ declare module "@bunkit/server" {
     "/api/health": Record<string, never>
     "/api/trackers": Record<string, never>
     "/api/trackers/:id": { id: string }
+    "/api/trackers/:trackerId/comments": { trackerId: string }
+    "/api/trackers/:trackerId/comments/:id": { trackerId: string; id: string }
     "/api/trackers/:trackerId/weapons": { trackerId: string }
     "/api/trackers/:trackerId/weapons/:id": { trackerId: string; id: string }
     "/api/trackers/:trackerId/weapons/:weaponId/bonus-rolls": { trackerId: string; weaponId: string }
