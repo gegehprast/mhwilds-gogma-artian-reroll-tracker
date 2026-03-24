@@ -1,4 +1,5 @@
 import type { Result } from "@bunkit/result"
+import type { WebSocketHandler } from "bun"
 import type { GenerateOpenApiSpecOptions } from "../http/openapi/generator"
 import type { RouteRegistry } from "../http/route-registry"
 import type {
@@ -15,18 +16,18 @@ import type {
 } from "../websocket/websocket-type-generator"
 
 /**
- * WebSocket server configuration
+ * WebSocket server configuration.
  */
-export interface WebSocketOptions {
-  /** Maximum payload length in bytes (default: 16MB) */
-  maxPayloadLength?: number
-  /** Idle timeout in seconds (default: 120) */
-  idleTimeout?: number
-  /** Enable per-message deflate compression (default: true) */
-  compression?: boolean
-  /** Backpressure limit in bytes (default: 16MB) */
-  backpressureLimit?: number
-}
+export type WebSocketOptions = Pick<
+  WebSocketHandler<unknown>,
+  | "maxPayloadLength"
+  | "backpressureLimit"
+  | "closeOnBackpressureLimit"
+  | "idleTimeout"
+  | "publishToSelf"
+  | "sendPings"
+  | "perMessageDeflate"
+>
 
 /**
  * Server configuration options

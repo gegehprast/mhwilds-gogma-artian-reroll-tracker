@@ -9,30 +9,63 @@ export class Ok<T> {
     this.value = value
   }
 
+  /**
+   * Check if the result is Ok
+   * @returns true if the result is Ok, false otherwise
+   */
   public isOk(): this is Ok<T> {
     return true
   }
 
+  /**
+   * Check if the result is Err
+   * @returns true if the result is Err, false otherwise
+   */
   public isErr(): this is never {
     return false
   }
 
+  /**
+   * Unwrap the value if it's Ok, otherwise throw an error
+   * @returns the unwrapped value
+   * @throws Error if the result is Err
+   */
   public unwrap(): T {
     return this.value
   }
 
+  /**
+   * Unwrap the value if it's Ok, otherwise return a default value
+   * @param defaultValue The default value to return if the result is Err
+   * @returns the unwrapped value or the default value
+   */
   public unwrapOr<U>(_defaultValue: U): T | U {
     return this.value
   }
 
+  /**
+   * Map the value if it's Ok, otherwise return an Err
+   * @param fn The function to apply to the value if it's Ok
+   * @returns a new Result with the mapped value or the original Err
+   */
   public map<U>(fn: (value: T) => U): Result<U, never> {
     return ok(fn(this.value))
   }
 
+  /**
+   * Map the error if it's Err, otherwise return an Ok
+   * @param fn The function to apply to the error if it's Err
+   * @returns a new Result with the original Ok or the mapped Err
+   */
   public mapErr<F extends Error>(_fn: (error: never) => F): Result<T, F> {
     return ok(this.value)
   }
 
+  /**
+   * Chain another Result-producing function if this is Ok, otherwise return an Err
+   * @param fn The function to apply to the value if it's Ok
+   * @returns a new Result from the chained function or the original Err
+   */
   public andThen<U, F extends Error>(
     fn: (value: T) => Result<U, F>,
   ): Result<U, F> {
@@ -51,32 +84,65 @@ export class Err<E extends Error> {
     this.error = error
   }
 
+  /**
+   * Check if the result is Ok
+   * @returns true if the result is Ok, false otherwise
+   */
   public isOk(): this is never {
     return false
   }
 
+  /**
+   * Check if the result is Err
+   * @returns true if the result is Err, false otherwise
+   */
   public isErr(): this is Err<E> {
     return true
   }
 
+  /**
+   * Unwrap the value if it's Ok, otherwise throw an error
+   * @returns the unwrapped value
+   * @throws Error if the result is Err
+   */
   public unwrap(): never {
     throw new Error(
       `Called unwrap on an Err value: ${JSON.stringify(this.error)}`,
     )
   }
 
+  /**
+   * Unwrap the value if it's Ok, otherwise return a default value
+   * @param defaultValue The default value to return if the result is Err
+   * @returns the unwrapped value or the default value
+   */
   public unwrapOr<T>(defaultValue: T): T {
     return defaultValue
   }
 
+  /**
+   * Map the value if it's Ok, otherwise return an Err
+   * @param fn The function to apply to the value if it's Ok
+   * @returns a new Result with the mapped value or the original Err
+   */
   public map<U>(_fn: (value: never) => U): Result<U, E> {
     return err(this.error)
   }
 
+  /**
+   * Map the error if it's Err, otherwise return an Ok
+   * @param fn The function to apply to the error if it's Err
+   * @returns a new Result with the original Ok or the mapped Err
+   */
   public mapErr<F extends Error>(fn: (error: E) => F): Result<never, F> {
     return err(fn(this.error))
   }
 
+  /**
+   * Chain another Result-producing function if this is Ok, otherwise return an Err
+   * @param fn The function to apply to the value if it's Ok
+   * @returns a new Result from the chained function or the original Err
+   */
   public andThen<U, F extends Error>(
     _fn: (value: never) => Result<U, F>,
   ): Result<U, E | F> {
