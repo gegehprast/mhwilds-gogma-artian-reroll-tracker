@@ -175,22 +175,6 @@ export function BonusRollsView({ tracker }: Props) {
                           updateRollMutation.mutate({ weaponId, rollId, data })
                         }
                         updating={updateRollMutation.isPending}
-                        onNavigateToNext={() => {
-                          const nextInput = document.querySelector<HTMLInputElement>(
-                            `[data-bonus-row="${idx + 1}"] input`,
-                          )
-                          if (!nextInput || !scrollRef.current) return
-                          nextInput.focus({ preventScroll: true })
-                          const inputRect = nextInput.getBoundingClientRect()
-                          const containerRect = scrollRef.current.getBoundingClientRect()
-                          const headerHeight =
-                            scrollRef.current.querySelector('thead')?.getBoundingClientRect().height ?? 0
-                          if (inputRect.bottom > containerRect.bottom) {
-                            scrollRef.current.scrollTop += inputRect.bottom - containerRect.bottom + 8
-                          } else if (inputRect.top < containerRect.top + headerHeight) {
-                            scrollRef.current.scrollTop -= containerRect.top + headerHeight - inputRect.top + 8
-                          }
-                        }}
                       />
                     </td>
                   )

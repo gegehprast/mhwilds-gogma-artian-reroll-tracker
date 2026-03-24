@@ -15,7 +15,6 @@ export interface SkillDataCellProps {
     data: { groupSkill?: string; seriesSkill?: string },
   ) => void
   updating: boolean
-  onNavigateToNext?: () => void
 }
 
 export function SkillDataCell({
@@ -25,7 +24,6 @@ export function SkillDataCell({
   trackerId,
   updateRoll,
   updating,
-  onNavigateToNext,
 }: SkillDataCellProps) {
   const qc = useQueryClient()
   const [groupSkill, setGroupSkill] = useState(roll?.groupSkill ?? "")
@@ -96,7 +94,11 @@ export function SkillDataCell({
           if (e.key === "Enter") {
             e.preventDefault()
             save()
-            onNavigateToNext?.()
+            document
+              .querySelector<HTMLInputElement>(
+                `[data-skill-row="${index + 1}"] input`,
+              )
+              ?.focus()
           }
           if (e.key === "Escape") reset()
         }}
