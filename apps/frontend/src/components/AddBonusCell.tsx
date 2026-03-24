@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useState } from "react"
 import type { Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { BONUS_KEYS } from "../types/bonus-roll-types"
 
@@ -35,12 +36,12 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
       qc.invalidateQueries({ queryKey: ["bonus-rolls", trackerId, weapon.id] })
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setValues(emptyBonuses)
+      addToast("Roll added", "success")
     },
   })
 
   function submit() {
-    const allFilled = BONUS_KEYS.every((k) => values[k].trim())
-    if (!allFilled) return
+    if (BONUS_KEYS.every((k) => !values[k].trim())) return
     create.mutate({
       bonus1: values.bonus1.trim(),
       bonus2: values.bonus2.trim(),
@@ -73,7 +74,9 @@ export function AddBonusCell({ weapon, trackerId }: Props) {
       <button
         type="button"
         onClick={submit}
-        disabled={create.isPending || BONUS_KEYS.some((k) => !values[k].trim())}
+        disabled={
+          create.isPending || BONUS_KEYS.every((k) => !values[k].trim())
+        }
         className="w-full bg-amber-500/20 hover:bg-amber-500/40 disabled:opacity-40 text-amber-300 text-xs font-semibold rounded py-1 transition-colors"
       >
         {create.isPending ? "…" : "Add roll"}

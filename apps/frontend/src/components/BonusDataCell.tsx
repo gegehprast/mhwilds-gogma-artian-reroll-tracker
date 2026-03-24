@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import type { BonusRoll, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { BONUS_KEYS } from "../types/bonus-roll-types"
 
@@ -60,6 +61,7 @@ export function BonusDataCell({
       qc.invalidateQueries({ queryKey: ["bonus-rolls", trackerId, weapon.id] })
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setValues(emptyValues)
+      addToast("Roll saved", "success")
     },
   })
 
@@ -78,21 +80,7 @@ export function BonusDataCell({
   }, [roll?.bonus1, roll?.bonus2, roll?.bonus3, roll?.bonus4, roll?.bonus5])
 
   function save() {
-    const allFilled = BONUS_KEYS.every((k) => values[k].trim())
-    if (!allFilled) {
-      setValues(
-        roll
-          ? {
-              bonus1: roll.bonus1,
-              bonus2: roll.bonus2,
-              bonus3: roll.bonus3,
-              bonus4: roll.bonus4,
-              bonus5: roll.bonus5,
-            }
-          : emptyValues,
-      )
-      return
-    }
+    if (BONUS_KEYS.every((k) => !values[k].trim())) return
     if (roll) {
       const changed: Partial<BonusData> = {}
       for (const key of BONUS_KEYS) {

@@ -20,11 +20,11 @@ const BonusRollSchema = z
 
 const CreateBonusRollBodySchema = z
   .object({
-    bonus1: z.string().min(1),
-    bonus2: z.string().min(1),
-    bonus3: z.string().min(1),
-    bonus4: z.string().min(1),
-    bonus5: z.string().min(1),
+    bonus1: z.string(),
+    bonus2: z.string(),
+    bonus3: z.string(),
+    bonus4: z.string(),
+    bonus5: z.string(),
     atIndex: z.number().int().min(1).optional(),
   })
   .meta({ id: "CreateBonusRollBody" })
@@ -35,11 +35,11 @@ const ImportBonusRollsBodySchema = z
     rolls: z.array(
       z.object({
         attemptNum: z.number().int().min(1),
-        bonus1: z.string().min(1),
-        bonus2: z.string().min(1),
-        bonus3: z.string().min(1),
-        bonus4: z.string().min(1),
-        bonus5: z.string().min(1),
+        bonus1: z.string(),
+        bonus2: z.string(),
+        bonus3: z.string(),
+        bonus4: z.string(),
+        bonus5: z.string(),
       }),
     ),
   })
@@ -47,11 +47,11 @@ const ImportBonusRollsBodySchema = z
 
 const UpdateBonusRollBodySchema = z
   .object({
-    bonus1: z.string().min(1).optional(),
-    bonus2: z.string().min(1).optional(),
-    bonus3: z.string().min(1).optional(),
-    bonus4: z.string().min(1).optional(),
-    bonus5: z.string().min(1).optional(),
+    bonus1: z.string().optional(),
+    bonus2: z.string().optional(),
+    bonus3: z.string().optional(),
+    bonus4: z.string().optional(),
+    bonus5: z.string().optional(),
   })
   .meta({ id: "UpdateBonusRollBody" })
 

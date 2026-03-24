@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import type { SkillRoll, Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 
 export interface SkillDataCellProps {
   roll: SkillRoll | null
@@ -37,6 +38,7 @@ export function SkillDataCell({
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setGroupSkill("")
       setSeriesSkill("")
+      addToast("Roll saved", "success")
     },
   })
 
@@ -48,11 +50,7 @@ export function SkillDataCell({
   function save() {
     const g = groupSkill.trim()
     const s = seriesSkill.trim()
-    if (!g || !s) {
-      setGroupSkill(roll?.groupSkill ?? "")
-      setSeriesSkill(roll?.seriesSkill ?? "")
-      return
-    }
+    if (!g && !s) return
     if (roll) {
       if (g !== roll.groupSkill || s !== roll.seriesSkill) {
         updateRoll(weapon.id, roll.id, { groupSkill: g, seriesSkill: s })

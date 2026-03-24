@@ -17,8 +17,8 @@ const SkillRollSchema = z
 
 const CreateSkillRollBodySchema = z
   .object({
-    groupSkill: z.string().min(1),
-    seriesSkill: z.string().min(1),
+    groupSkill: z.string(),
+    seriesSkill: z.string(),
     atIndex: z.number().int().min(1).optional(),
   })
   .meta({ id: "CreateSkillRollBody" })
@@ -29,8 +29,8 @@ const ImportSkillRollsBodySchema = z
     rolls: z.array(
       z.object({
         attemptNum: z.number().int().min(1),
-        groupSkill: z.string().min(1),
-        seriesSkill: z.string().min(1),
+        groupSkill: z.string(),
+        seriesSkill: z.string(),
       }),
     ),
   })
@@ -38,8 +38,8 @@ const ImportSkillRollsBodySchema = z
 
 const UpdateSkillRollBodySchema = z
   .object({
-    groupSkill: z.string().min(1).optional(),
-    seriesSkill: z.string().min(1).optional(),
+    groupSkill: z.string().optional(),
+    seriesSkill: z.string().optional(),
   })
   .meta({ id: "UpdateSkillRollBody" })
 

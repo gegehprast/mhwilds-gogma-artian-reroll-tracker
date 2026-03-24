@@ -4,6 +4,7 @@ import { useAllSkillRolls } from "../hooks/useAllSkillRolls"
 import { useWeapons } from "../hooks/useWeapons"
 import type { SkillRoll, Tracker, Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 import { AddSkillCell } from "./AddSkillCell"
 import { ImportModal } from "./ImportModal"
 import { SkillDataCell } from "./SkillDataCell"
@@ -40,6 +41,7 @@ export function SkillRollsView({ tracker }: Props) {
     }) => skillRollService.update(tracker.id, weaponId, rollId, data),
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
+      addToast("Roll updated", "success")
     },
   })
 
@@ -59,6 +61,7 @@ export function SkillRollsView({ tracker }: Props) {
     }) => skillRollService.import(tracker.id, weaponId, selectedIndex, rolls),
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
+      addToast("Rolls imported", "success")
     },
   })
 

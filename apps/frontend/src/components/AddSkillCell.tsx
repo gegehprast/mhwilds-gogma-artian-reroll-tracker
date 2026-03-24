@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useState } from "react"
 import type { Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 
 interface Props {
   weapon: Weapon
@@ -22,13 +23,14 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setGroupSkill("")
       setSeriesSkill("")
+      addToast("Roll added", "success")
     },
   })
 
   function submit() {
     const g = groupSkill.trim()
     const s = seriesSkill.trim()
-    if (!g || !s) return
+    if (!g && !s) return
     create.mutate({ g, s })
   }
 
@@ -64,7 +66,9 @@ export function AddSkillCell({ weapon, trackerId }: Props) {
       <button
         type="button"
         onClick={submit}
-        disabled={create.isPending || !groupSkill.trim() || !seriesSkill.trim()}
+        disabled={
+          create.isPending || (!groupSkill.trim() && !seriesSkill.trim())
+        }
         className="w-full bg-amber-500/20 hover:bg-amber-500/40 disabled:opacity-40 text-amber-300 text-xs font-semibold rounded py-1 transition-colors"
       >
         {create.isPending ? "…" : "Add roll"}

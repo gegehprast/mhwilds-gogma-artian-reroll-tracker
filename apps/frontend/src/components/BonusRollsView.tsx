@@ -4,6 +4,7 @@ import { useAllBonusRolls } from "../hooks/useAllBonusRolls"
 import { useWeapons } from "../hooks/useWeapons"
 import type { BonusRoll, Tracker, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
+import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { AddBonusCell } from "./AddBonusCell"
 import { BonusDataCell } from "./BonusDataCell"
@@ -41,6 +42,7 @@ export function BonusRollsView({ tracker }: Props) {
     }) => bonusRollService.update(tracker.id, weaponId, rollId, data),
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
+      addToast("Roll updated", "success")
     },
   })
 
@@ -56,6 +58,7 @@ export function BonusRollsView({ tracker }: Props) {
     }) => bonusRollService.import(tracker.id, weaponId, selectedIndex, rolls),
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
+      addToast("Rolls imported", "success")
     },
   })
 
