@@ -68,81 +68,83 @@ function AddWeaponPopover({
   )
 }
 
-// ── Editable roll cell ──────────────────────────────────────────────────────
+// ── Data-row cell: handles update for existing rolls, create-at-index for empty ──
 
-interface EditableCellProps {
-  roll: SkillRoll
+interface SkillDataCellProps {
+  roll: SkillRoll | null
+  index: number
   weapon: Weapon
-  onImport: (roll: SkillRoll, weapon: Weapon) => void
+  trackerId: string
   updateRoll: (
     weaponId: string,
     rollId: string,
     data: { groupSkill?: string; seriesSkill?: string },
   ) => void
-  deleteRoll: (weaponId: string, rollId: string) => void
   updating: boolean
 }
 
-function EditableSkillCell({
+function SkillDataCell({
   roll,
+  index,
   weapon,
-  onImport,
+  trackerId,
   updateRoll,
-  deleteRoll,
   updating,
-}: EditableCellProps) {
-  const [groupSkill, setGroupSkill] = useState(roll.groupSkill)
-  const [seriesSkill, setSeriesSkill] = useState(roll.seriesSkill)
+}: SkillDataCellProps) {
+  const qc = useQueryClient()
+  const [groupSkill, setGroupSkill] = useState(roll?.groupSkill ?? "")
+  const [seriesSkill, setSeriesSkill] = useState(roll?.seriesSkill ?? "")
   const seriesRef = useRef<HTMLInputElement>(null)
 
+  const createMutation = useMutation({
+    mutationFn: ({ g, s, idx }: { g: string; s: string; idx: number }) =>
+      skillRollService.create(trackerId, weapon.id, g, s, idx),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
+      qc.invalidateQueries({ queryKey: ["tracker"] })
+      setGroupSkill("")
+      setSeriesSkill("")
+    },
+  })
+
   useEffect(() => {
-    setGroupSkill(roll.groupSkill)
-    setSeriesSkill(roll.seriesSkill)
-  }, [roll.groupSkill, roll.seriesSkill])
+    setGroupSkill(roll?.groupSkill ?? "")
+    setSeriesSkill(roll?.seriesSkill ?? "")
+  }, [roll?.groupSkill, roll?.seriesSkill])
 
   function save() {
     const g = groupSkill.trim()
     const s = seriesSkill.trim()
     if (!g || !s) {
-      setGroupSkill(roll.groupSkill)
-      setSeriesSkill(roll.seriesSkill)
+      setGroupSkill(roll?.groupSkill ?? "")
+      setSeriesSkill(roll?.seriesSkill ?? "")
       return
     }
-    if (g !== roll.groupSkill || s !== roll.seriesSkill) {
-      updateRoll(weapon.id, roll.id, { groupSkill: g, seriesSkill: s })
+    if (roll) {
+      if (g !== roll.groupSkill || s !== roll.seriesSkill) {
+        updateRoll(weapon.id, roll.id, { groupSkill: g, seriesSkill: s })
+      }
+    } else {
+      createMutation.mutate({ g, s, idx: index })
     }
   }
 
   function reset() {
-    setGroupSkill(roll.groupSkill)
-    setSeriesSkill(roll.seriesSkill)
+    setGroupSkill(roll?.groupSkill ?? "")
+    setSeriesSkill(roll?.seriesSkill ?? "")
   }
+
+  const isPending = roll ? updating : createMutation.isPending
+  const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
   return (
     <div className="flex flex-col gap-1 py-1">
-      <div className="flex justify-end gap-0.5 mb-0.5">
-        <button
-          type="button"
-          onClick={() => onImport(roll, weapon)}
-          className="text-gray-500 hover:text-blue-400 text-[10px] px-0.5 leading-none"
-          title="Import from here"
-        >
-          ↑
-        </button>
-        <button
-          type="button"
-          onClick={() => deleteRoll(weapon.id, roll.id)}
-          className="text-gray-500 hover:text-red-400 text-[10px] px-0.5 leading-none"
-          title="Delete"
-        >
-          ✕
-        </button>
-      </div>
       <input
-        className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none"
+        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
         value={groupSkill}
         onChange={(e) => setGroupSkill(e.target.value)}
         placeholder="Group skill"
+        disabled={isPending}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault()
@@ -153,10 +155,11 @@ function EditableSkillCell({
       />
       <input
         ref={seriesRef}
-        className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none"
+        className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
         value={seriesSkill}
         onChange={(e) => setSeriesSkill(e.target.value)}
         placeholder="Series skill"
+        disabled={isPending}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault()
@@ -164,9 +167,9 @@ function EditableSkillCell({
           }
           if (e.key === "Escape") reset()
         }}
-        onBlur={save}
+        onBlur={roll ? save : undefined}
       />
-      {updating && (
+      {isPending && (
         <span className="text-[10px] text-gray-500 text-center">saving…</span>
       )}
     </div>
@@ -272,14 +275,6 @@ export function SkillRollsBirdView({ tracker }: Props) {
       rollId: string
       data: { groupSkill?: string; seriesSkill?: string }
     }) => skillRollService.update(tracker.id, weaponId, rollId, data),
-    onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
-    },
-  })
-
-  const deleteRollMutation = useMutation({
-    mutationFn: ({ weaponId, rollId }: { weaponId: string; rollId: string }) =>
-      skillRollService.delete(tracker.id, weaponId, rollId),
     onSuccess: (_, { weaponId }) => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
     },
@@ -392,26 +387,16 @@ export function SkillRollsBirdView({ tracker }: Props) {
                     key={w.id}
                     className="px-3 border-r border-gray-800 align-top w-52"
                   >
-                    {roll ? (
-                      <EditableSkillCell
-                        roll={roll}
-                        weapon={w}
-                        onImport={(r, wep) =>
-                          setImportTarget({ roll: r, weapon: wep })
-                        }
-                        updateRoll={(weaponId, rollId, data) =>
-                          updateRollMutation.mutate({ weaponId, rollId, data })
-                        }
-                        deleteRoll={(weaponId, rollId) =>
-                          deleteRollMutation.mutate({ weaponId, rollId })
-                        }
-                        updating={updateRollMutation.isPending}
-                      />
-                    ) : (
-                      <div className="py-2 text-center text-gray-700 text-xs select-none">
-                        —
-                      </div>
-                    )}
+                    <SkillDataCell
+                      roll={roll}
+                      index={idx}
+                      weapon={w}
+                      trackerId={tracker.id}
+                      updateRoll={(weaponId, rollId, data) =>
+                        updateRollMutation.mutate({ weaponId, rollId, data })
+                      }
+                      updating={updateRollMutation.isPending}
+                    />
                   </td>
                 )
               })}

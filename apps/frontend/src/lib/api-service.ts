@@ -102,12 +102,17 @@ export const skillRollService = {
     weaponId: string,
     groupSkill: string,
     seriesSkill: string,
+    atIndex?: number,
   ): Promise<SkillRoll> {
     const { data, error } = await apiClient.POST(
       "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls",
       {
         params: { path: { trackerId, weaponId } },
-        body: { groupSkill, seriesSkill },
+        body: {
+          groupSkill,
+          seriesSkill,
+          ...(atIndex !== undefined && { atIndex }),
+        },
       },
     )
     if (!data) throw new Error(String(error))
@@ -177,10 +182,14 @@ export const bonusRollService = {
       bonus4: string
       bonus5: string
     },
+    atIndex?: number,
   ): Promise<BonusRoll> {
     const { data, error } = await apiClient.POST(
       "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls",
-      { params: { path: { trackerId, weaponId } }, body: bonuses },
+      {
+        params: { path: { trackerId, weaponId } },
+        body: { ...bonuses, ...(atIndex !== undefined && { atIndex }) },
+      },
     )
     if (!data) throw new Error(String(error))
     return data

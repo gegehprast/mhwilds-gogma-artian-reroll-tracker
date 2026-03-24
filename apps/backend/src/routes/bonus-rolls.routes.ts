@@ -25,6 +25,7 @@ const CreateBonusRollBodySchema = z
     bonus3: z.string().min(1),
     bonus4: z.string().min(1),
     bonus5: z.string().min(1),
+    atIndex: z.number().int().min(1).optional(),
   })
   .meta({ id: "CreateBonusRollBody" })
 
@@ -93,6 +94,7 @@ createRoute("POST", BASE)
       body.bonus3,
       body.bonus4,
       body.bonus5,
+      body.atIndex,
     )
     if (result.isErr()) return mapError(result.error, res)
     return res.created(result.value)

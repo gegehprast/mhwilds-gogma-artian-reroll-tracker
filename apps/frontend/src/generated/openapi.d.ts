@@ -357,6 +357,7 @@ export interface components {
         CreateSkillRollBody: {
             groupSkill: string;
             seriesSkill: string;
+            atIndex?: number;
         };
         UpdateSkillRollBody: {
             groupSkill?: string;
@@ -376,6 +377,7 @@ export interface components {
             bonus3: string;
             bonus4: string;
             bonus5: string;
+            atIndex?: number;
         };
         UpdateBonusRollBody: {
             bonus1?: string;

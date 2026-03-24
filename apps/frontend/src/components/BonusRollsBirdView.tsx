@@ -15,6 +15,14 @@ interface Props {
 type BonusKey = "bonus1" | "bonus2" | "bonus3" | "bonus4" | "bonus5"
 type BonusData = Record<BonusKey, string>
 
+const BONUS_KEYS: BonusKey[] = [
+  "bonus1",
+  "bonus2",
+  "bonus3",
+  "bonus4",
+  "bonus5",
+]
+
 // ── Add weapon popover ──────────────────────────────────────────────────────
 
 function AddWeaponPopover({
@@ -71,44 +79,48 @@ function AddWeaponPopover({
   )
 }
 
-// ── Editable bonus cell ─────────────────────────────────────────────────────
+// ── Data-row cell: handles update for existing rolls, create-at-index for empty ──
 
-interface EditableBonusCellProps {
-  roll: BonusRoll
+interface BonusDataCellProps {
+  roll: BonusRoll | null
+  index: number
   weapon: Weapon
-  onImport: (roll: BonusRoll, weapon: Weapon) => void
+  trackerId: string
   updateRoll: (
     weaponId: string,
     rollId: string,
     data: Partial<BonusData>,
   ) => void
-  deleteRoll: (weaponId: string, rollId: string) => void
   updating: boolean
 }
 
-const BONUS_KEYS: BonusKey[] = [
-  "bonus1",
-  "bonus2",
-  "bonus3",
-  "bonus4",
-  "bonus5",
-]
-
-function EditableBonusCell({
+function BonusDataCell({
   roll,
+  index,
   weapon,
-  onImport,
+  trackerId,
   updateRoll,
-  deleteRoll,
   updating,
-}: EditableBonusCellProps) {
-  const [values, setValues] = useState<BonusData>({
-    bonus1: roll.bonus1,
-    bonus2: roll.bonus2,
-    bonus3: roll.bonus3,
-    bonus4: roll.bonus4,
-    bonus5: roll.bonus5,
-  })
+}: BonusDataCellProps) {
+  const qc = useQueryClient()
+  const emptyValues: BonusData = {
+    bonus1: "",
+    bonus2: "",
+    bonus3: "",
+    bonus4: "",
+    bonus5: "",
+  }
+  const [values, setValues] = useState<BonusData>(
+    roll
+      ? {
+          bonus1: roll.bonus1,
+          bonus2: roll.bonus2,
+          bonus3: roll.bonus3,
+          bonus4: roll.bonus4,
+          bonus5: roll.bonus5,
+        }
+      : emptyValues,
+  )
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -117,64 +129,96 @@ function EditableBonusCell({
     useRef<HTMLInputElement>(null),
   ]
 
+  const createMutation = useMutation({
+    mutationFn: ({ bonuses, idx }: { bonuses: BonusData; idx: number }) =>
+      bonusRollService.create(trackerId, weapon.id, bonuses, idx),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["bonus-rolls", trackerId, weapon.id] })
+      qc.invalidateQueries({ queryKey: ["tracker"] })
+      setValues(emptyValues)
+    },
+  })
+
   useEffect(() => {
-    setValues({
-      bonus1: roll.bonus1,
-      bonus2: roll.bonus2,
-      bonus3: roll.bonus3,
-      bonus4: roll.bonus4,
-      bonus5: roll.bonus5,
-    })
-  }, [roll.bonus1, roll.bonus2, roll.bonus3, roll.bonus4, roll.bonus5])
+    setValues(
+      roll
+        ? {
+            bonus1: roll.bonus1,
+            bonus2: roll.bonus2,
+            bonus3: roll.bonus3,
+            bonus4: roll.bonus4,
+            bonus5: roll.bonus5,
+          }
+        : emptyValues,
+    )
+  }, [roll?.bonus1, roll?.bonus2, roll?.bonus3, roll?.bonus4, roll?.bonus5])
 
   function save() {
-    const changed: Partial<BonusData> = {}
-    for (const key of BONUS_KEYS) {
-      if (values[key].trim() !== roll[key]) changed[key] = values[key].trim()
+    const allFilled = BONUS_KEYS.every((k) => values[k].trim())
+    if (!allFilled) {
+      setValues(
+        roll
+          ? {
+              bonus1: roll.bonus1,
+              bonus2: roll.bonus2,
+              bonus3: roll.bonus3,
+              bonus4: roll.bonus4,
+              bonus5: roll.bonus5,
+            }
+          : emptyValues,
+      )
+      return
     }
-    if (Object.keys(changed).length > 0) {
-      updateRoll(weapon.id, roll.id, changed)
+    if (roll) {
+      const changed: Partial<BonusData> = {}
+      for (const key of BONUS_KEYS) {
+        if (values[key].trim() !== roll[key]) changed[key] = values[key].trim()
+      }
+      if (Object.keys(changed).length > 0) {
+        updateRoll(weapon.id, roll.id, changed)
+      }
+    } else {
+      createMutation.mutate({
+        bonuses: {
+          bonus1: values.bonus1.trim(),
+          bonus2: values.bonus2.trim(),
+          bonus3: values.bonus3.trim(),
+          bonus4: values.bonus4.trim(),
+          bonus5: values.bonus5.trim(),
+        },
+        idx: index,
+      })
     }
   }
 
   function reset() {
-    setValues({
-      bonus1: roll.bonus1,
-      bonus2: roll.bonus2,
-      bonus3: roll.bonus3,
-      bonus4: roll.bonus4,
-      bonus5: roll.bonus5,
-    })
+    setValues(
+      roll
+        ? {
+            bonus1: roll.bonus1,
+            bonus2: roll.bonus2,
+            bonus3: roll.bonus3,
+            bonus4: roll.bonus4,
+            bonus5: roll.bonus5,
+          }
+        : emptyValues,
+    )
   }
+
+  const isPending = roll ? updating : createMutation.isPending
+  const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
   return (
     <div className="flex flex-col gap-1 py-1">
-      <div className="flex justify-end gap-0.5 mb-0.5">
-        <button
-          type="button"
-          onClick={() => onImport(roll, weapon)}
-          className="text-gray-500 hover:text-blue-400 text-[10px] px-0.5 leading-none"
-          title="Import from here"
-        >
-          ↑
-        </button>
-        <button
-          type="button"
-          onClick={() => deleteRoll(weapon.id, roll.id)}
-          className="text-gray-500 hover:text-red-400 text-[10px] px-0.5 leading-none"
-          title="Delete"
-        >
-          ✕
-        </button>
-      </div>
       {BONUS_KEYS.map((key, i) => (
         <input
           key={key}
           ref={inputRefs[i]}
-          className="w-full bg-gray-700 text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none"
+          className={`w-full ${inputBg} text-gray-100 text-xs rounded px-2 py-1 border border-gray-700 focus:border-amber-500 outline-none placeholder-gray-600`}
           value={values[key]}
           onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
           placeholder={`Bonus ${i + 1}`}
+          disabled={isPending}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -183,10 +227,10 @@ function EditableBonusCell({
             }
             if (e.key === "Escape") reset()
           }}
-          onBlur={i === 4 ? save : undefined}
+          onBlur={roll && i === 4 ? save : undefined}
         />
       ))}
-      {updating && (
+      {isPending && (
         <span className="text-[10px] text-gray-500 text-center">saving…</span>
       )}
     </div>
@@ -304,14 +348,6 @@ export function BonusRollsBirdView({ tracker }: Props) {
     },
   })
 
-  const deleteRollMutation = useMutation({
-    mutationFn: ({ weaponId, rollId }: { weaponId: string; rollId: string }) =>
-      bonusRollService.delete(tracker.id, weaponId, rollId),
-    onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
-    },
-  })
-
   const importRollsMutation = useMutation({
     mutationFn: ({
       weaponId,
@@ -415,26 +451,16 @@ export function BonusRollsBirdView({ tracker }: Props) {
                     key={w.id}
                     className="px-3 border-r border-gray-800 align-top w-52"
                   >
-                    {roll ? (
-                      <EditableBonusCell
-                        roll={roll}
-                        weapon={w}
-                        onImport={(r, wep) =>
-                          setImportTarget({ roll: r, weapon: wep })
-                        }
-                        updateRoll={(weaponId, rollId, data) =>
-                          updateRollMutation.mutate({ weaponId, rollId, data })
-                        }
-                        deleteRoll={(weaponId, rollId) =>
-                          deleteRollMutation.mutate({ weaponId, rollId })
-                        }
-                        updating={updateRollMutation.isPending}
-                      />
-                    ) : (
-                      <div className="py-2 text-center text-gray-700 text-xs select-none">
-                        —
-                      </div>
-                    )}
+                    <BonusDataCell
+                      roll={roll}
+                      index={idx}
+                      weapon={w}
+                      trackerId={tracker.id}
+                      updateRoll={(weaponId, rollId, data) =>
+                        updateRollMutation.mutate({ weaponId, rollId, data })
+                      }
+                      updating={updateRollMutation.isPending}
+                    />
                   </td>
                 )
               })}

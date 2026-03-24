@@ -19,6 +19,7 @@ const CreateSkillRollBodySchema = z
   .object({
     groupSkill: z.string().min(1),
     seriesSkill: z.string().min(1),
+    atIndex: z.number().int().min(1).optional(),
   })
   .meta({ id: "CreateSkillRollBody" })
 
@@ -78,6 +79,7 @@ createRoute("POST", BASE)
       params.weaponId,
       body.groupSkill,
       body.seriesSkill,
+      body.atIndex,
     )
     if (result.isErr()) return mapError(result.error, res)
     return res.created(result.value)

@@ -56,6 +56,7 @@ export class SkillRollService {
     weaponId: string,
     groupSkill: string,
     seriesSkill: string,
+    atIndex?: number,
   ): Promise<
     Result<SkillRoll, NotFoundError | ForbiddenError | DatabaseError>
   > {
@@ -67,7 +68,7 @@ export class SkillRollService {
 
     const created = await this.repo.create({
       weaponId,
-      index: maxIndex.value + 1,
+      index: atIndex ?? maxIndex.value + 1,
       groupSkill,
       seriesSkill,
     })

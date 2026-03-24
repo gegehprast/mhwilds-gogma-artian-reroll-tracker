@@ -62,6 +62,7 @@ export class BonusRollService {
     bonus3: string,
     bonus4: string,
     bonus5: string,
+    atIndex?: number,
   ): Promise<
     Result<BonusRoll, NotFoundError | ForbiddenError | DatabaseError>
   > {
@@ -73,7 +74,7 @@ export class BonusRollService {
 
     const created = await this.repo.create({
       weaponId,
-      index: maxIndex.value + 1,
+      index: atIndex ?? maxIndex.value + 1,
       bonus1,
       bonus2,
       bonus3,
