@@ -601,6 +601,89 @@
         }
       }
     },
+    "/api/trackers/{trackerId}/weapons/reorder": {
+      "put": {
+        "operationId": "reorderWeapons",
+        "summary": "Reorder weapons",
+        "description": "Sets the display order of weapons by providing an ordered list of IDs.",
+        "tags": [
+          "Weapons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderWeaponsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Insufficient permissions",
+                  "code": "FORBIDDEN"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
       "post": {
         "operationId": "importSkillRolls",
@@ -2131,6 +2214,20 @@
         ],
         "title": "Element"
       },
+      "ReorderWeaponsBody": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
       "ImportSkillRollsBody": {
         "type": "object",
         "properties": {
@@ -2360,7 +2457,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-24T18:58:55.090Z"
+            "example": "2026-03-25T01:14:15.898Z"
           },
           "uptime": {
             "type": "number",
@@ -2432,6 +2529,11 @@
           "element": {
             "$ref": "#/components/schemas/Element"
           },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
           "createdAt": {
             "type": "integer",
             "minimum": -9007199254740991,
@@ -2448,6 +2550,7 @@
           "trackerId",
           "weaponType",
           "element",
+          "sortOrder",
           "createdAt",
           "updatedAt"
         ],
