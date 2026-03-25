@@ -3,7 +3,7 @@ services:
     image: ghcr.io/gegehprast/mhwilds-gogma-reroll-tracker:latest
     container_name: gogma-tracker
     ports:
-      - "${PORT:-80}:80"
+      - "${PORT:-5173}:80"
     volumes:
       - tracker_data:/app/apps/backend/data
     restart: unless-stopped

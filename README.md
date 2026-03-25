@@ -1,244 +1,238 @@
-# BunKit
+# MHWilds Gogma Reroll Tracker
 
-A production-ready monorepo template for building HTTP APIs and WebSocket backends with Bun, TypeScript, and PostgreSQL.
+A web app for tracking Monster Hunter Wilds **Gogma Artian Weapon** rerolls. This app attempts to help you track your rolls across all your weapons, so you can plan your grind more effectively.
 
-## Overview
+---
 
-| Layer | Technology |
-|-------|-----------|
-| Runtime | [Bun](https://bun.sh) >= 1.3.3 |
-| HTTP/WebSocket | [`@bunkit/server`](packages/server) — custom type-safe framework |
-| Error handling | [`@bunkit/result`](packages/result) — Result pattern |
-| Database | PostgreSQL + [Drizzle ORM](https://orm.drizzle.team) |
-| Validation | [Zod v4](https://zod.dev) |
-| Auth | JWT via [jose](https://github.com/panva/jose) |
-| API docs | OpenAPI 3.1 via [zod-openapi](https://github.com/samchungy/zod-openapi) |
-| Code quality | [Biome](https://biomejs.dev) |
-| Frontend (example) | React 19 + [Rolldown-Vite](https://vite.dev) + TailwindCSS 4 + TanStack Query |
+## Usage
 
-The included React frontend is a reference implementation. Replace it with any framework or no framework, or just delete it.
+This app runs locally on your computer and opens in your browser — no account, no cloud, no internet required after setup. Your data stays on your machine.
 
-## Prerequisites
+There are three ways to run it. Pick the one that's easier for you:
 
-- Bun >= 1.3.3
-- PostgreSQL >= 14
+| | Option A: Docker | Option B: Bun | Option C: Hosted | 
+|---|---|---|---|
+| **What you install** | Docker Desktop | Bun runtime | Nothing | 
+| **What you download** | Just the `docker-compose.yml` file | The full repository | Nothing | 
+| **App runs at** | http://localhost:5173 | http://localhost:5173 | https://mhwildsgogmarerolltracker.gegeh.dev | 
+| **Best for** | Most players who prefer local | Players comfortable with a terminal | Just want to use it now | 
 
-## Quick Start
+---
 
-```bash
-git clone https://github.com/gegehprast/bunkit my-project && cd my-project
-bun install
-```
+## Option A: Hosted (easiest)
 
-Create `apps/backend/.env.local`:
+The easiest way — no installation required. Just open your browser and go to:
 
-```bash
-NODE_ENV=development
-PORT=3001
-HOST=0.0.0.0
-DATABASE_URL=postgresql://user:password@localhost:5432/myapp_dev
-JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters-long
-JWT_EXPIRES_IN=7d
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-minimum-32-characters
-JWT_REFRESH_EXPIRES_IN=30d
-CORS_ORIGIN=http://localhost:5173
-LOG_LEVEL=debug
-```
+👉 **https://mhwildsgogmarerolltracker.gegeh.dev**
 
-```bash
-bun run backend:db:generate   # generate migrations from schemas
-bun run backend:db:migrate    # apply migrations
+This is a public instance hosted by me. A few things worth knowing:
 
-bun run backend:dev           # backend on http://localhost:3001
-bun run frontend:dev          # frontend on http://localhost:5173
-```
+- **No account or login required** — you can start tracking immediately
+- **No sensitive data is collected** — the app does not ask for personal information and does not track you. Your roll data is stored anonymously on the server.
+- **Your roll data is saved** on the server tied to your browser session, so you can pick up where you left off as long as you use the same browser. You also get a unique code that you can use to access your data from another device or browser.
+- The server may occasionally go down for maintenance or updates
 
-API docs available at `http://localhost:3001/docs` when the backend is running.
+If you'd prefer your data to stay entirely on your own machine, use one of the local options below.
 
-## Project Structure
+---
 
-```
-bunkit/
-├── apps/
-│   ├── backend/
-│   │   ├── src/
-│   │   │   ├── main.ts
-│   │   │   ├── auth/          # JWT authentication
-│   │   │   ├── config/        # Environment config
-│   │   │   ├── core/          # Server, logger, errors, shutdown
-│   │   │   ├── db/            # Drizzle client, schemas, repositories
-│   │   │   ├── middlewares/
-│   │   │   └── routes/        # HTTP + WebSocket routes
-│   │   ├── drizzle/           # Migrations
-│   │   ├── scripts/           # Code generation scripts
-│   │   └── tests/
-│   └── frontend/              # Example React app (replaceable)
-│       └── src/
-│           ├── components/
-│           ├── hooks/
-│           ├── lib/
-│           └── generated/     # Auto-generated types from backend
-├── packages/
-│   ├── server/                # @bunkit/server
-│   └── result/                # @bunkit/result
-└── scripts/
-    └── lint.ts
-```
+## Option B: Docker
 
-## Scripts
+Docker is just a software for deploying applications inside lightweight, isolated containers. Docker has a GUI called **Docker Desktop** that works on Windows, Mac, and Linux. You don't need to know anything about Docker to use this app — just follow the steps below and it will be up and running in no time.
 
-All commands run from the repository root.
+---
 
-### Workspace
+### Step 1 — Install Docker
 
-| Command | Description |
-|---------|-------------|
-| `bun run lint` | Lint all packages |
-| `bun run check` | Biome check with auto-fix |
-| `bun run format` | Format all code |
+Download Docker Desktop here: **https://www.docker.com/products/docker-desktop/**
 
-### Backend
+After installing, open Docker Desktop and leave it running in the background. You'll see a Docker icon in your system tray (Windows) or menu bar (Mac). It needs to be running whenever you want to use the tracker.
 
-| Command | Description |
-|---------|-------------|
-| `bun run backend:dev` | Start with hot reload |
-| `bun run backend:start` | Start (production) |
-| `bun run backend:typecheck` | Type check |
-| `bun run backend:test` | Run tests |
-| `bun run backend:db:generate` | Generate Drizzle migrations |
-| `bun run backend:db:migrate` | Apply migrations |
-| `bun run backend:db:studio` | Open Drizzle Studio |
-| `bun run backend:openapi:generate` | Generate OpenAPI types → `apps/frontend/src/generated` |
-| `bun run backend:ws-types:generate` | Generate WebSocket types → `apps/frontend/src/generated` |
+---
 
-### Frontend
+### Step 2 — Download the compose file
 
-| Command | Description |
-|---------|-------------|
-| `bun run frontend:dev` | Start dev server |
-| `bun run frontend:build` | Production build |
-| `bun run frontend:preview` | Preview production build |
-| `bun run frontend:typecheck` | Type check |
+Download the [`docker-compose.yml`](docker-compose.yml) file from this repository and save it somewhere easy to find — for example, create a folder called `gogma-tracker` on your Desktop and put it there.
 
-## Core Concepts
+---
 
-### Defining Routes
+### Step 3 — Start the app
 
-```typescript
-import { createRoute } from "@bunkit/server"
-import { z } from "zod"
+Open a terminal in the folder where you saved `docker-compose.yml`:
 
-const TodoSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  completed: z.boolean(),
-})
+- **Windows**: Open the folder in File Explorer, then right-click an empty area and choose **"Open in Terminal"** (or search for "Command Prompt" / "PowerShell" in the Start menu, then `cd` to your folder)
+- **Mac/Linux**: Open Terminal and `cd` to the folder
 
-createRoute("GET", "/api/todos/:id")
-  .response(TodoSchema)
-  .handler(({ params }) => {
-    return { id: params.id, title: "Example", completed: false }
-  })
-```
-
-### Result Pattern
-
-All service and repository methods must return `Result<T, E>` — never throw.
-
-```typescript
-import { ok, err, type Result } from "@bunkit/result"
-
-function findUser(id: string): Result<User, AppError> {
-  const user = db.getUserById(id)
-  return user ? ok(user) : err(new NotFoundError(`User ${id} not found`))
-}
-
-const result = findUser("123")
-  .map(user => user.email)
-  .andThen(email => sendEmail(email))
-```
-
-### Type Generation
-
-After modifying backend schemas, regenerate types for the frontend:
+Then run:
 
 ```bash
-bun run backend:openapi:generate    # REST API types
-bun run backend:ws-types:generate   # WebSocket message types
+docker compose pull
+docker compose up -d
 ```
 
-Generated files are written to `apps/frontend/src/generated/`. Use them with `openapi-fetch`:
+The first run will download the app image. This only happens once.
 
-```typescript
-import createClient from "openapi-fetch"
-import type { paths } from "@/generated/openapi"
+Once it's done, open your browser and go to: **http://localhost:5173**
 
-const client = createClient<paths>({ baseUrl: "http://localhost:3001" })
+The tracker should be up and running.
 
-const { data, error } = await client.GET("/api/todos/{id}", {
-  params: { path: { id: "123" } },
-})
-```
+> **Note:** If port 5173 is already in use, you can choose a different port. Create a file called `.env` next to your `docker-compose.yml` with this content:
+> ```
+> PORT=8080
+> ```
+> Then visit **http://localhost:8080** instead.
 
-### WebSocket Routes
+---
 
-```typescript
-import { createWebSocketRoute } from "@bunkit/server"
-import { z } from "zod"
+### Stopping the app
 
-createWebSocketRoute("/ws/chat")
-  .onMessage("chat", z.object({ roomId: z.string(), message: z.string() }), ({ data, ws }) => {
-    ws.send({ type: "chat", ...data })
-  })
-```
-
-## Example Features
-
-The template ships with working examples that can be removed or replaced:
-
-- **Auth** — registration, login, JWT access/refresh tokens, protected routes
-- **Todos** — full CRUD with user-scoped data
-- **Chat** — WebSocket rooms, message broadcasting, typing indicators, user presence
-
-## Adding New Routes
-
-1. Create a route file in `apps/backend/src/routes/`
-2. Register it in `apps/backend/src/routes/index.ts`
-3. Run `bun run backend:openapi:generate` to update frontend types
-
-## Adding Database Tables
-
-1. Define schema in `apps/backend/src/db/schemas/`
-2. `bun run backend:db:generate` — generate migration
-3. `bun run backend:db:migrate` — apply migration
-4. Create a repository in `apps/backend/src/db/repositories/`
-
-## Testing
-
-Tests must be run from each package directory:
+To stop the tracker:
 
 ```bash
-cd apps/backend && bun test
-cd packages/server && bun test
-cd packages/result && bun test
+docker compose down
 ```
 
-Root shortcuts: `bun run backend:test`, `bun run server:test`, `bun run result:test`
+Your data is safe — it's stored in a Docker volume and will still be there when you start it again.
 
-## Deployment
+---
 
-**Backend** — Bun runs TypeScript directly, no build step required:
+### Starting again later
+
+Any time you want to use the tracker again, just make sure Docker Desktop is running, then:
 
 ```bash
-# Set NODE_ENV=production, strong JWT secrets, production DATABASE_URL, correct CORS_ORIGIN
-bun run backend:db:migrate
-bun run backend:start
+docker compose up -d
 ```
 
-**Frontend**:
+---
+
+### Updating to a newer version
 
 ```bash
-bun run frontend:build   # outputs to apps/frontend/dist/
+docker compose pull
+docker compose up -d
 ```
 
-Deploy `apps/frontend/dist/` to any static host (Vercel, Netlify, Cloudflare Pages, etc.).
+That's it. Your saved data is never touched during updates.
+
+---
+
+### Using Docker Desktop (no command line)
+
+If you prefer not to use a terminal at all, Docker Desktop has a GUI:
+
+1. Open **Docker Desktop**
+2. Go to the **Containers** tab — you should see `gogma-tracker` listed after the first run
+3. Use the ▶ / ■ buttons to start/stop it
+4. To update, go to **Images**, find the tracker image, and click **Pull** to get the latest version, then restart the container
+
+For the very first setup you still need to run `docker compose pull` and `docker compose up -d` once from the terminal, as Docker Desktop doesn't directly handle `docker-compose.yml` files without that initial step.
+
+---
+
+### Data location
+
+Your rolls are stored in a Docker volume called `tracker_data`. Docker manages this automatically — the data persists across restarts and updates, and is never deleted unless you explicitly remove the volume.
+
+To back up your data, you can copy the SQLite database file out of the volume:
+
+```bash
+docker run --rm -v tracker_data:/data -v "$(pwd):/backup" alpine cp /data/tracker.db /backup/tracker.db
+```
+
+This saves a `tracker.db` file in your current folder.
+
+---
+
+## Option C: Bun (no Docker)
+
+This method runs the app directly on your machine using **Bun**, a JavaScript runtime. It's slightly more involved to set up but doesn't require Docker.
+
+---
+
+### Step 1 — Install Bun
+
+- **Windows**: Open PowerShell and run:
+  ```powershell
+  powershell -c "irm bun.sh/install.ps1 | iex"
+  ```
+- **Mac/Linux**: Open Terminal and run:
+  ```bash
+  curl -fsSL https://bun.sh/install | bash
+  ```
+
+After installing, close and reopen your terminal so the `bun` command is available. You can view more here: **https://bun.com/docs/installation**
+
+---
+
+### Step 2 — Download the repository
+
+Download this repository as a ZIP file (click the green **Code** button on GitHub → **Download ZIP**), then extract it to a folder of your choice.
+
+Alternatively, if you have Git installed:
+
+```bash
+git clone https://github.com/gegehprast/mhwilds-gogma-reroll-tracker.git
+cd mhwilds-gogma-reroll-tracker
+```
+
+---
+
+### Step 3 — Run the start script
+
+Open a terminal in the folder where you extracted/cloned the repository.
+
+**Windows (PowerShell):**
+
+> If you get an error about "execution policy", run this once first, then try again:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+> ```
+
+```powershell
+.\start.ps1
+```
+
+**Mac/Linux:**
+
+```bash
+./start.sh
+```
+
+The first run will install dependencies and build the frontend — this takes a minute or two. Once it's ready, you'll see:
+
+```
+✅ Ready!
+
+   Open http://localhost:5173 in your browser
+```
+
+Open **http://localhost:5173** in your browser.
+
+Press `Ctrl+C` in the terminal to stop the app.
+
+---
+
+### Starting again later
+
+Just run the same script again from the same folder:
+
+```bash
+# Mac/Linux
+./start.sh
+
+# Windows
+.\start.ps1
+```
+
+Dependencies are already installed and the database is already set up, so it starts faster after the first run.
+
+---
+
+### Data location
+
+Your rolls are saved in `apps/backend/data/tracker.db` inside the repository folder. Back this file up if you want to preserve your data.
+
+---
+
+## Developers
