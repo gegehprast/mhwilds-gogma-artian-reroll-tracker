@@ -15,7 +15,9 @@ import {
   getWeaponRepository,
   type WeaponRepository,
 } from "@/db/repositories/weapons.repository"
-import type { BonusRoll } from "@/db/schemas"
+import type { BonusRoll, Comment } from "@/db/schemas"
+
+export type BonusRollWithComments = BonusRoll & { comments: Comment[] }
 
 export class BonusRollService {
   private readonly repo: BonusRollRepository
@@ -45,11 +47,35 @@ export class BonusRollService {
     weaponId: string,
     trackerId: string,
   ): Promise<
-    Result<BonusRoll[], NotFoundError | ForbiddenError | DatabaseError>
+    Result<
+      BonusRollWithComments[],
+      NotFoundError | ForbiddenError | DatabaseError
+    >
   > {
     const check = await this.assertWeaponOwnership(weaponId, trackerId)
     if (check.isErr()) return err(check.error)
-    return this.repo.findByWeaponId(weaponId)
+
+    const rolls = await this.repo.findByWeaponId(weaponId)
+    if (rolls.isErr()) return err(rolls.error)
+    if (rolls.value.length === 0) return ok([])
+
+    const rollIds = rolls.value.map((r) => r.id)
+    const allComments = await this.commentRepo.findByRollIds(rollIds, "bonus")
+    if (allComments.isErr()) return err(allComments.error)
+
+    const commentsByRollId = new Map<string, Comment[]>()
+    for (const comment of allComments.value) {
+      const existing = commentsByRollId.get(comment.rollId) ?? []
+      existing.push(comment)
+      commentsByRollId.set(comment.rollId, existing)
+    }
+
+    return ok(
+      rolls.value.map((roll) => ({
+        ...roll,
+        comments: commentsByRollId.get(roll.id) ?? [],
+      })),
+    )
   }
 
   public async create(

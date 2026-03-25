@@ -30,6 +30,27 @@ export class CommentRepository extends BaseRepository {
     )
   }
 
+  public async findByRollIds(
+    rollIds: string[],
+    rollType: CommentRollType,
+  ): Promise<Result<Comment[], DatabaseError>> {
+    if (rollIds.length === 0) return ok([])
+    return this.wrapQuery(
+      async () =>
+        this.db
+          .select()
+          .from(comments)
+          .where(
+            and(
+              inArray(comments.rollId, rollIds),
+              eq(comments.rollType, rollType),
+            ),
+          )
+          .all(),
+      "Failed to find comments for rolls",
+    )
+  }
+
   public async countByRoll(
     rollId: string,
     rollType: CommentRollType,

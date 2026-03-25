@@ -3,6 +3,7 @@ import { z } from "zod"
 import { getBonusRollService } from "@/services/bonus-rolls.service"
 import { getTrackerService } from "@/services/trackers.service"
 import { mapError } from "./_helpers"
+import { CommentSchema } from "./_schemas"
 
 const BonusRollSchema = z
   .object({
@@ -18,6 +19,10 @@ const BonusRollSchema = z
     updatedAt: z.number().int(),
   })
   .meta({ id: "BonusRoll", title: "Bonus Roll" })
+
+const BonusRollWithCommentsSchema = BonusRollSchema.extend({
+  comments: z.array(CommentSchema),
+}).meta({ id: "BonusRollWithComments", title: "Bonus Roll With Comments" })
 
 const CreateBonusRollBodySchema = z
   .object({
@@ -89,7 +94,7 @@ createRoute("GET", BASE)
     description: "Returns all bonus rolls for a weapon, ordered by index.",
     tags: ["Bonus Rolls"],
   })
-  .response(z.array(BonusRollSchema))
+  .response(z.array(BonusRollWithCommentsSchema))
   .errors([403, 404])
   .handler(async ({ params, res }) => {
     const service = getBonusRollService()

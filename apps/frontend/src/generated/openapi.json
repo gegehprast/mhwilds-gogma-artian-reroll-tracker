@@ -836,7 +836,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SkillRoll"
+                    "$ref": "#/components/schemas/SkillRollWithComments"
                   }
                 }
               }
@@ -1448,7 +1448,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BonusRoll"
+                    "$ref": "#/components/schemas/BonusRollWithComments"
                   }
                 }
               }
@@ -2727,7 +2727,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-25T09:53:55.631Z"
+            "example": "2026-03-25T19:52:03.188Z"
           },
           "uptime": {
             "type": "number",
@@ -2870,6 +2870,110 @@
         "additionalProperties": false,
         "title": "Skill Roll"
       },
+      "SkillRollWithComments": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "weaponId": {
+            "type": "string"
+          },
+          "setSkill": {
+            "type": "string"
+          },
+          "groupSkill": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "index",
+          "weaponId",
+          "setSkill",
+          "groupSkill",
+          "createdAt",
+          "updatedAt",
+          "comments"
+        ],
+        "additionalProperties": false,
+        "title": "Skill Roll With Comments"
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rollId": {
+            "type": "string"
+          },
+          "rollType": {
+            "type": "string",
+            "enum": [
+              "skill",
+              "bonus"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "red",
+              "orange",
+              "yellow",
+              "green",
+              "blue",
+              "violet",
+              "pink"
+            ]
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "rollId",
+          "rollType",
+          "content",
+          "color",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "title": "Comment"
+      },
       "DeletePastSkillRollsResponse": {
         "type": "object",
         "properties": {
@@ -2945,6 +3049,68 @@
         "additionalProperties": false,
         "title": "Bonus Roll"
       },
+      "BonusRollWithComments": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "weaponId": {
+            "type": "string"
+          },
+          "bonus1": {
+            "type": "string"
+          },
+          "bonus2": {
+            "type": "string"
+          },
+          "bonus3": {
+            "type": "string"
+          },
+          "bonus4": {
+            "type": "string"
+          },
+          "bonus5": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "updatedAt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "index",
+          "weaponId",
+          "bonus1",
+          "bonus2",
+          "bonus3",
+          "bonus4",
+          "bonus5",
+          "createdAt",
+          "updatedAt",
+          "comments"
+        ],
+        "additionalProperties": false,
+        "title": "Bonus Roll With Comments"
+      },
       "DeletePastBonusRollsResponse": {
         "type": "object",
         "properties": {
@@ -2964,60 +3130,6 @@
           "newBonusIndex"
         ],
         "additionalProperties": false
-      },
-      "Comment": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "rollId": {
-            "type": "string"
-          },
-          "rollType": {
-            "type": "string",
-            "enum": [
-              "skill",
-              "bonus"
-            ]
-          },
-          "content": {
-            "type": "string"
-          },
-          "color": {
-            "type": "string",
-            "enum": [
-              "red",
-              "orange",
-              "yellow",
-              "green",
-              "blue",
-              "violet",
-              "pink"
-            ]
-          },
-          "createdAt": {
-            "type": "integer",
-            "minimum": -9007199254740991,
-            "maximum": 9007199254740991
-          },
-          "updatedAt": {
-            "type": "integer",
-            "minimum": -9007199254740991,
-            "maximum": 9007199254740991
-          }
-        },
-        "required": [
-          "id",
-          "rollId",
-          "rollType",
-          "content",
-          "color",
-          "createdAt",
-          "updatedAt"
-        ],
-        "additionalProperties": false,
-        "title": "Comment"
       },
       "BadRequestErrorResponse": {
         "type": "object",

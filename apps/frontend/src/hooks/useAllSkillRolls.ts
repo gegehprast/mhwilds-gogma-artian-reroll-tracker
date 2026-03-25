@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query"
 import {
-  type SkillRoll,
+  type SkillRollWithComments,
   skillRollService,
   type Weapon,
 } from "../lib/api-service"
@@ -22,7 +22,7 @@ export function useAllSkillRolls(
 
   const isLoading = results.some((r) => r.isLoading)
 
-  const data = new Map<string, SkillRoll[]>()
+  const data = new Map<string, SkillRollWithComments[]>()
   for (let i = 0; i < weapons.length; i++) {
     const weapon = weapons[i]
     const result = results[i]

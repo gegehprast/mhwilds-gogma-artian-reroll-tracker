@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query"
 import {
-  type BonusRoll,
+  type BonusRollWithComments,
   bonusRollService,
   type Weapon,
 } from "../lib/api-service"
@@ -22,7 +22,7 @@ export function useAllBonusRolls(
 
   const isLoading = results.some((r) => r.isLoading)
 
-  const data = new Map<string, BonusRoll[]>()
+  const data = new Map<string, BonusRollWithComments[]>()
   for (let i = 0; i < weapons.length; i++) {
     const weapon = weapons[i]
     const result = results[i]

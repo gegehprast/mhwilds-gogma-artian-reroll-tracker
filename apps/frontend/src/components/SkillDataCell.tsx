@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
-import { useComments } from "../hooks/useComments"
-import type { SkillRoll, Weapon } from "../lib/api-service"
+import { useCommentMutations } from "../hooks/useComments"
+import type { SkillRollWithComments, Weapon } from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
 import { GROUP_SKILLS, SET_SKILLS } from "../lib/constants"
 import { addToast } from "../lib/toast"
@@ -11,7 +11,7 @@ import { ImportPreviewModal } from "./ImportPreviewModal"
 import { RollGutter } from "./RollGutter"
 
 export interface SkillDataCellProps {
-  roll: SkillRoll | null
+  roll: SkillRollWithComments | null
   index: number
   weapon: Weapon
   trackerId: string
@@ -38,13 +38,12 @@ export function SkillDataCell({
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
 
+  const comments = roll?.comments ?? []
   const {
-    comments,
-    isLoading: commentsLoading,
     create: createComment,
     update: updateComment,
     remove: removeComment,
-  } = useComments(trackerId, roll?.id, "skill")
+  } = useCommentMutations(trackerId, roll?.id, "skill")
 
   const createMutation = useMutation({
     mutationFn: ({ s, g, idx }: { g: string; s: string; idx: number }) =>
@@ -149,7 +148,7 @@ export function SkillDataCell({
       {popoverOpen && roll && gutterRef.current && (
         <CommentPopover
           comments={comments}
-          isLoading={commentsLoading}
+          isLoading={false}
           anchorRect={gutterRef.current.getBoundingClientRect()}
           onClose={() => setPopoverOpen(false)}
           onCreate={(content, color) =>

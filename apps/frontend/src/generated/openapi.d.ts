@@ -555,7 +555,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-25T09:53:55.631Z */
+            /** @example 2026-03-25T19:52:03.188Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -589,6 +589,29 @@ export interface components {
             createdAt: number;
             updatedAt: number;
         };
+        /** Skill Roll With Comments */
+        SkillRollWithComments: {
+            id: string;
+            index: number;
+            weaponId: string;
+            setSkill: string;
+            groupSkill: string;
+            createdAt: number;
+            updatedAt: number;
+            comments: components["schemas"]["Comment"][];
+        };
+        /** Comment */
+        Comment: {
+            id: string;
+            rollId: string;
+            /** @enum {string} */
+            rollType: "skill" | "bonus";
+            content: string;
+            /** @enum {string} */
+            color: "red" | "orange" | "yellow" | "green" | "blue" | "violet" | "pink";
+            createdAt: number;
+            updatedAt: number;
+        };
         DeletePastSkillRollsResponse: {
             deleted: number;
             newSkillIndex: number;
@@ -606,21 +629,23 @@ export interface components {
             createdAt: number;
             updatedAt: number;
         };
+        /** Bonus Roll With Comments */
+        BonusRollWithComments: {
+            id: string;
+            index: number;
+            weaponId: string;
+            bonus1: string;
+            bonus2: string;
+            bonus3: string;
+            bonus4: string;
+            bonus5: string;
+            createdAt: number;
+            updatedAt: number;
+            comments: components["schemas"]["Comment"][];
+        };
         DeletePastBonusRollsResponse: {
             deleted: number;
             newBonusIndex: number;
-        };
-        /** Comment */
-        Comment: {
-            id: string;
-            rollId: string;
-            /** @enum {string} */
-            rollType: "skill" | "bonus";
-            content: string;
-            /** @enum {string} */
-            color: "red" | "orange" | "yellow" | "green" | "blue" | "violet" | "pink";
-            createdAt: number;
-            updatedAt: number;
         };
         /** @description Bad Request Error Response */
         BadRequestErrorResponse: {
@@ -1397,7 +1422,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SkillRoll"][];
+                    "application/json": components["schemas"]["SkillRollWithComments"][];
                 };
             };
             /** @description Forbidden - Insufficient permissions */
@@ -1896,7 +1921,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BonusRoll"][];
+                    "application/json": components["schemas"]["BonusRollWithComments"][];
                 };
             };
             /** @description Forbidden - Insufficient permissions */

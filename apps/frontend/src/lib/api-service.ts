@@ -6,7 +6,11 @@ import { apiClient, setTrackerId } from "./api-client"
 export type Tracker = components["schemas"]["Tracker"]
 export type Weapon = components["schemas"]["Weapon"]
 export type SkillRoll = components["schemas"]["SkillRoll"]
+export type SkillRollWithComments =
+  components["schemas"]["SkillRollWithComments"]
 export type BonusRoll = components["schemas"]["BonusRoll"]
+export type BonusRollWithComments =
+  components["schemas"]["BonusRollWithComments"]
 export type WeaponType = components["schemas"]["WeaponType"]
 export type Element = components["schemas"]["Element"]
 export type { Comment, CommentColor }
@@ -97,7 +101,10 @@ export const weaponService = {
 }
 
 export const skillRollService = {
-  async list(trackerId: string, weaponId: string): Promise<SkillRoll[]> {
+  async list(
+    trackerId: string,
+    weaponId: string,
+  ): Promise<SkillRollWithComments[]> {
     const { data, error } = await apiClient.GET(
       "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls",
       { params: { path: { trackerId, weaponId } } },
@@ -177,7 +184,10 @@ export const skillRollService = {
 }
 
 export const bonusRollService = {
-  async list(trackerId: string, weaponId: string): Promise<BonusRoll[]> {
+  async list(
+    trackerId: string,
+    weaponId: string,
+  ): Promise<BonusRollWithComments[]> {
     const { data, error } = await apiClient.GET(
       "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls",
       { params: { path: { trackerId, weaponId } } },

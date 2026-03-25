@@ -3,6 +3,7 @@ import { z } from "zod"
 import { getSkillRollService } from "@/services/skill-rolls.service"
 import { getTrackerService } from "@/services/trackers.service"
 import { mapError } from "./_helpers"
+import { CommentSchema } from "./_schemas"
 
 const SkillRollSchema = z
   .object({
@@ -15,6 +16,10 @@ const SkillRollSchema = z
     updatedAt: z.number().int(),
   })
   .meta({ id: "SkillRoll", title: "Skill Roll" })
+
+const SkillRollWithCommentsSchema = SkillRollSchema.extend({
+  comments: z.array(CommentSchema),
+}).meta({ id: "SkillRollWithComments", title: "Skill Roll With Comments" })
 
 const CreateSkillRollBodySchema = z
   .object({
@@ -77,7 +82,7 @@ createRoute("GET", BASE)
     description: "Returns all skill rolls for a weapon, ordered by index.",
     tags: ["Skill Rolls"],
   })
-  .response(z.array(SkillRollSchema))
+  .response(z.array(SkillRollWithCommentsSchema))
   .errors([403, 404])
   .handler(async ({ params, res }) => {
     const service = getSkillRollService()
