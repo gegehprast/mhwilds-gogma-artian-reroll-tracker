@@ -1,0 +1,47 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+bun-debug.log*
+
+# Build outputs
+apps/frontend/dist
+apps/backend/coverage
+apps/frontend/coverage
+
+# SQLite data (never bake runtime data into the image)
+apps/backend/data/
+
+# Test files
+apps/backend/tests/
+**/*.test.ts
+
+# Editor / OS
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+.github
+
+# Docs
+*.md
+README*
+
+# Drizzle: include schema but skip generated SQL snapshots
+apps/backend/drizzle/*.sql
+apps/backend/drizzle/meta/*.json
+!apps/backend/drizzle/meta/_journal.json
