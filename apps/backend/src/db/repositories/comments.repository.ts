@@ -1,5 +1,5 @@
-import type { Result } from "@bunkit/result"
-import { and, eq } from "drizzle-orm"
+import { ok, type Result } from "@bunkit/result"
+import { and, eq, inArray, notInArray } from "drizzle-orm"
 import type { DatabaseError } from "@/core/errors"
 import {
   type Comment,
@@ -8,6 +8,8 @@ import {
   comments,
   type NewComment,
 } from "@/db/schemas"
+import { bonusRolls } from "@/db/schemas/bonus-rolls.schema"
+import { skillRolls } from "@/db/schemas/skill-rolls.schema"
 import { BaseRepository } from "./base-repository"
 
 export class CommentRepository extends BaseRepository {
@@ -86,6 +88,36 @@ export class CommentRepository extends BaseRepository {
     return this.wrapQuery(async () => {
       await this.db.delete(comments).where(eq(comments.id, id))
     }, "Failed to delete comment")
+  }
+
+  public async deleteByRollIds(
+    ids: string[],
+  ): Promise<Result<void, DatabaseError>> {
+    if (ids.length === 0) return ok(undefined)
+    return this.wrapQuery(async () => {
+      await this.db.delete(comments).where(inArray(comments.rollId, ids))
+    }, "Failed to delete comments by roll IDs")
+  }
+
+  public async deleteOrphaned(): Promise<Result<number, DatabaseError>> {
+    return this.wrapQuery(async () => {
+      const deleted = await this.db
+        .delete(comments)
+        .where(
+          and(
+            notInArray(
+              comments.rollId,
+              this.db.select({ id: skillRolls.id }).from(skillRolls),
+            ),
+            notInArray(
+              comments.rollId,
+              this.db.select({ id: bonusRolls.id }).from(bonusRolls),
+            ),
+          ),
+        )
+        .returning({ id: comments.id })
+      return deleted.length
+    }, "Failed to delete orphaned comments")
   }
 }
 

@@ -84,6 +84,23 @@ createRoute("POST", BASE)
     return res.created(result.value)
   })
 
+createRoute("DELETE", `${BASE}/dangling`)
+  .openapi({
+    operationId: "cleanupDanglingComments",
+    summary: "Clean up dangling comments",
+    description:
+      "Deletes all comments whose roll no longer exists. Safe to call at any time.",
+    tags: ["Comments"],
+  })
+  .response(z.object({ deleted: z.number().int() }))
+  .handler(async ({ res }) => {
+    const service = getCommentService()
+    const result = await service.cleanupDangling()
+    if (result.isErr())
+      return res.internalError("Failed to clean up dangling comments")
+    return res.ok({ deleted: result.value })
+  })
+
 createRoute("PATCH", `${BASE}/:id`)
   .openapi({
     operationId: "updateComment",

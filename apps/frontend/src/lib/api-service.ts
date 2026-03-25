@@ -324,4 +324,13 @@ export const commentService = {
       params: { path: { trackerId, id } },
     })
   },
+
+  async cleanupDangling(trackerId: string): Promise<number> {
+    const { data, error } = await apiClient.DELETE(
+      "/api/trackers/{trackerId}/comments/dangling",
+      { params: { path: { trackerId } } },
+    )
+    if (!data) throw new Error(String(error))
+    return data.deleted
+  },
 }

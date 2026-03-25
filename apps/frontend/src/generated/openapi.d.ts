@@ -412,6 +412,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/trackers/{trackerId}/comments/dangling": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Clean up dangling comments
+         * @description Deletes all comments whose roll no longer exists. Safe to call at any time.
+         */
+        delete: operations["cleanupDanglingComments"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/trackers/{trackerId}/comments/{id}": {
         parameters: {
             query?: never;
@@ -535,7 +555,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-25T08:15:29.868Z */
+            /** @example 2026-03-25T09:53:55.631Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -2430,6 +2450,46 @@ export interface operations {
                      *     }
                      */
                     "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    cleanupDanglingComments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        deleted: number;
+                    };
                 };
             };
             /** @description Internal Server Error - Unexpected server error */

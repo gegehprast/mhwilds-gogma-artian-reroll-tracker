@@ -13,6 +13,7 @@ declare module "@bunkit/server" {
     "/api/trackers/:trackerId/bonus-rolls/past": { trackerId: string }
     "/api/trackers/:trackerId/comments": { trackerId: string }
     "/api/trackers/:trackerId/comments/:id": { trackerId: string; id: string }
+    "/api/trackers/:trackerId/comments/dangling": { trackerId: string }
     "/api/trackers/:trackerId/skill-rolls/past": { trackerId: string }
     "/api/trackers/:trackerId/weapons": { trackerId: string }
     "/api/trackers/:trackerId/weapons/:id": { trackerId: string; id: string }

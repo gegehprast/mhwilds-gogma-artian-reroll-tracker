@@ -4,6 +4,10 @@ import { MAX_ROLL_INDEX } from "@/config/game-constants"
 import type { DatabaseError } from "@/core/errors"
 import { ForbiddenError, NotFoundError, ValidationError } from "@/core/errors"
 import {
+  type CommentRepository,
+  getCommentRepository,
+} from "@/db/repositories/comments.repository"
+import {
   getSkillRollRepository,
   type SkillRollRepository,
 } from "@/db/repositories/skill-rolls.repository"
@@ -16,10 +20,12 @@ import type { SkillRoll } from "@/db/schemas"
 export class SkillRollService {
   private readonly repo: SkillRollRepository
   private readonly weaponRepo: WeaponRepository
+  private readonly commentRepo: CommentRepository
 
   public constructor() {
     this.repo = getSkillRollRepository()
     this.weaponRepo = getWeaponRepository()
+    this.commentRepo = getCommentRepository()
   }
 
   private async assertWeaponOwnership(
@@ -114,6 +120,8 @@ export class SkillRollService {
     _weaponId: string,
     _trackerId: string,
   ): Promise<Result<void, NotFoundError | ForbiddenError | DatabaseError>> {
+    const cleanup = await this.commentRepo.deleteByRollIds([id])
+    if (cleanup.isErr()) return err(cleanup.error)
     return this.repo.delete(id)
   }
 
@@ -121,7 +129,15 @@ export class SkillRollService {
     trackerId: string,
     beforeIndex: number,
   ): Promise<Result<{ deleted: number; offset: number }, DatabaseError>> {
-    return this.repo.deleteAndShiftByTrackerId(trackerId, beforeIndex)
+    const result = await this.repo.deleteAndShiftByTrackerId(
+      trackerId,
+      beforeIndex,
+    )
+    if (result.isErr()) return err(result.error)
+    const { deleted, offset, deletedIds } = result.value
+    const cleanup = await this.commentRepo.deleteByRollIds(deletedIds)
+    if (cleanup.isErr()) return err(cleanup.error)
+    return ok({ deleted, offset })
   }
 
   public async import(
@@ -143,6 +159,9 @@ export class SkillRollService {
     }
     const deleted = await this.repo.deleteRange(weaponId, fromIndex, toIndex)
     if (deleted.isErr()) return err(deleted.error)
+
+    const cleanup = await this.commentRepo.deleteByRollIds(deleted.value)
+    if (cleanup.isErr()) return err(cleanup.error)
 
     if (rolls.length === 0) return ok([])
 

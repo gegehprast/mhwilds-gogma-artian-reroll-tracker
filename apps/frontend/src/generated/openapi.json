@@ -2133,6 +2133,64 @@
         }
       }
     },
+    "/api/trackers/{trackerId}/comments/dangling": {
+      "delete": {
+        "operationId": "cleanupDanglingComments",
+        "summary": "Clean up dangling comments",
+        "description": "Deletes all comments whose roll no longer exists. Safe to call at any time.",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "deleted"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/trackers/{trackerId}/comments/{id}": {
       "patch": {
         "operationId": "updateComment",
@@ -2669,7 +2727,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-25T08:15:29.868Z"
+            "example": "2026-03-25T09:53:55.631Z"
           },
           "uptime": {
             "type": "number",

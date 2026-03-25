@@ -46,6 +46,21 @@ export class SkillRollRepository extends BaseRepository {
     )
   }
 
+  public async findIdsByWeaponId(
+    weaponId: string,
+  ): Promise<Result<string[], DatabaseError>> {
+    return this.wrapQuery(
+      async () =>
+        this.db
+          .select({ id: skillRolls.id })
+          .from(skillRolls)
+          .where(eq(skillRolls.weaponId, weaponId))
+          .all()
+          .map((r) => r.id),
+      "Failed to find skill roll IDs by weapon ID",
+    )
+  }
+
   public async create(
     data: NewSkillRoll,
   ): Promise<Result<SkillRoll, DatabaseError>> {
@@ -66,14 +81,14 @@ export class SkillRollRepository extends BaseRepository {
   }
 
   /**
-   * Delete rolls where index > fromIndex AND index <= toIndex (exclusive start, inclusive end).
-   * Returns the number of deleted rows.
+   * Delete rolls where fromIndex <= index <= toIndex.
+   * Returns the IDs of deleted rows.
    */
   public async deleteRange(
     weaponId: string,
     fromIndex: number,
     toIndex: number,
-  ): Promise<Result<number, DatabaseError>> {
+  ): Promise<Result<string[], DatabaseError>> {
     return this.wrapQuery(async () => {
       const deleted = await this.db
         .delete(skillRolls)
@@ -84,8 +99,8 @@ export class SkillRollRepository extends BaseRepository {
             lte(skillRolls.index, toIndex),
           ),
         )
-        .returning()
-      return deleted.length
+        .returning({ id: skillRolls.id })
+      return deleted.map((r) => r.id)
     }, "Failed to delete skill roll range")
   }
 
@@ -97,7 +112,12 @@ export class SkillRollRepository extends BaseRepository {
   public async deleteAndShiftByTrackerId(
     trackerId: string,
     beforeIndex: number,
-  ): Promise<Result<{ deleted: number; offset: number }, DatabaseError>> {
+  ): Promise<
+    Result<
+      { deleted: number; offset: number; deletedIds: string[] },
+      DatabaseError
+    >
+  > {
     return this.wrapQuery(async () => {
       const offset = beforeIndex - 1
 
@@ -108,7 +128,7 @@ export class SkillRollRepository extends BaseRepository {
         .all()
         .map((w) => w.id)
 
-      if (weaponIds.length === 0) return { deleted: 0, offset }
+      if (weaponIds.length === 0) return { deleted: 0, offset, deletedIds: [] }
 
       // Delete past rolls
       const deletedRows = await this.db
@@ -119,9 +139,12 @@ export class SkillRollRepository extends BaseRepository {
             lt(skillRolls.index, beforeIndex),
           ),
         )
-        .returning()
+        .returning({ id: skillRolls.id })
 
-      if (offset === 0) return { deleted: deletedRows.length, offset }
+      const deletedIds = deletedRows.map((r) => r.id)
+
+      if (offset === 0)
+        return { deleted: deletedIds.length, offset, deletedIds }
 
       // Fetch surviving rolls, delete them, then re-insert with shifted indices
       // (in-place UPDATE violates the UNIQUE(weapon_id, index) constraint in SQLite
@@ -150,7 +173,7 @@ export class SkillRollRepository extends BaseRepository {
           .values(survivors.map((r) => ({ ...r, index: r.index - offset })))
       }
 
-      return { deleted: deletedRows.length, offset }
+      return { deleted: deletedIds.length, offset, deletedIds }
     }, "Failed to delete and shift skill rolls")
   }
 

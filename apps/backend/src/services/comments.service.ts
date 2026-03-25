@@ -148,6 +148,10 @@ export class CommentService {
 
     return this.repo.delete(id)
   }
+
+  public async cleanupDangling(): Promise<Result<number, DatabaseError>> {
+    return this.repo.deleteOrphaned()
+  }
 }
 
 let instance: CommentService | null = null

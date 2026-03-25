@@ -6,6 +6,7 @@ export function useComments(
   trackerId: string | undefined,
   rollId: string | undefined,
   rollType: "skill" | "bonus",
+  enabled = true,
 ) {
   const qc = useQueryClient()
   const key = ["comments", trackerId, rollId]
@@ -17,7 +18,8 @@ export function useComments(
         throw new Error("trackerId and rollId required")
       return commentService.list(trackerId, rollId, rollType)
     },
-    enabled: !!trackerId && !!rollId,
+    enabled: enabled && !!trackerId && !!rollId,
+    staleTime: Infinity,
   })
 
   const create = useMutation({

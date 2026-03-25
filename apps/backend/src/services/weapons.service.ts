@@ -4,6 +4,18 @@ import type { Element, WeaponType } from "@/config/game-constants"
 import type { DatabaseError } from "@/core/errors"
 import { ForbiddenError, NotFoundError } from "@/core/errors"
 import {
+  type BonusRollRepository,
+  getBonusRollRepository,
+} from "@/db/repositories/bonus-rolls.repository"
+import {
+  type CommentRepository,
+  getCommentRepository,
+} from "@/db/repositories/comments.repository"
+import {
+  getSkillRollRepository,
+  type SkillRollRepository,
+} from "@/db/repositories/skill-rolls.repository"
+import {
   getWeaponRepository,
   type WeaponRepository,
 } from "@/db/repositories/weapons.repository"
@@ -11,9 +23,15 @@ import type { Weapon } from "@/db/schemas"
 
 export class WeaponService {
   private readonly repo: WeaponRepository
+  private readonly skillRollRepo: SkillRollRepository
+  private readonly bonusRollRepo: BonusRollRepository
+  private readonly commentRepo: CommentRepository
 
   public constructor() {
     this.repo = getWeaponRepository()
+    this.skillRollRepo = getSkillRollRepository()
+    this.bonusRollRepo = getBonusRollRepository()
+    this.commentRepo = getCommentRepository()
   }
 
   public async listByTracker(
@@ -55,6 +73,18 @@ export class WeaponService {
   ): Promise<Result<void, NotFoundError | ForbiddenError | DatabaseError>> {
     const check = await this.getById(id, trackerId)
     if (check.isErr()) return err(check.error)
+
+    // Clean up comments for all rolls on this weapon before cascade deletes them
+    const skillIds = await this.skillRollRepo.findIdsByWeaponId(id)
+    if (skillIds.isErr()) return err(skillIds.error)
+    const bonusIds = await this.bonusRollRepo.findIdsByWeaponId(id)
+    if (bonusIds.isErr()) return err(bonusIds.error)
+    const commentCleanup = await this.commentRepo.deleteByRollIds([
+      ...skillIds.value,
+      ...bonusIds.value,
+    ])
+    if (commentCleanup.isErr()) return err(commentCleanup.error)
+
     return this.repo.delete(id)
   }
 
