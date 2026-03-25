@@ -108,7 +108,7 @@ export function BonusRollsView({ tracker }: Props) {
         <select
           value={filterBonus}
           onChange={(e) => setFilterBonus(e.target.value)}
-          className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:border-gray-500"
+          className="w-30 text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:border-gray-500"
         >
           <option value="">Any bonus</option>
           {BONUSES.map((b) => (

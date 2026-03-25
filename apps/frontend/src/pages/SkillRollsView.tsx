@@ -105,7 +105,7 @@ export function SkillRollsView({ tracker }: Props) {
         <select
           value={filterSetSkill}
           onChange={(e) => setFilterSetSkill(e.target.value)}
-          className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:border-gray-500"
+          className="w-30 text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:border-gray-500"
         >
           <option value="">Any set skill</option>
           {SET_SKILLS.map((s) => (
@@ -117,7 +117,7 @@ export function SkillRollsView({ tracker }: Props) {
         <select
           value={filterGroupSkill}
           onChange={(e) => setFilterGroupSkill(e.target.value)}
-          className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:border-gray-500"
+          className="w-30 text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:border-gray-500"
         >
           <option value="">Any group skill</option>
           {GROUP_SKILLS.map((s) => (
