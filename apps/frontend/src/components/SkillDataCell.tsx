@@ -48,8 +48,8 @@ export function SkillDataCell({
   } = useComments(trackerId, roll?.id, "skill")
 
   const createMutation = useMutation({
-    mutationFn: ({ g, s, idx }: { g: string; s: string; idx: number }) =>
-      skillRollService.create(trackerId, weapon.id, g, s, idx),
+    mutationFn: ({ s, g, idx }: { g: string; s: string; idx: number }) =>
+      skillRollService.create(trackerId, weapon.id, s, g, idx),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
       qc.invalidateQueries({ queryKey: ["tracker"] })
@@ -76,14 +76,14 @@ export function SkillDataCell({
     setSetSkill(roll?.setSkill ?? "")
   }, [roll?.groupSkill, roll?.setSkill])
 
-  function save(g: string, s: string) {
-    if (!g && !s) return
+  function save(setSkill: string, groupSkill: string) {
+    if (!groupSkill && !setSkill) return
     if (roll) {
-      if (g !== roll.groupSkill || s !== roll.setSkill) {
-        updateRoll(weapon.id, roll.id, { groupSkill: g, setSkill: s })
+      if (groupSkill !== roll.groupSkill || setSkill !== roll.setSkill) {
+        updateRoll(weapon.id, roll.id, { groupSkill, setSkill })
       }
     } else {
-      createMutation.mutate({ g, s, idx: index })
+      createMutation.mutate({ s: setSkill, g: groupSkill, idx: index })
     }
   }
 
@@ -99,7 +99,7 @@ export function SkillDataCell({
           value={setSkill}
           onCommit={(value) => {
             setSetSkill(value)
-            save(groupSkill.trim(), value.trim())
+            save(value.trim(), groupSkill.trim())
             groupContainerRef.current
               ?.querySelector<HTMLInputElement>("input")
               ?.focus()
@@ -113,7 +113,7 @@ export function SkillDataCell({
             value={groupSkill}
             onCommit={(value) => {
               setGroupSkill(value)
-              save(value.trim(), setSkill.trim())
+              save(setSkill.trim(), value.trim())
               document
                 .querySelector<HTMLInputElement>(
                   `[data-skill-row="${weapon.id}-${index + 1}"] input`,
