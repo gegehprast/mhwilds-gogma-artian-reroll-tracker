@@ -1,5 +1,5 @@
 import type { Result } from "@bunkit/result"
-import { and, asc, eq, gte, lt, lte, max } from "drizzle-orm"
+import { and, asc, eq, gte, inArray, lt, lte, max } from "drizzle-orm"
 import type { DatabaseError } from "@/core/errors"
 import { type NewSkillRoll, type SkillRoll, skillRolls } from "@/db/schemas"
 import { weapons } from "@/db/schemas/weapons.schema"
@@ -90,38 +90,68 @@ export class SkillRollRepository extends BaseRepository {
   }
 
   /**
-   * Delete all rolls with index < beforeIndex across all weapons belonging to the tracker.
-   * Returns the number of deleted rows.
+   * Delete all rolls with index < beforeIndex across all weapons belonging to the tracker,
+   * then shift surviving rolls down by offset = beforeIndex - 1.
+   * Returns { deleted, offset }.
    */
-  public async deleteBeforeIndexByTrackerId(
+  public async deleteAndShiftByTrackerId(
     trackerId: string,
     beforeIndex: number,
-  ): Promise<Result<number, DatabaseError>> {
+  ): Promise<Result<{ deleted: number; offset: number }, DatabaseError>> {
     return this.wrapQuery(async () => {
-      const weaponsSubquery = this.db
+      const offset = beforeIndex - 1
+
+      const weaponIds = this.db
         .select({ id: weapons.id })
         .from(weapons)
         .where(eq(weapons.trackerId, trackerId))
         .all()
+        .map((w) => w.id)
 
-      const weaponIds = weaponsSubquery.map((w) => w.id)
-      if (weaponIds.length === 0) return 0
+      if (weaponIds.length === 0) return { deleted: 0, offset }
 
-      let total = 0
-      for (const weaponId of weaponIds) {
-        const deleted = await this.db
-          .delete(skillRolls)
-          .where(
-            and(
-              eq(skillRolls.weaponId, weaponId),
-              lt(skillRolls.index, beforeIndex),
-            ),
-          )
-          .returning()
-        total += deleted.length
+      // Delete past rolls
+      const deletedRows = await this.db
+        .delete(skillRolls)
+        .where(
+          and(
+            inArray(skillRolls.weaponId, weaponIds),
+            lt(skillRolls.index, beforeIndex),
+          ),
+        )
+        .returning()
+
+      if (offset === 0) return { deleted: deletedRows.length, offset }
+
+      // Fetch surviving rolls, delete them, then re-insert with shifted indices
+      // (in-place UPDATE violates the UNIQUE(weapon_id, index) constraint in SQLite
+      // because rows are updated in arbitrary order)
+      const survivors = this.db
+        .select()
+        .from(skillRolls)
+        .where(
+          and(
+            inArray(skillRolls.weaponId, weaponIds),
+            gte(skillRolls.index, beforeIndex),
+          ),
+        )
+        .all()
+
+      if (survivors.length > 0) {
+        await this.db.delete(skillRolls).where(
+          inArray(
+            skillRolls.id,
+            survivors.map((r) => r.id),
+          ),
+        )
+
+        await this.db
+          .insert(skillRolls)
+          .values(survivors.map((r) => ({ ...r, index: r.index - offset })))
       }
-      return total
-    }, "Failed to delete past skill rolls")
+
+      return { deleted: deletedRows.length, offset }
+    }, "Failed to delete and shift skill rolls")
   }
 
   public async update(

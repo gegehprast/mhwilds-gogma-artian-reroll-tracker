@@ -1,6 +1,7 @@
 import { createRoute } from "@bunkit/server"
 import { z } from "zod"
 import { getBonusRollService } from "@/services/bonus-rolls.service"
+import { getTrackerService } from "@/services/trackers.service"
 import { mapError } from "./_helpers"
 
 const BonusRollSchema = z
@@ -173,7 +174,7 @@ const DeletePastBonusRollsBodySchema = z
   .meta({ id: "DeletePastBonusRollsBody" })
 
 const DeletePastBonusRollsResponseSchema = z
-  .object({ deleted: z.number().int() })
+  .object({ deleted: z.number().int(), newBonusIndex: z.number().int() })
   .meta({ id: "DeletePastBonusRollsResponse" })
 
 createRoute("DELETE", "/api/trackers/:trackerId/bonus-rolls/past")
@@ -181,18 +182,33 @@ createRoute("DELETE", "/api/trackers/:trackerId/bonus-rolls/past")
     operationId: "deletePastBonusRolls",
     summary: "Delete past bonus rolls",
     description:
-      "Deletes all bonus rolls with index < beforeIndex across every weapon in the tracker.",
+      "Deletes all bonus rolls with index < beforeIndex across every weapon, shifts surviving roll indices down, and updates the tracker's bonusIndex accordingly.",
     tags: ["Bonus Rolls"],
   })
   .body(DeletePastBonusRollsBodySchema)
   .response(DeletePastBonusRollsResponseSchema)
-  .errors([400])
+  .errors([400, 404])
   .handler(async ({ params, body, res }) => {
-    const service = getBonusRollService()
-    const result = await service.deletePastRolls(
+    const rollService = getBonusRollService()
+    const trackerService = getTrackerService()
+
+    const tracker = await trackerService.getById(params.trackerId)
+    if (tracker.isErr()) return mapError(tracker.error, res)
+
+    const result = await rollService.deletePastRolls(
       params.trackerId,
       body.beforeIndex,
     )
     if (result.isErr()) return mapError(result.error, res)
-    return res.ok({ deleted: result.value })
+
+    const { deleted, offset } = result.value
+    const newBonusIndex = Math.max(1, tracker.value.bonusIndex - offset)
+
+    const updated = await trackerService.setBonusIndex(
+      params.trackerId,
+      newBonusIndex,
+    )
+    if (updated.isErr()) return mapError(updated.error, res)
+
+    return res.ok({ deleted, newBonusIndex })
   })

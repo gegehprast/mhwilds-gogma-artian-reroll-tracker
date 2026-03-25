@@ -1,3 +1,7 @@
+import { useRef } from "react"
+import { useCloseOnEscape } from "../hooks/useCloseOnEscape"
+import { useCloseOnOutsideClick } from "../hooks/useCloseOnOutsideClick"
+
 interface ConfirmDialogProps {
   title: string
   message: string
@@ -15,17 +19,19 @@ export function ConfirmDialog({
   onCancel,
   isPending = false,
 }: ConfirmDialogProps) {
+  const panelRef = useRef<HTMLDivElement>(null)
+  useCloseOnEscape(onCancel, !isPending)
+  useCloseOnOutsideClick(panelRef, onCancel, !isPending)
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <button
-        type="button"
-        aria-label="Close"
-        className="absolute inset-0 bg-black/60 cursor-default"
-        onClick={onCancel}
-      />
+      <div className="absolute inset-0 bg-black/60" />
       {/* Panel */}
-      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-sm mx-4 flex flex-col gap-4">
+      <div
+        ref={panelRef}
+        className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-sm mx-4 flex flex-col gap-4"
+      >
         <h2 className="text-base font-semibold text-gray-100">{title}</h2>
         <p className="text-sm text-gray-400">{message}</p>
         <div className="flex gap-3 justify-end">

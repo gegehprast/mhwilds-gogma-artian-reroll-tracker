@@ -1207,7 +1207,7 @@
       "delete": {
         "operationId": "deletePastSkillRolls",
         "summary": "Delete past skill rolls",
-        "description": "Deletes all skill rolls with index < beforeIndex across every weapon in the tracker.",
+        "description": "Deletes all skill rolls with index < beforeIndex across every weapon, shifts surviving roll indices down, and updates the tracker's skillIndex accordingly.",
         "tags": [
           "Skill Rolls"
         ],
@@ -1260,6 +1260,20 @@
                 },
                 "schema": {
                   "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
                 }
               }
             }
@@ -1805,7 +1819,7 @@
       "delete": {
         "operationId": "deletePastBonusRolls",
         "summary": "Delete past bonus rolls",
-        "description": "Deletes all bonus rolls with index < beforeIndex across every weapon in the tracker.",
+        "description": "Deletes all bonus rolls with index < beforeIndex across every weapon, shifts surviving roll indices down, and updates the tracker's bonusIndex accordingly.",
         "tags": [
           "Bonus Rolls"
         ],
@@ -1858,6 +1872,20 @@
                 },
                 "schema": {
                   "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Resource does not exist",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Resource not found",
+                  "code": "NOT_FOUND"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
                 }
               }
             }
@@ -2641,7 +2669,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-25T07:52:21.015Z"
+            "example": "2026-03-25T08:15:29.868Z"
           },
           "uptime": {
             "type": "number",
@@ -2791,10 +2819,16 @@
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
+          },
+          "newSkillIndex": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           }
         },
         "required": [
-          "deleted"
+          "deleted",
+          "newSkillIndex"
         ],
         "additionalProperties": false
       },
@@ -2860,10 +2894,16 @@
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
+          },
+          "newBonusIndex": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
           }
         },
         "required": [
-          "deleted"
+          "deleted",
+          "newBonusIndex"
         ],
         "additionalProperties": false
       },

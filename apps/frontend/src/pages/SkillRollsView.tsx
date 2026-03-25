@@ -172,6 +172,7 @@ export function SkillRollsView({ tracker }: Props) {
           onDeletePast={async (beforeIndex) => {
             await skillRollService.deletePast(tracker.id, beforeIndex)
             qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id] })
+            qc.invalidateQueries({ queryKey: ["tracker"] })
             addToast("Past rolls deleted", "success")
           }}
           renderCell={(w, idx) => {

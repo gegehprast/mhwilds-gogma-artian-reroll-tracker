@@ -144,8 +144,8 @@ export class BonusRollService {
   public async deletePastRolls(
     trackerId: string,
     beforeIndex: number,
-  ): Promise<Result<number, DatabaseError>> {
-    return this.repo.deleteBeforeIndexByTrackerId(trackerId, beforeIndex)
+  ): Promise<Result<{ deleted: number; offset: number }, DatabaseError>> {
+    return this.repo.deleteAndShiftByTrackerId(trackerId, beforeIndex)
   }
 
   public async import(

@@ -1,6 +1,7 @@
 import { createRoute } from "@bunkit/server"
 import { z } from "zod"
 import { getSkillRollService } from "@/services/skill-rolls.service"
+import { getTrackerService } from "@/services/trackers.service"
 import { mapError } from "./_helpers"
 
 const SkillRollSchema = z
@@ -157,7 +158,7 @@ const DeletePastSkillRollsBodySchema = z
   .meta({ id: "DeletePastSkillRollsBody" })
 
 const DeletePastSkillRollsResponseSchema = z
-  .object({ deleted: z.number().int() })
+  .object({ deleted: z.number().int(), newSkillIndex: z.number().int() })
   .meta({ id: "DeletePastSkillRollsResponse" })
 
 createRoute("DELETE", "/api/trackers/:trackerId/skill-rolls/past")
@@ -165,18 +166,33 @@ createRoute("DELETE", "/api/trackers/:trackerId/skill-rolls/past")
     operationId: "deletePastSkillRolls",
     summary: "Delete past skill rolls",
     description:
-      "Deletes all skill rolls with index < beforeIndex across every weapon in the tracker.",
+      "Deletes all skill rolls with index < beforeIndex across every weapon, shifts surviving roll indices down, and updates the tracker's skillIndex accordingly.",
     tags: ["Skill Rolls"],
   })
   .body(DeletePastSkillRollsBodySchema)
   .response(DeletePastSkillRollsResponseSchema)
-  .errors([400])
+  .errors([400, 404])
   .handler(async ({ params, body, res }) => {
-    const service = getSkillRollService()
-    const result = await service.deletePastRolls(
+    const rollService = getSkillRollService()
+    const trackerService = getTrackerService()
+
+    const tracker = await trackerService.getById(params.trackerId)
+    if (tracker.isErr()) return mapError(tracker.error, res)
+
+    const result = await rollService.deletePastRolls(
       params.trackerId,
       body.beforeIndex,
     )
     if (result.isErr()) return mapError(result.error, res)
-    return res.ok({ deleted: result.value })
+
+    const { deleted, offset } = result.value
+    const newSkillIndex = Math.max(1, tracker.value.skillIndex - offset)
+
+    const updated = await trackerService.setSkillIndex(
+      params.trackerId,
+      newSkillIndex,
+    )
+    if (updated.isErr()) return mapError(updated.error, res)
+
+    return res.ok({ deleted, newSkillIndex })
   })

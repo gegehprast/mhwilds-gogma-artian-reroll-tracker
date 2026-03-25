@@ -292,7 +292,7 @@ export interface paths {
         post?: never;
         /**
          * Delete past skill rolls
-         * @description Deletes all skill rolls with index < beforeIndex across every weapon in the tracker.
+         * @description Deletes all skill rolls with index < beforeIndex across every weapon, shifts surviving roll indices down, and updates the tracker's skillIndex accordingly.
          */
         delete: operations["deletePastSkillRolls"];
         options?: never;
@@ -380,7 +380,7 @@ export interface paths {
         post?: never;
         /**
          * Delete past bonus rolls
-         * @description Deletes all bonus rolls with index < beforeIndex across every weapon in the tracker.
+         * @description Deletes all bonus rolls with index < beforeIndex across every weapon, shifts surviving roll indices down, and updates the tracker's bonusIndex accordingly.
          */
         delete: operations["deletePastBonusRolls"];
         options?: never;
@@ -535,7 +535,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-25T07:52:21.015Z */
+            /** @example 2026-03-25T08:15:29.868Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -571,6 +571,7 @@ export interface components {
         };
         DeletePastSkillRollsResponse: {
             deleted: number;
+            newSkillIndex: number;
         };
         /** Bonus Roll */
         BonusRoll: {
@@ -587,6 +588,7 @@ export interface components {
         };
         DeletePastBonusRollsResponse: {
             deleted: number;
+            newBonusIndex: number;
         };
         /** Comment */
         Comment: {
@@ -1727,6 +1729,21 @@ export interface operations {
                     "application/json": components["schemas"]["BadRequestErrorResponse"];
                 };
             };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
             /** @description Internal Server Error - Unexpected server error */
             500: {
                 headers: {
@@ -2209,6 +2226,21 @@ export interface operations {
                      *     }
                      */
                     "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Not Found - Resource does not exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NotFoundErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */

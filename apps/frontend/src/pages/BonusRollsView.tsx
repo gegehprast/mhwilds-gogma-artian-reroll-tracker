@@ -162,6 +162,7 @@ export function BonusRollsView({ tracker }: Props) {
           onDeletePast={async (beforeIndex) => {
             await bonusRollService.deletePast(tracker.id, beforeIndex)
             qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id] })
+            qc.invalidateQueries({ queryKey: ["tracker"] })
             addToast("Past rolls deleted", "success")
           }}
           renderCell={(w, idx) => {
