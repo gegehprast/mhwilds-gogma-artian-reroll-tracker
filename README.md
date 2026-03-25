@@ -268,13 +268,13 @@ Your rolls are saved in `apps/backend/data/tracker.db` inside the repository fol
 
 The easiest way — no installation required. Just open your browser and go to:
 
-👉 **https://mhwildsgogmarerolltracker.gegeh.dev**
+**https://mhwildsgogmarerolltracker.gegeh.dev**
 
 This is a public instance hosted by me. A few things worth knowing:
 
 - **No account or login required** — you can start tracking immediately
 - **No sensitive data is collected** — the app does not ask for personal information and does not track you. Your roll data is stored anonymously on the server.
-- **Your roll data is saved** on the server tied to your browser session, so you can pick up where you left off as long as you use the same browser. You also get a unique code that you can use to access your data from another device or browser.
+- **Your roll data is saved** on the server tied to your browser session. You also get a unique code that you can use to access your data from another device or browser.
 - The server may occasionally go down for maintenance or updates
 
 If you'd prefer your data to stay entirely on your own machine, use one of the local options.
