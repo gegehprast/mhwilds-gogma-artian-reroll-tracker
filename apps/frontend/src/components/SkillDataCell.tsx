@@ -9,6 +9,7 @@ import { ComboBox } from "./ComboBox"
 import { CommentPin } from "./CommentPin"
 import { CommentPopover } from "./CommentPopover"
 import { ImportPreviewModal } from "./ImportPreviewModal"
+import { PinIconButton } from "./PinIconButton"
 
 export interface SkillDataCellProps {
   roll: SkillRoll | null
@@ -55,6 +56,18 @@ export function SkillDataCell({
       setGroupSkill("")
       setSetSkill("")
       addToast("Roll saved", "success")
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => {
+      if (!roll) return Promise.resolve()
+      return skillRollService.delete(trackerId, weapon.id, roll.id)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
+      qc.invalidateQueries({ queryKey: ["tracker"] })
+      addToast("Roll deleted", "success")
     },
   })
 
@@ -116,24 +129,32 @@ export function SkillDataCell({
 
       <div
         ref={pinRef}
-        className="absolute right-0 top-0 bottom-0 flex flex-col items-center py-1"
+        className="absolute -right-4.5 top-0 bottom-0 flex flex-col items-center justify-around py-1"
       >
-        <button
-          type="button"
-          aria-label="Upload rolls from this index"
-          title="Upload rolls from this index"
-          onClick={() => setImportOpen(true)}
-          className="transition-opacity w-3 shrink-0 text-gray-400 hover:text-gray-300 bg-transparent border-0 p-0 flex items-center justify-center cursor-pointer"
-        >
-          <span className="text-[10px] leading-none">↑</span>
-        </button>
         {roll && (
-          <div className="flex-1 flex items-center">
-            <CommentPin
-              comments={comments}
-              onClick={() => setPopoverOpen((v) => !v)}
-            />
-          </div>
+          <CommentPin
+            comments={comments}
+            onClick={() => setPopoverOpen((v) => !v)}
+          />
+        )}
+      </div>
+
+      <div className="absolute right-0 top-0 bottom-0 flex flex-col items-center justify-around py-1">
+        <PinIconButton
+          label="Upload rolls from this index"
+          onClick={() => setImportOpen(true)}
+        >
+          <span className="font-mono leading-none">↑</span>
+        </PinIconButton>
+        {roll && (
+          <PinIconButton
+            label="Delete roll"
+            onClick={() => deleteMutation.mutate()}
+            disabled={deleteMutation.isPending}
+            variant="danger"
+          >
+            <span className="font-mono leading-none">×</span>
+          </PinIconButton>
         )}
       </div>
 
