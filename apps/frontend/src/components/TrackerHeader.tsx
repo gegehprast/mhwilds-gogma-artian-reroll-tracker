@@ -1,7 +1,8 @@
 import { ArrowLeftRight, Copy, Pencil } from "lucide-react"
-import { useState } from "react"
+import { useState, useSyncExternalStore } from "react"
 import { useTracker } from "../hooks/useTracker"
 import type { Tracker } from "../lib/api-service"
+import { getSnapshot, subscribe } from "../lib/saving"
 import { addToast } from "../lib/toast"
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
   const { updateName } = useTracker()
+  const isSaving = useSyncExternalStore(subscribe, getSnapshot)
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState(tracker.name)
 
@@ -36,6 +38,14 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
 
       {/* Row 2: name · id · copy · switch — all one line */}
       <div className="flex items-center gap-2 min-w-0 ml-auto mt-2 md:mt-0">
+        {/* Saving indicator */}
+        {isSaving && (
+          <span className="flex items-center gap-1 text-xs text-gray-500 shrink-0">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-500 animate-pulse" />
+            Saving…
+          </span>
+        )}
+
         {/* Tracker name */}
         <div className="flex items-center min-w-0 shrink">
           {editingName ? (
