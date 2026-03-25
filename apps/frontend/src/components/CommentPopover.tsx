@@ -203,7 +203,19 @@ export function CommentPopover({
 
       {/* Add form */}
       {canAdd && (
-        <div className="border-t border-gray-700 p-2 flex flex-col gap-1.5">
+        <div className="border-t border-gray-700 p-2 flex flex-col gap-2">
+          <div className="flex items-center gap-1">
+            {COMMENT_COLORS.map((col) => (
+              <button
+                key={col}
+                type="button"
+                onClick={() => setNewColor(col)}
+                className={`w-4 h-4 rounded-full ${COMMENT_COLOR_CLASSES[col].bg} transition-transform ${newColor === col ? "ring-2 ring-white ring-offset-1 ring-offset-gray-900 scale-110" : ""}`}
+                aria-label={col}
+              />
+            ))}
+          </div>
+
           <textarea
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
@@ -217,27 +229,15 @@ export function CommentPopover({
             rows={2}
             className="w-full bg-gray-800 text-gray-100 text-xs rounded px-2 py-1.5 resize-none border border-gray-700 focus:outline-none focus:border-gray-500 placeholder:text-gray-600"
           />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              {COMMENT_COLORS.map((col) => (
-                <button
-                  key={col}
-                  type="button"
-                  onClick={() => setNewColor(col)}
-                  className={`w-4 h-4 rounded-full ${COMMENT_COLOR_CLASSES[col].bg} transition-transform ${newColor === col ? "ring-2 ring-white ring-offset-1 ring-offset-gray-900 scale-110" : ""}`}
-                  aria-label={col}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={handleCreate}
-              disabled={isPending || !newContent.trim()}
-              className="text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-gray-200 rounded px-2.5 py-1 transition-colors"
-            >
-              Add
-            </button>
-          </div>
+
+          <button
+            type="button"
+            onClick={handleCreate}
+            disabled={isPending || !newContent.trim()}
+            className="text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-gray-200 rounded px-2.5 py-1 transition-colors"
+          >
+            Add
+          </button>
         </div>
       )}
     </div>,
