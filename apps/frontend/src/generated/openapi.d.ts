@@ -192,6 +192,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/trackers/{trackerId}/weapons/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Reorder weapons
+         * @description Sets the display order of weapons by providing an ordered list of IDs.
+         */
+        put: operations["reorderWeapons"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/trackers/{trackerId}/weapons/{weaponId}/skill-rolls/import": {
         parameters: {
             query?: never;
@@ -392,6 +412,9 @@ export interface components {
             weaponType: components["schemas"]["WeaponType"];
             element: components["schemas"]["Element"];
         };
+        ReorderWeaponsBody: {
+            ids: string[];
+        };
         /**
          * WeaponType
          * @enum {string}
@@ -486,6 +509,7 @@ export interface components {
             trackerId: string;
             weaponType: components["schemas"]["WeaponType"];
             element: components["schemas"]["Element"];
+            sortOrder: number;
             createdAt: number;
             updatedAt: number;
         };
@@ -1072,12 +1096,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Insufficient permissions",
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ForbiddenErrorResponse"];
                 };
             };
@@ -1087,17 +1105,60 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Resource not found",
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
                     "application/json": components["schemas"]["NotFoundErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    reorderWeapons: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderWeaponsBody"];
+            };
+        };
+        responses: {
+            /** @description 204 No Content */
+            204: {
+                headers: { [name: string]: unknown };
+                content?: never;
+            };
+            /** @description Forbidden - Insufficient permissions */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForbiddenErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
                 headers: {
                     [name: string]: unknown;
                 };

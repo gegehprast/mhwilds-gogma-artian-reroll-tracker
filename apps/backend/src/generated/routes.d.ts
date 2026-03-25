@@ -20,6 +20,7 @@ declare module "@bunkit/server" {
     "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls": { trackerId: string; weaponId: string }
     "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls/:id": { trackerId: string; weaponId: string; id: string }
     "/api/trackers/:trackerId/weapons/:weaponId/skill-rolls/import": { trackerId: string; weaponId: string }
+    "/api/trackers/:trackerId/weapons/reorder": { trackerId: string }
     "/docs": Record<string, never>
     "/openapi.json": Record<string, never>
     "/openapi/refresh": Record<string, never>

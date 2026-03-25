@@ -15,6 +15,7 @@ const WeaponSchema = z
     trackerId: z.string(),
     weaponType: WeaponTypeSchema,
     element: ElementSchema,
+    sortOrder: z.number().int(),
     createdAt: z.number().int(),
     updatedAt: z.number().int(),
   })
@@ -26,6 +27,10 @@ const CreateWeaponBodySchema = z
     element: ElementSchema,
   })
   .meta({ id: "CreateWeaponBody" })
+
+const ReorderWeaponsBodySchema = z
+  .object({ ids: z.array(z.string()) })
+  .meta({ id: "ReorderWeaponsBody" })
 
 createRoute("GET", "/api/trackers/:trackerId/weapons")
   .openapi({
@@ -75,6 +80,23 @@ createRoute("DELETE", "/api/trackers/:trackerId/weapons/:id")
   .handler(async ({ params, res }) => {
     const service = getWeaponService()
     const result = await service.delete(params.id, params.trackerId)
+    if (result.isErr()) return mapError(result.error, res)
+    return res.noContent()
+  })
+
+createRoute("PUT", "/api/trackers/:trackerId/weapons/reorder")
+  .openapi({
+    operationId: "reorderWeapons",
+    summary: "Reorder weapons",
+    description:
+      "Sets the display order of weapons by providing an ordered list of IDs.",
+    tags: ["Weapons"],
+  })
+  .body(ReorderWeaponsBodySchema)
+  .errors([403])
+  .handler(async ({ params, body, res }) => {
+    const service = getWeaponService()
+    const result = await service.reorder(params.trackerId, body.ids)
     if (result.isErr()) return mapError(result.error, res)
     return res.noContent()
   })

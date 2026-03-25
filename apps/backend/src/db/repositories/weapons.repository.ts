@@ -1,5 +1,5 @@
 import type { Result } from "@bunkit/result"
-import { and, eq } from "drizzle-orm"
+import { and, asc, eq } from "drizzle-orm"
 import type { Element, WeaponType } from "@/config/game-constants"
 import type { DatabaseError } from "@/core/errors"
 import { type NewWeapon, type Weapon, weapons } from "@/db/schemas"
@@ -25,6 +25,7 @@ export class WeaponRepository extends BaseRepository {
           .select()
           .from(weapons)
           .where(eq(weapons.trackerId, trackerId))
+          .orderBy(asc(weapons.sortOrder))
           .all(),
       "Failed to find weapons by tracker ID",
     )
@@ -64,6 +65,17 @@ export class WeaponRepository extends BaseRepository {
     return this.wrapQuery(async () => {
       await this.db.delete(weapons).where(eq(weapons.id, id))
     }, "Failed to delete weapon")
+  }
+
+  public async reorderAll(ids: string[]): Promise<Result<void, DatabaseError>> {
+    return this.wrapQuery(async () => {
+      for (let i = 0; i < ids.length; i++) {
+        await this.db
+          .update(weapons)
+          .set({ sortOrder: i })
+          .where(eq(weapons.id, ids[i] as string))
+      }
+    }, "Failed to reorder weapons")
   }
 }
 

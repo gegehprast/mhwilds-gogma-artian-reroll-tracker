@@ -1,4 +1,9 @@
-import { sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
+import {
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core"
 import { nanoid } from "nanoid"
 import {
   ELEMENTS,
@@ -22,6 +27,7 @@ export const weapons = sqliteTable(
       .$type<WeaponType>()
       .notNull(),
     element: text("element", { enum: ELEMENTS }).$type<Element>().notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
     ...timestamps(),
   },
   (table) => [

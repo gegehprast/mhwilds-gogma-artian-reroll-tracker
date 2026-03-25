@@ -87,6 +87,13 @@ export const weaponService = {
       params: { path: { trackerId, id } },
     })
   },
+
+  async reorder(trackerId: string, ids: string[]): Promise<void> {
+    await apiClient.PUT("/api/trackers/{trackerId}/weapons/reorder", {
+      params: { path: { trackerId } },
+      body: { ids },
+    })
+  },
 }
 
 export const skillRollService = {

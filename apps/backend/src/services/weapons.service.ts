@@ -57,6 +57,22 @@ export class WeaponService {
     if (check.isErr()) return err(check.error)
     return this.repo.delete(id)
   }
+
+  public async reorder(
+    trackerId: string,
+    ids: string[],
+  ): Promise<Result<void, ForbiddenError | DatabaseError>> {
+    const existing = await this.repo.findByTrackerId(trackerId)
+    if (existing.isErr()) return err(existing.error)
+    const validIds = new Set(existing.value.map((w) => w.id))
+    for (const id of ids) {
+      if (!validIds.has(id))
+        return err(
+          new ForbiddenError(`Weapon '${id}' does not belong to this tracker`),
+        )
+    }
+    return this.repo.reorderAll(ids)
+  }
 }
 
 let instance: WeaponService | null = null

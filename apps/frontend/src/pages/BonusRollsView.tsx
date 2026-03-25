@@ -17,8 +17,31 @@ interface Props {
 
 export function BonusRollsView({ tracker }: Props) {
   const qc = useQueryClient()
-  const { query: weaponsQuery } = useWeapons(tracker.id)
+  const {
+    query: weaponsQuery,
+    remove: removeWeapon,
+    reorder: reorderWeapon,
+  } = useWeapons(tracker.id)
   const weapons: Weapon[] = weaponsQuery.data ?? []
+
+  function handleDeleteWeapon(weaponId: string) {
+    removeWeapon.mutate(weaponId, {
+      onSuccess: () => addToast("Weapon deleted", "success"),
+    })
+  }
+
+  function handleMoveWeapon(weaponId: string, direction: "left" | "right") {
+    const idx = weapons.findIndex((w) => w.id === weaponId)
+    if (idx === -1) return
+    const newOrder = [...weapons]
+    const swapIdx = direction === "left" ? idx - 1 : idx + 1
+    const a = newOrder[idx]
+    const b = newOrder[swapIdx]
+    if (!a || !b) return
+    newOrder[idx] = b
+    newOrder[swapIdx] = a
+    reorderWeapon.mutate(newOrder.map((w) => w.id))
+  }
   const { data: rollsByWeapon, isLoading } = useAllBonusRolls(
     tracker.id,
     weapons,
@@ -143,6 +166,8 @@ export function BonusRollsView({ tracker }: Props) {
           existingIndices={existingIndices}
           currentIndex={tracker.bonusIndex ?? undefined}
           overrideIndices={overrideIndices}
+          onDeleteWeapon={handleDeleteWeapon}
+          onMoveWeapon={handleMoveWeapon}
           renderCell={(w, idx) => {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??

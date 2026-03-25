@@ -39,5 +39,13 @@ export function useWeapons(trackerId: string | undefined) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["weapons", trackerId] }),
   })
 
-  return { query, findOrCreate, remove }
+  const reorder = useMutation({
+    mutationFn: (ids: string[]) => {
+      if (!trackerId) throw new Error("trackerId required")
+      return weaponService.reorder(trackerId, ids)
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["weapons", trackerId] }),
+  })
+
+  return { query, findOrCreate, remove, reorder }
 }
