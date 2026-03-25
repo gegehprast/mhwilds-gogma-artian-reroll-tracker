@@ -271,7 +271,7 @@ This is a public instance hosted by me. A few things worth knowing:
 - **Your roll data is saved** on the server tied to your browser session, so you can pick up where you left off as long as you use the same browser. You also get a unique code that you can use to access your data from another device or browser.
 - The server may occasionally go down for maintenance or updates
 
-If you'd prefer your data to stay entirely on your own machine, use one of the local options below.
+If you'd prefer your data to stay entirely on your own machine, use one of the local options.
 
 ---
 
