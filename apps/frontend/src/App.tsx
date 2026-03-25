@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { AddWeaponButton } from "./components/AddWeaponButton"
 import { IndexControl } from "./components/IndexControl"
+import { NextRollBadge } from "./components/NextRollBadge"
 import { TrackerHeader } from "./components/TrackerHeader"
 import { TrackerSetup } from "./components/TrackerSetup"
 import { useTracker } from "./hooks/useTracker"
@@ -80,6 +81,8 @@ function MainApp() {
 
         {/* Index input + add weapon */}
         <div className="flex items-center gap-2 ml-auto">
+          {/* next roll recommendation */}
+          <NextRollBadge tracker={tracker} activeTab={activeTab} />
           <IndexControl tracker={tracker} activeTab={activeTab} />
           <AddWeaponButton trackerId={tracker.id} />
         </div>
