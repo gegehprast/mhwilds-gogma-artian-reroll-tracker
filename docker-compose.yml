@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/gegehprast/mhwilds-gogma-reroll-tracker:latest
+    image: ghcr.io/gegehprast/mhwilds-gogma-reroll-tracker:main
     container_name: gogma-tracker
     ports:
       - "${PORT:-5173}:80"
