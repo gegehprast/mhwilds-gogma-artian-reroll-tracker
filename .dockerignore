@@ -42,7 +42,6 @@ apps/backend/tests/
 *.md
 README*
 
-# Drizzle: include schema but skip generated SQL snapshots
-apps/backend/drizzle/*.sql
+# Drizzle: skip snapshot files only, keep SQL migrations and journal
 apps/backend/drizzle/meta/*.json
 !apps/backend/drizzle/meta/_journal.json
