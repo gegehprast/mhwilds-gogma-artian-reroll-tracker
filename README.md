@@ -10,7 +10,7 @@ This app runs locally on your computer and opens in your browser — no account,
 
 There are three ways to run it. Pick the one that's easier for you:
 
-| | Option A: Docker | Option B: Bun | Option C: Hosted | 
+| | [Option A: Docker](#option-a-docker-local-easiest) | [Option B: Bun](#option-b-bun-local-more-involved) | [Option C: Hosted](#option-c-hosted-easiest) | 
 |---|---|---|---|
 | **What you install** | Docker Desktop | Bun runtime | Nothing | 
 | **What you download** | Just the `docker-compose.yml` file | The full repository | Nothing | 
@@ -19,24 +19,7 @@ There are three ways to run it. Pick the one that's easier for you:
 
 ---
 
-## Option A: Hosted (easiest)
-
-The easiest way — no installation required. Just open your browser and go to:
-
-👉 **https://mhwildsgogmarerolltracker.gegeh.dev**
-
-This is a public instance hosted by me. A few things worth knowing:
-
-- **No account or login required** — you can start tracking immediately
-- **No sensitive data is collected** — the app does not ask for personal information and does not track you. Your roll data is stored anonymously on the server.
-- **Your roll data is saved** on the server tied to your browser session, so you can pick up where you left off as long as you use the same browser. You also get a unique code that you can use to access your data from another device or browser.
-- The server may occasionally go down for maintenance or updates
-
-If you'd prefer your data to stay entirely on your own machine, use one of the local options below.
-
----
-
-## Option B: Docker (local, easiest)
+## Option A: Docker (local, easiest)
 
 Docker is just a software for deploying applications inside lightweight, isolated containers. Docker has a GUI called **Docker Desktop** that works on Windows, Mac, and Linux. You don't need to know anything about Docker to use this app — just follow the steps below and it will be up and running in no time.
 
@@ -144,7 +127,7 @@ This saves a `tracker.db` file in your current folder.
 
 ---
 
-## Option C: Bun (local, more involved)
+## Option B: Bun (local, more involved)
 
 This method runs the app directly on your machine using **Bun**, a JavaScript runtime. It's slightly more involved to set up but doesn't require Docker.
 
@@ -272,6 +255,23 @@ Then restart with the `--rebuild` flag to rebuild the frontend:
 ### Data location
 
 Your rolls are saved in `apps/backend/data/tracker.db` inside the repository folder. Back this file up if you want to preserve your data.
+
+---
+
+## Option C: Hosted (easiest)
+
+The easiest way — no installation required. Just open your browser and go to:
+
+👉 **https://mhwildsgogmarerolltracker.gegeh.dev**
+
+This is a public instance hosted by me. A few things worth knowing:
+
+- **No account or login required** — you can start tracking immediately
+- **No sensitive data is collected** — the app does not ask for personal information and does not track you. Your roll data is stored anonymously on the server.
+- **Your roll data is saved** on the server tied to your browser session, so you can pick up where you left off as long as you use the same browser. You also get a unique code that you can use to access your data from another device or browser.
+- The server may occasionally go down for maintenance or updates
+
+If you'd prefer your data to stay entirely on your own machine, use one of the local options below.
 
 ---
 
