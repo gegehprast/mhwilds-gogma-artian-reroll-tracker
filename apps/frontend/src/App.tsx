@@ -3,7 +3,6 @@ import { AddWeaponButton } from "./components/AddWeaponButton"
 import { IndexControl } from "./components/IndexControl"
 import { TrackerHeader } from "./components/TrackerHeader"
 import { TrackerSetup } from "./components/TrackerSetup"
-import { WeaponSelector } from "./components/WeaponSelector"
 import { useTracker } from "./hooks/useTracker"
 import { getTrackerId } from "./lib/api-client"
 import { BonusRollsView } from "./pages/BonusRollsView"
@@ -17,14 +16,11 @@ export default function App() {
 
 function MainApp() {
   const { query } = useTracker()
-  const [selectedWeaponId, setSelectedWeaponId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<"skills-bird" | "bonuses-bird">(
     "skills-bird",
   )
 
   const tracker = query.data
-
-  const isBirdView = activeTab === "skills-bird" || activeTab === "bonuses-bird"
 
   function handleSwitchTracker() {
     localStorage.removeItem("tracker_id")
@@ -82,27 +78,15 @@ function MainApp() {
           ))}
         </div>
 
-        {/* Index input + add weapon — shown in bird views */}
-        {isBirdView && (
-          <div className="flex items-center gap-2 ml-auto">
-            <IndexControl tracker={tracker} activeTab={activeTab} />
-            <AddWeaponButton trackerId={tracker.id} />
-          </div>
-        )}
+        {/* Index input + add weapon */}
+        <div className="flex items-center gap-2 ml-auto">
+          <IndexControl tracker={tracker} activeTab={activeTab} />
+          <AddWeaponButton trackerId={tracker.id} />
+        </div>
       </div>
 
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Weapon list sidebar — hidden in bird view */}
-        {!isBirdView && (
-          <WeaponSelector
-            trackerId={tracker.id}
-            selectedWeaponId={selectedWeaponId}
-            onSelect={setSelectedWeaponId}
-          />
-        )}
-
-        {/* Content area */}
         {activeTab === "skills-bird" && <SkillRollsView tracker={tracker} />}
 
         {activeTab === "bonuses-bird" && <BonusRollsView tracker={tracker} />}
