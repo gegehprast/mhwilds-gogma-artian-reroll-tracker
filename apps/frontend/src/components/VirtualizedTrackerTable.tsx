@@ -11,6 +11,8 @@ interface Props {
   currentIndex?: number
   renderCell: (weapon: Weapon, idx: number) => ReactNode
   renderAddCell: (weapon: Weapon) => ReactNode
+  /** When set, display only these indices (disables load-more and the Add row) */
+  overrideIndices?: number[]
 }
 
 const PAGE_SIZE = 20
@@ -22,6 +24,7 @@ export function VirtualizedTrackerTable({
   currentIndex,
   renderCell,
   renderAddCell,
+  overrideIndices,
 }: Props) {
   const maxExisting =
     existingIndices.length > 0 ? existingIndices[existingIndices.length - 1] : 0
@@ -29,7 +32,8 @@ export function VirtualizedTrackerTable({
     Math.max(PAGE_SIZE, maxExisting),
   )
   const totalRows = Math.max(visibleCount, maxExisting)
-  const allIndices = Array.from({ length: totalRows }, (_, i) => i + 1)
+  const allIndices =
+    overrideIndices ?? Array.from({ length: totalRows }, (_, i) => i + 1)
   const nextIndex = totalRows + 1
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -49,13 +53,14 @@ export function VirtualizedTrackerTable({
 
   const lastVirtualRowIndex = virtualRows[virtualRows.length - 1]?.index
   useEffect(() => {
+    if (overrideIndices) return
     if (
       lastVirtualRowIndex !== undefined &&
       lastVirtualRowIndex >= allIndices.length - 3
     ) {
       setVisibleCount((c) => c + PAGE_SIZE)
     }
-  }, [lastVirtualRowIndex, allIndices.length])
+  }, [lastVirtualRowIndex, allIndices.length, overrideIndices])
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-auto">
@@ -125,19 +130,21 @@ export function VirtualizedTrackerTable({
           )}
 
           {/* ── Add row ── */}
-          <tr className="border-b border-gray-700 bg-gray-900/50">
-            <td className="sticky left-0 z-10 bg-gray-900 px-4 py-2 font-mono text-sm text-red-400 border-r border-gray-700 text-center align-top">
-              {nextIndex}
-            </td>
-            {weapons.map((w) => (
-              <td
-                key={w.id}
-                className="px-3 py-1 border-r border-gray-700 align-top w-52"
-              >
-                {renderAddCell(w)}
+          {!overrideIndices && (
+            <tr className="border-b border-gray-700 bg-gray-900/50">
+              <td className="sticky left-0 z-10 bg-gray-900 px-4 py-2 font-mono text-sm text-red-400 border-r border-gray-700 text-center align-top">
+                {nextIndex}
               </td>
-            ))}
-          </tr>
+              {weapons.map((w) => (
+                <td
+                  key={w.id}
+                  className="px-3 py-1 border-r border-gray-700 align-top w-52"
+                >
+                  {renderAddCell(w)}
+                </td>
+              ))}
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
