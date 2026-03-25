@@ -74,11 +74,19 @@ export function NextRollBadge({ tracker, activeTab }: Props) {
   )
   const extra = nearestGroup.length - 1
 
-  const badgeLabel = hasRecommendations
+  // Full label for wider screens
+  const fullLabel = hasRecommendations
     ? extra > 0
       ? `Suggested roll: ${nearest.label} (+${extra} more)`
       : `Suggested roll: ${nearest.label}`
     : "Suggested roll: Add red comment as target"
+
+  // Short label for mobile
+  const shortLabel = hasRecommendations
+    ? extra > 0
+      ? `${nearest.label} +${extra}`
+      : nearest.label
+    : null
 
   return (
     <div className="relative" ref={containerRef}>
@@ -91,11 +99,16 @@ export function NextRollBadge({ tracker, activeTab }: Props) {
             : "text-gray-500 bg-gray-800 hover:bg-gray-700"
         }`}
       >
-        <Target size={11} />
-        {badgeLabel}
+        <Target size={11} className="shrink-0" />
+        {/* Mobile: compact */}
+        <span className="sm:hidden">
+          {shortLabel ?? <span className="sr-only">No targets</span>}
+        </span>
+        {/* Desktop: full text */}
+        <span className="hidden sm:inline">{fullLabel}</span>
       </button>
       {open && hasRecommendations && (
-        <div className="absolute right-0 top-full mt-1 z-50 bg-gray-900 border border-gray-700 rounded shadow-lg p-2 min-w-52 text-xs">
+        <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1 z-50 bg-gray-900 border border-gray-700 rounded shadow-lg p-2 min-w-52 text-xs">
           <p className="text-gray-500 mb-1.5 font-medium">
             Nearest red-comment rolls:
           </p>

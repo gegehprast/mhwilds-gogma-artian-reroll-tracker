@@ -55,36 +55,47 @@ function MainApp() {
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
       <TrackerHeader tracker={tracker} onSwitchTracker={handleSwitchTracker} />
 
-      {/* Roll type tabs */}
-      <div className="bg-gray-900 border-b border-gray-800 px-4 flex items-center gap-1">
-        <div className="flex gap-1">
-          {(
-            [
-              ["skills-bird", "Skills"],
-              ["bonuses-bird", "Bonuses"],
-            ] as const
-          ).map(([tab, label]) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`py-3 px-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab
-                  ? "border-red-400 text-red-400"
-                  : "border-transparent text-gray-500 hover:text-gray-300"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+      {/* Roll type tabs + controls */}
+      <div className="bg-gray-900 border-b border-gray-800 flex flex-col">
+        {/* Tabs row — always visible */}
+        <div className="px-4 flex items-center gap-1">
+          <div className="flex gap-1">
+            {(
+              [
+                ["skills-bird", "Skills"],
+                ["bonuses-bird", "Bonuses"],
+              ] as const
+            ).map(([tab, label]) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`py-3 px-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === tab
+                    ? "border-red-400 text-red-400"
+                    : "border-transparent text-gray-500 hover:text-gray-300"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Index input + add weapon — hidden on mobile, shown on sm+ */}
+          <div className="hidden sm:flex items-center gap-2 ml-auto">
+            <NextRollBadge tracker={tracker} activeTab={activeTab} />
+            <IndexControl tracker={tracker} activeTab={activeTab} />
+            <AddWeaponButton trackerId={tracker.id} />
+          </div>
         </div>
 
-        {/* Index input + add weapon */}
-        <div className="flex items-center gap-2 ml-auto">
-          {/* next roll recommendation */}
+        {/* Controls row — mobile only */}
+        <div className="sm:hidden flex items-center gap-2 px-4 pb-2 mt-4">
           <NextRollBadge tracker={tracker} activeTab={activeTab} />
-          <IndexControl tracker={tracker} activeTab={activeTab} />
-          <AddWeaponButton trackerId={tracker.id} />
+          <div className="ml-auto flex items-center gap-2">
+            <IndexControl tracker={tracker} activeTab={activeTab} />
+            <AddWeaponButton trackerId={tracker.id} />
+          </div>
         </div>
       </div>
 
