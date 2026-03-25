@@ -1,3 +1,4 @@
+import { ArrowLeftRight, Copy, Pencil } from "lucide-react"
 import { useState } from "react"
 import { useTracker } from "../hooks/useTracker"
 import type { Tracker } from "../lib/api-service"
@@ -56,10 +57,11 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
                 setNameInput(tracker.name)
                 setEditingName(true)
               }}
-              className="text-xs font-medium text-gray-200 hover:text-red-300 truncate max-w-28"
+              className="flex items-center gap-1 text-xs font-medium text-gray-200 hover:text-red-300 truncate max-w-28"
               title="Click to rename"
             >
-              {tracker.name} ✎
+              {tracker.name}
+              <Pencil size={10} className="shrink-0" />
             </button>
           )}
         </div>
@@ -67,19 +69,21 @@ export function TrackerHeader({ tracker, onSwitchTracker }: Props) {
         {/* ID */}
         <button
           type="button"
-          className="font-mono text-xs text-red-300 select-all bg-gray-800 px-2 py-0.5 rounded truncate"
+          className="flex items-center gap-1.5 font-mono text-xs text-red-300 select-all bg-gray-800 px-2 py-0.5 rounded truncate"
           onClick={handleCopyId}
           title="Click to copy to clipboard"
         >
           {tracker.id}
+          <Copy size={10} className="shrink-0" />
         </button>
 
         <button
           type="button"
           onClick={onSwitchTracker}
-          className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-0.5 rounded transition-colors shrink-0"
+          className="flex items-center gap-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-0.5 rounded transition-colors shrink-0"
           title="Switch to a different tracker"
         >
+          <ArrowLeftRight size={11} />
           Switch
         </button>
       </div>

@@ -100,7 +100,7 @@ export function TrackerSetup({ onReady }: Props) {
               type="button"
               onClick={handleGenerate}
               disabled={loading}
-              className="bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
+              className="bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors"
             >
               {loading ? "Creating…" : "Create New Tracker"}
             </button>
@@ -108,7 +108,7 @@ export function TrackerSetup({ onReady }: Props) {
         ) : (
           <div className="flex flex-col gap-3">
             <input
-              className="bg-gray-800 text-gray-100 rounded px-3 py-2 border border-gray-600 placeholder-gray-600 font-mono text-sm"
+              className="bg-gray-800 text-gray-100 rounded px-3 py-2 border border-gray-600 placeholder-gray-600"
               placeholder="Paste Tracker ID"
               value={loadId}
               onChange={(e) => setLoadId(e.target.value)}
@@ -119,7 +119,7 @@ export function TrackerSetup({ onReady }: Props) {
               type="button"
               onClick={handleLoad}
               disabled={loading || !loadId.trim()}
-              className="bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
+              className="bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors"
             >
               {loading ? "Loading…" : "Load Tracker"}
             </button>
