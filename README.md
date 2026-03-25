@@ -117,10 +117,16 @@ For the very first setup you still need to run `docker compose pull` and `docker
 
 Your rolls are stored in a Docker volume called `tracker_data`. Docker manages this automatically — the data persists across restarts and updates, and is never deleted unless you explicitly remove the volume.
 
-To back up your data, you can copy the SQLite database file out of the volume:
+To back up your data, you can copy the SQLite database file out of the volume.
 
+**Mac/Linux:**
 ```bash
 docker run --rm -v tracker_data:/data -v "$(pwd):/backup" alpine cp /data/tracker.db /backup/tracker.db
+```
+
+**Windows (PowerShell):**
+```powershell
+docker run --rm -v tracker_data:/data -v "${PWD}:/backup" alpine cp /data/tracker.db /backup/tracker.db
 ```
 
 This saves a `tracker.db` file in your current folder.
