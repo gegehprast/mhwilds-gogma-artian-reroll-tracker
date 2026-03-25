@@ -58,7 +58,10 @@ COPY --from=frontend-builder /app/apps/frontend/dist /usr/share/nginx/html
 # nginx config: serves SPA, proxies /api/* to Bun
 COPY nginx.prod.conf /etc/nginx/http.d/default.conf
 
-# SQLite data directory (mount a volume here for persistence)
+# SQLite data directory — declare as a volume so container orchestrators
+# (Dokploy, Docker Compose, etc.) persist it across deployments.
+# In Dokploy: add a volume mapping for this path in the service settings.
+VOLUME ["/app/apps/backend/data"]
 RUN mkdir -p /app/apps/backend/data
 
 # Entrypoint: run migrations, start Bun in background, then nginx in foreground
