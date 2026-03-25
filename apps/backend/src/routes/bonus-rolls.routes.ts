@@ -165,3 +165,34 @@ createRoute("DELETE", `${BASE}/:id`)
     if (result.isErr()) return mapError(result.error, res)
     return res.noContent()
   })
+
+const DeletePastBonusRollsBodySchema = z
+  .object({
+    beforeIndex: z.number().int().min(2),
+  })
+  .meta({ id: "DeletePastBonusRollsBody" })
+
+const DeletePastBonusRollsResponseSchema = z
+  .object({ deleted: z.number().int() })
+  .meta({ id: "DeletePastBonusRollsResponse" })
+
+createRoute("DELETE", "/api/trackers/:trackerId/bonus-rolls/past")
+  .openapi({
+    operationId: "deletePastBonusRolls",
+    summary: "Delete past bonus rolls",
+    description:
+      "Deletes all bonus rolls with index < beforeIndex across every weapon in the tracker.",
+    tags: ["Bonus Rolls"],
+  })
+  .body(DeletePastBonusRollsBodySchema)
+  .response(DeletePastBonusRollsResponseSchema)
+  .errors([400])
+  .handler(async ({ params, body, res }) => {
+    const service = getBonusRollService()
+    const result = await service.deletePastRolls(
+      params.trackerId,
+      body.beforeIndex,
+    )
+    if (result.isErr()) return mapError(result.error, res)
+    return res.ok({ deleted: result.value })
+  })

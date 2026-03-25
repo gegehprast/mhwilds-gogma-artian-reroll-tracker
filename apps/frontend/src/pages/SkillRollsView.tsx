@@ -169,6 +169,11 @@ export function SkillRollsView({ tracker }: Props) {
           overrideIndices={overrideIndices}
           onDeleteWeapon={handleDeleteWeapon}
           onReorderWeapons={handleReorderWeapons}
+          onDeletePast={async (beforeIndex) => {
+            await skillRollService.deletePast(tracker.id, beforeIndex)
+            qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id] })
+            addToast("Past rolls deleted", "success")
+          }}
           renderCell={(w, idx) => {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??

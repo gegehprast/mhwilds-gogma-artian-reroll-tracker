@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 interface ComboBoxProps {
   value: string
@@ -23,7 +24,9 @@ export function ComboBox({
   const [inputValue, setInputValue] = useState(value)
   const [highlighted, setHighlighted] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({})
 
   useEffect(() => {
     setInputValue(value)
@@ -101,6 +104,18 @@ export function ComboBox({
     }
   }, [highlighted])
 
+  useEffect(() => {
+    if (!open || !inputRef.current) return
+    const rect = inputRef.current.getBoundingClientRect()
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 2,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 9999,
+    })
+  }, [open])
+
   const hasError = !!value && !(options as readonly string[]).includes(value)
 
   return (
@@ -114,6 +129,7 @@ export function ComboBox({
       onBlur={handleBlur}
     >
       <input
+        ref={inputRef}
         type="text"
         value={inputValue}
         onChange={handleInputChange}
@@ -122,29 +138,33 @@ export function ComboBox({
         placeholder={placeholder}
         className={`w-full ${inputBg} text-gray-200 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-red-500/60 placeholder-gray-600${hasError ? " ring-2 ring-red-500" : ""}`}
       />
-      {open && filtered.length > 0 && (
-        <ul
-          ref={listRef}
-          className="absolute z-50 w-full mt-0.5 max-h-48 overflow-auto bg-gray-900 border border-gray-700 rounded shadow-lg text-xs text-gray-200"
-        >
-          {filtered.map((opt, i) => (
-            <li
-              key={opt}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                select(opt)
-              }}
-              className={`px-2 py-1 cursor-pointer ${
-                i === highlighted
-                  ? "bg-red-500/30 text-red-200"
-                  : "hover:bg-gray-700"
-              }`}
-            >
-              {opt}
-            </li>
-          ))}
-        </ul>
-      )}
+      {open &&
+        filtered.length > 0 &&
+        createPortal(
+          <ul
+            ref={listRef}
+            style={dropdownStyle}
+            className="max-h-48 overflow-auto bg-gray-900 border border-gray-700 rounded shadow-lg text-xs text-gray-200"
+          >
+            {filtered.map((opt, i) => (
+              <li
+                key={opt}
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  select(opt)
+                }}
+                className={`px-2 py-1 cursor-pointer ${
+                  i === highlighted
+                    ? "bg-red-500/30 text-red-200"
+                    : "hover:bg-gray-700"
+                }`}
+              >
+                {opt}
+              </li>
+            ))}
+          </ul>,
+          document.body,
+        )}
     </div>
   )
 }

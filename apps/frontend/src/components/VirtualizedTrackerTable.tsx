@@ -1,7 +1,9 @@
 import { useVirtualizer } from "@tanstack/react-virtual"
+import { Trash2 } from "lucide-react"
 import type { ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
 import type { Weapon } from "../lib/api-service"
+import { ConfirmDialog } from "./ConfirmDialog"
 import { WeaponColumnHeader } from "./WeaponColumnHeader"
 
 interface Props {
@@ -15,6 +17,7 @@ interface Props {
   overrideIndices?: number[]
   onDeleteWeapon?: (weaponId: string) => void
   onReorderWeapons?: (ids: string[]) => void
+  onDeletePast?: (beforeIndex: number) => Promise<void>
 }
 
 const PAGE_SIZE = 20
@@ -30,9 +33,14 @@ export function VirtualizedTrackerTable({
   overrideIndices,
   onDeleteWeapon,
   onReorderWeapons,
+  onDeletePast,
 }: Props) {
   const [draggedId, setDraggedId] = useState<string | null>(null)
   const [dragOverId, setDragOverId] = useState<string | null>(null)
+  const [confirmDeleteBefore, setConfirmDeleteBefore] = useState<number | null>(
+    null,
+  )
+  const [isDeleting, setIsDeleting] = useState(false)
   const maxExisting =
     existingIndices.length > 0 ? existingIndices[existingIndices.length - 1] : 0
   const [visibleCount, setVisibleCount] = useState(() =>
@@ -74,6 +82,25 @@ export function VirtualizedTrackerTable({
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-auto">
+      {confirmDeleteBefore !== null && (
+        <ConfirmDialog
+          title="Delete past rolls"
+          message={`Delete all rolls before index ${confirmDeleteBefore} across every weapon? This cannot be undone.`}
+          confirmLabel="Delete all"
+          isPending={isDeleting}
+          onCancel={() => setConfirmDeleteBefore(null)}
+          onConfirm={async () => {
+            if (!onDeletePast || confirmDeleteBefore === null) return
+            setIsDeleting(true)
+            try {
+              await onDeletePast(confirmDeleteBefore)
+            } finally {
+              setIsDeleting(false)
+              setConfirmDeleteBefore(null)
+            }
+          }}
+        />
+      )}
       <table className="border-collapse text-sm min-w-max">
         {/* ── Header ── */}
         <thead>
@@ -141,13 +168,29 @@ export function VirtualizedTrackerTable({
                 } ${isPast ? "saturate-40 opacity-70" : ""}`}
               >
                 <td
-                  className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm text-center align-middle transition-colors ${
+                  className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm text-center align-middle transition-colors group/index-cell ${
                     isCurrentIndex
                       ? "bg-red-950 group-hover/row:bg-red-800 group-focus-within/row:bg-red-800 text-red-300 border-r border-red-800"
                       : "bg-gray-950 group-hover/row:bg-gray-800 group-focus-within/row:bg-gray-800 text-gray-300 border-r border-gray-800"
                   }`}
                 >
-                  {idx}
+                  {isPast && onDeletePast ? (
+                    <>
+                      <span className="group-hover/index-cell:hidden">
+                        {idx}
+                      </span>
+                      <button
+                        type="button"
+                        title={`Delete all rolls before index ${idx + 1}`}
+                        onClick={() => setConfirmDeleteBefore(idx + 1)}
+                        className="hidden group-hover/index-cell:flex items-center justify-center w-full text-gray-500 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </>
+                  ) : (
+                    idx
+                  )}
                 </td>
                 {weapons.map((w) => (
                   <td

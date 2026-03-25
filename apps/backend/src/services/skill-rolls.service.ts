@@ -117,6 +117,13 @@ export class SkillRollService {
     return this.repo.delete(id)
   }
 
+  public async deletePastRolls(
+    trackerId: string,
+    beforeIndex: number,
+  ): Promise<Result<number, DatabaseError>> {
+    return this.repo.deleteBeforeIndexByTrackerId(trackerId, beforeIndex)
+  }
+
   public async import(
     trackerId: string,
     weaponId: string,

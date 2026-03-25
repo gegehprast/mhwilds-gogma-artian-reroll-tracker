@@ -165,6 +165,15 @@ export const skillRollService = {
     if (!result) throw new Error(String(error))
     return result
   },
+
+  async deletePast(trackerId: string, beforeIndex: number): Promise<number> {
+    const { data, error } = await apiClient.DELETE(
+      "/api/trackers/{trackerId}/skill-rolls/past",
+      { params: { path: { trackerId } }, body: { beforeIndex } },
+    )
+    if (!data) throw new Error(String(error))
+    return data.deleted
+  },
 }
 
 export const bonusRollService = {
@@ -248,6 +257,15 @@ export const bonusRollService = {
     )
     if (!result) throw new Error(String(error))
     return result
+  },
+
+  async deletePast(trackerId: string, beforeIndex: number): Promise<number> {
+    const { data, error } = await apiClient.DELETE(
+      "/api/trackers/{trackerId}/bonus-rolls/past",
+      { params: { path: { trackerId } }, body: { beforeIndex } },
+    )
+    if (!data) throw new Error(String(error))
+    return data.deleted
   },
 }
 

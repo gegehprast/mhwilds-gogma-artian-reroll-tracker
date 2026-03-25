@@ -1,5 +1,5 @@
 import type { Result } from "@bunkit/result"
-import { and, asc, eq, gte, lte, max } from "drizzle-orm"
+import { and, asc, eq, gte, lt, lte, max } from "drizzle-orm"
 import type { DatabaseError } from "@/core/errors"
 import { type BonusRoll, bonusRolls, type NewBonusRoll } from "@/db/schemas"
 import { weapons } from "@/db/schemas/weapons.schema"
@@ -87,6 +87,41 @@ export class BonusRollRepository extends BaseRepository {
         .returning()
       return deleted.length
     }, "Failed to delete bonus roll range")
+  }
+
+  /**
+   * Delete all rolls with index < beforeIndex across all weapons belonging to the tracker.
+   * Returns the number of deleted rows.
+   */
+  public async deleteBeforeIndexByTrackerId(
+    trackerId: string,
+    beforeIndex: number,
+  ): Promise<Result<number, DatabaseError>> {
+    return this.wrapQuery(async () => {
+      const weaponsSubquery = this.db
+        .select({ id: weapons.id })
+        .from(weapons)
+        .where(eq(weapons.trackerId, trackerId))
+        .all()
+
+      const weaponIds = weaponsSubquery.map((w) => w.id)
+      if (weaponIds.length === 0) return 0
+
+      let total = 0
+      for (const weaponId of weaponIds) {
+        const deleted = await this.db
+          .delete(bonusRolls)
+          .where(
+            and(
+              eq(bonusRolls.weaponId, weaponId),
+              lt(bonusRolls.index, beforeIndex),
+            ),
+          )
+          .returning()
+        total += deleted.length
+      }
+      return total
+    }, "Failed to delete past bonus rolls")
   }
 
   public async update(

@@ -149,3 +149,34 @@ createRoute("DELETE", `${BASE}/:id`)
     if (result.isErr()) return mapError(result.error, res)
     return res.noContent()
   })
+
+const DeletePastSkillRollsBodySchema = z
+  .object({
+    beforeIndex: z.number().int().min(2),
+  })
+  .meta({ id: "DeletePastSkillRollsBody" })
+
+const DeletePastSkillRollsResponseSchema = z
+  .object({ deleted: z.number().int() })
+  .meta({ id: "DeletePastSkillRollsResponse" })
+
+createRoute("DELETE", "/api/trackers/:trackerId/skill-rolls/past")
+  .openapi({
+    operationId: "deletePastSkillRolls",
+    summary: "Delete past skill rolls",
+    description:
+      "Deletes all skill rolls with index < beforeIndex across every weapon in the tracker.",
+    tags: ["Skill Rolls"],
+  })
+  .body(DeletePastSkillRollsBodySchema)
+  .response(DeletePastSkillRollsResponseSchema)
+  .errors([400])
+  .handler(async ({ params, body, res }) => {
+    const service = getSkillRollService()
+    const result = await service.deletePastRolls(
+      params.trackerId,
+      body.beforeIndex,
+    )
+    if (result.isErr()) return mapError(result.error, res)
+    return res.ok({ deleted: result.value })
+  })

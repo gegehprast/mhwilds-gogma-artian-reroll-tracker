@@ -1203,6 +1203,85 @@
         }
       }
     },
+    "/api/trackers/{trackerId}/skill-rolls/past": {
+      "delete": {
+        "operationId": "deletePastSkillRolls",
+        "summary": "Delete past skill rolls",
+        "description": "Deletes all skill rolls with index < beforeIndex across every weapon in the tracker.",
+        "tags": [
+          "Skill Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletePastSkillRollsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePastSkillRollsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
       "post": {
         "operationId": "importBonusRolls",
@@ -1700,6 +1779,85 @@
                 },
                 "schema": {
                   "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Internal server error",
+                  "code": "INTERNAL_ERROR",
+                  "details": "Stack trace or error details for debugging"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trackers/{trackerId}/bonus-rolls/past": {
+      "delete": {
+        "operationId": "deletePastBonusRolls",
+        "summary": "Delete past bonus rolls",
+        "description": "Deletes all bonus rolls with index < beforeIndex across every weapon in the tracker.",
+        "tags": [
+          "Bonus Rolls"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trackerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletePastBonusRollsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePastBonusRollsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input or validation failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Validation failed",
+                  "code": "BAD_REQUEST",
+                  "details": [
+                    {
+                      "path": [
+                        "email"
+                      ],
+                      "message": "Invalid email format"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestErrorResponse"
                 }
               }
             }
@@ -2292,6 +2450,19 @@
           }
         }
       },
+      "DeletePastSkillRollsBody": {
+        "type": "object",
+        "properties": {
+          "beforeIndex": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "beforeIndex"
+        ]
+      },
       "ImportBonusRollsBody": {
         "type": "object",
         "properties": {
@@ -2389,6 +2560,19 @@
           }
         }
       },
+      "DeletePastBonusRollsBody": {
+        "type": "object",
+        "properties": {
+          "beforeIndex": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "beforeIndex"
+        ]
+      },
       "CreateCommentBody": {
         "type": "object",
         "properties": {
@@ -2457,7 +2641,7 @@
           },
           "timestamp": {
             "type": "string",
-            "example": "2026-03-25T01:14:15.898Z"
+            "example": "2026-03-25T07:52:21.015Z"
           },
           "uptime": {
             "type": "number",
@@ -2600,6 +2784,20 @@
         "additionalProperties": false,
         "title": "Skill Roll"
       },
+      "DeletePastSkillRollsResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "additionalProperties": false
+      },
       "BonusRoll": {
         "type": "object",
         "properties": {
@@ -2654,6 +2852,20 @@
         ],
         "additionalProperties": false,
         "title": "Bonus Roll"
+      },
+      "DeletePastBonusRollsResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "additionalProperties": false
       },
       "Comment": {
         "type": "object",

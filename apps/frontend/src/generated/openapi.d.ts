@@ -280,6 +280,26 @@ export interface paths {
         patch: operations["updateSkillRoll"];
         trace?: never;
     };
+    "/api/trackers/{trackerId}/skill-rolls/past": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete past skill rolls
+         * @description Deletes all skill rolls with index < beforeIndex across every weapon in the tracker.
+         */
+        delete: operations["deletePastSkillRolls"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/trackers/{trackerId}/weapons/{weaponId}/bonus-rolls/import": {
         parameters: {
             query?: never;
@@ -346,6 +366,26 @@ export interface paths {
          * @description Correct any of the five bonus stat columns. The index is not editable.
          */
         patch: operations["updateBonusRoll"];
+        trace?: never;
+    };
+    "/api/trackers/{trackerId}/bonus-rolls/past": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete past bonus rolls
+         * @description Deletes all bonus rolls with index < beforeIndex across every weapon in the tracker.
+         */
+        delete: operations["deletePastBonusRolls"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/trackers/{trackerId}/comments": {
@@ -441,6 +481,9 @@ export interface components {
             setSkill?: string;
             groupSkill?: string;
         };
+        DeletePastSkillRollsBody: {
+            beforeIndex: number;
+        };
         ImportBonusRollsBody: {
             fromIndex: number;
             rolls: {
@@ -466,6 +509,9 @@ export interface components {
             bonus4?: string;
             bonus5?: string;
         };
+        DeletePastBonusRollsBody: {
+            beforeIndex: number;
+        };
         CreateCommentBody: {
             rollId: string;
             /** @enum {string} */
@@ -489,7 +535,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-25T01:14:15.898Z */
+            /** @example 2026-03-25T07:52:21.015Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -523,6 +569,9 @@ export interface components {
             createdAt: number;
             updatedAt: number;
         };
+        DeletePastSkillRollsResponse: {
+            deleted: number;
+        };
         /** Bonus Roll */
         BonusRoll: {
             id: string;
@@ -535,6 +584,9 @@ export interface components {
             bonus5: string;
             createdAt: number;
             updatedAt: number;
+        };
+        DeletePastBonusRollsResponse: {
+            deleted: number;
         };
         /** Comment */
         Comment: {
@@ -1628,6 +1680,71 @@ export interface operations {
             };
         };
     };
+    deletePastSkillRolls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeletePastSkillRollsBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletePastSkillRollsResponse"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
     importBonusRolls: {
         parameters: {
             query?: never;
@@ -2027,6 +2144,71 @@ export interface operations {
                      *     }
                      */
                     "application/json": components["schemas"]["NotFoundErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error - Unexpected server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["InternalServerErrorResponse"];
+                };
+            };
+        };
+    };
+    deletePastBonusRolls: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trackerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeletePastBonusRollsBody"];
+            };
+        };
+        responses: {
+            /** @description 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletePastBonusRollsResponse"];
+                };
+            };
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */
