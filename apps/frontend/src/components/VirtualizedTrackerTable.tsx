@@ -132,12 +132,13 @@ export function VirtualizedTrackerTable({
             const idx = allIndices[vRow.index]
             if (idx === undefined) return null
             const isCurrentIndex = idx === currentIndex
+            const isPast = currentIndex !== undefined && idx < currentIndex
             return (
               <tr
                 key={idx}
                 className={`group/row border-b transition-colors border-gray-800/60 ${
                   idx % 2 === 0 ? "bg-gray-800/20" : ""
-                }`}
+                } ${isPast ? "saturate-40 opacity-70" : ""}`}
               >
                 <td
                   className={`sticky left-0 z-10 px-4 py-2 font-mono text-sm text-center align-middle transition-colors ${
