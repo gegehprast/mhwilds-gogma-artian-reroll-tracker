@@ -412,9 +412,6 @@ export interface components {
             weaponType: components["schemas"]["WeaponType"];
             element: components["schemas"]["Element"];
         };
-        ReorderWeaponsBody: {
-            ids: string[];
-        };
         /**
          * WeaponType
          * @enum {string}
@@ -425,6 +422,9 @@ export interface components {
          * @enum {string}
          */
         Element: "None" | "Fire" | "Water" | "Thunder" | "Ice" | "Dragon" | "Poison" | "Paralysis" | "Sleep" | "Blast";
+        ReorderWeaponsBody: {
+            ids: string[];
+        };
         ImportSkillRollsBody: {
             fromIndex: number;
             rolls: {
@@ -489,7 +489,7 @@ export interface components {
              * @constant
              */
             status: "ok";
-            /** @example 2026-03-24T18:58:55.090Z */
+            /** @example 2026-03-25T01:14:15.898Z */
             timestamp: string;
             /** @example 123.456 */
             uptime: number;
@@ -1096,6 +1096,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
                     "application/json": components["schemas"]["ForbiddenErrorResponse"];
                 };
             };
@@ -1105,6 +1111,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    /**
+                     * @example {
+                     *       "message": "Resource not found",
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
                     "application/json": components["schemas"]["NotFoundErrorResponse"];
                 };
             };
@@ -1114,6 +1126,13 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    /**
+                     * @example {
+                     *       "message": "Internal server error",
+                     *       "code": "INTERNAL_ERROR",
+                     *       "details": "Stack trace or error details for debugging"
+                     *     }
+                     */
                     "application/json": components["schemas"]["InternalServerErrorResponse"];
                 };
             };
@@ -1134,10 +1153,28 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 204 No Content */
-            204: {
-                headers: { [name: string]: unknown };
-                content?: never;
+            /** @description Bad Request - Invalid input or validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Validation failed",
+                     *       "code": "BAD_REQUEST",
+                     *       "details": [
+                     *         {
+                     *           "path": [
+                     *             "email"
+                     *           ],
+                     *           "message": "Invalid email format"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BadRequestErrorResponse"];
+                };
             };
             /** @description Forbidden - Insufficient permissions */
             403: {
@@ -1145,20 +1182,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    /**
+                     * @example {
+                     *       "message": "Insufficient permissions",
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
                     "application/json": components["schemas"]["ForbiddenErrorResponse"];
                 };
             };
             /** @description Internal Server Error - Unexpected server error */
             500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InternalServerErrorResponse"];
-                };
-            };
-        };
-    };
                 headers: {
                     [name: string]: unknown;
                 };
