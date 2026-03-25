@@ -36,7 +36,7 @@ If you'd prefer your data to stay entirely on your own machine, use one of the l
 
 ---
 
-## Option B: Docker
+## Option B: Docker (local, easiest)
 
 Docker is just a software for deploying applications inside lightweight, isolated containers. Docker has a GUI called **Docker Desktop** that works on Windows, Mac, and Linux. You don't need to know anything about Docker to use this app — just follow the steps below and it will be up and running in no time.
 
@@ -144,7 +144,7 @@ This saves a `tracker.db` file in your current folder.
 
 ---
 
-## Option C: Bun (no Docker)
+## Option C: Bun (local, more involved)
 
 This method runs the app directly on your machine using **Bun**, a JavaScript runtime. It's slightly more involved to set up but doesn't require Docker.
 
@@ -172,7 +172,7 @@ Download this repository as a ZIP file (click the green **Code** button on GitHu
 Alternatively, if you have Git installed:
 
 ```bash
-git clone https://github.com/gegehprast/mhwilds-gogma-reroll-tracker.git
+git clone --depth 1 https://github.com/gegehprast/mhwilds-gogma-reroll-tracker.git
 cd mhwilds-gogma-reroll-tracker
 ```
 
@@ -213,6 +213,12 @@ Press `Ctrl+C` in the terminal to stop the app.
 
 ---
 
+### Stopping the app
+
+Press `Ctrl+C` in the terminal where the app is running.
+
+---
+
 ### Starting again later
 
 Just run the same script again from the same folder:
@@ -225,7 +231,41 @@ Just run the same script again from the same folder:
 .\start.ps1
 ```
 
-Dependencies are already installed and the database is already set up, so it starts faster after the first run.
+Dependencies are already installed, the database is already set up, and the frontend build is cached — so it starts much faster after the first run.
+
+---
+
+### Updating the app
+
+**If you used Git:**
+
+```bash
+git pull
+```
+
+Then restart with the `--rebuild` flag to rebuild the frontend:
+
+```bash
+# Mac/Linux
+./start.sh --rebuild
+
+# Windows
+.\start.ps1 -Rebuild
+```
+
+**If you downloaded the ZIP:**
+
+1. Back up your data first — copy `apps/backend/data/tracker.db` somewhere safe
+2. Download the new ZIP from GitHub and extract it to a **new** folder
+3. Copy your `tracker.db` back into `apps/backend/data/` in the new folder
+4. Run the start script normally:
+```bash
+# Mac/Linux
+./start.sh
+
+# Windows
+.\start.ps1
+```
 
 ---
 

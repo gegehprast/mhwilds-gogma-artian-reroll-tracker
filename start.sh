@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+REBUILD=0
+for arg in "$@"; do
+    case "$arg" in
+        --rebuild) REBUILD=1 ;;
+    esac
+done
+
 # ── Check Bun ────────────────────────────────────────────────────────────────
 if ! command -v bun >/dev/null 2>&1; then
     echo ""
@@ -20,8 +27,12 @@ echo "📦 Installing dependencies..."
 bun install --frozen-lockfile
 
 # ── Build frontend ────────────────────────────────────────────────────────────
-echo "🔨 Building frontend..."
-VITE_API_URL=http://localhost:3001 bun run frontend:build
+if [ "$REBUILD" = "1" ] || [ ! -d apps/frontend/dist ]; then
+    echo "🔨 Building frontend..."
+    VITE_API_URL=http://localhost:3001 bun run frontend:build
+else
+    echo "⚡ Skipping frontend build (dist already exists). Use --rebuild to force."
+fi
 
 # ── Ensure backend .env exists (Bun requires it for --env-file) ───────────────
 if [ ! -f apps/backend/.env ]; then

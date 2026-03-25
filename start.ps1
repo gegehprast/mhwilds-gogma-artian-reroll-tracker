@@ -2,6 +2,9 @@
 # Run this script in PowerShell from the project root folder.
 # If you get an error about "execution policy", run this first (once):
 #   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+param(
+    [switch]$Rebuild
+)
 
 # ── Check Bun ────────────────────────────────────────────────────────────────
 if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
@@ -23,10 +26,14 @@ bun install --frozen-lockfile
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 # ── Build frontend ────────────────────────────────────────────────────────────
-Write-Host "🔨 Building frontend..."
-$env:VITE_API_URL = "http://localhost:3001"
-bun run frontend:build
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ($Rebuild -or -not (Test-Path "apps\frontend\dist")) {
+    Write-Host "🔨 Building frontend..."
+    $env:VITE_API_URL = "http://localhost:3001"
+    bun run frontend:build
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+} else {
+    Write-Host "⚡ Skipping frontend build (dist already exists). Use -Rebuild to force."
+}
 
 # ── Ensure backend .env exists (Bun requires it for --env-file) ───────────────
 if (-not (Test-Path "apps\backend\.env")) {
