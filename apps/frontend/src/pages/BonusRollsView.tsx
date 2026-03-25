@@ -30,17 +30,8 @@ export function BonusRollsView({ tracker }: Props) {
     })
   }
 
-  function handleMoveWeapon(weaponId: string, direction: "left" | "right") {
-    const idx = weapons.findIndex((w) => w.id === weaponId)
-    if (idx === -1) return
-    const newOrder = [...weapons]
-    const swapIdx = direction === "left" ? idx - 1 : idx + 1
-    const a = newOrder[idx]
-    const b = newOrder[swapIdx]
-    if (!a || !b) return
-    newOrder[idx] = b
-    newOrder[swapIdx] = a
-    reorderWeapon.mutate(newOrder.map((w) => w.id))
+  function handleReorderWeapons(ids: string[]) {
+    reorderWeapon.mutate(ids)
   }
   const { data: rollsByWeapon, isLoading } = useAllBonusRolls(
     tracker.id,
@@ -167,7 +158,7 @@ export function BonusRollsView({ tracker }: Props) {
           currentIndex={tracker.bonusIndex ?? undefined}
           overrideIndices={overrideIndices}
           onDeleteWeapon={handleDeleteWeapon}
-          onMoveWeapon={handleMoveWeapon}
+          onReorderWeapons={handleReorderWeapons}
           renderCell={(w, idx) => {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??

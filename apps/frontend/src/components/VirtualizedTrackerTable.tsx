@@ -14,7 +14,7 @@ interface Props {
   /** When set, display only these indices (disables load-more and the Add row) */
   overrideIndices?: number[]
   onDeleteWeapon?: (weaponId: string) => void
-  onMoveWeapon?: (weaponId: string, direction: "left" | "right") => void
+  onReorderWeapons?: (ids: string[]) => void
 }
 
 const PAGE_SIZE = 20
@@ -28,8 +28,10 @@ export function VirtualizedTrackerTable({
   renderAddCell,
   overrideIndices,
   onDeleteWeapon,
-  onMoveWeapon,
+  onReorderWeapons,
 }: Props) {
+  const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [dragOverId, setDragOverId] = useState<string | null>(null)
   const maxExisting =
     existingIndices.length > 0 ? existingIndices[existingIndices.length - 1] : 0
   const [visibleCount, setVisibleCount] = useState(() =>
@@ -75,14 +77,40 @@ export function VirtualizedTrackerTable({
             <th className="sticky top-0 left-0 z-20 bg-gray-900 text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide border-r border-gray-700 w-20 min-w-20">
               Index
             </th>
-            {weapons.map((w, i) => (
+            {weapons.map((w) => (
               <WeaponColumnHeader
                 key={w.id}
                 weapon={w}
-                canMoveLeft={i > 0}
-                canMoveRight={i < weapons.length - 1}
-                onMoveLeft={() => onMoveWeapon?.(w.id, "left")}
-                onMoveRight={() => onMoveWeapon?.(w.id, "right")}
+                isDragging={draggedId === w.id}
+                isDragOver={dragOverId === w.id && draggedId !== w.id}
+                onDragStart={(e) => {
+                  setDraggedId(w.id)
+                  e.dataTransfer.effectAllowed = "move"
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  e.dataTransfer.dropEffect = "move"
+                  if (w.id !== draggedId) setDragOverId(w.id)
+                }}
+                onDragLeave={() => setDragOverId(null)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  if (!draggedId || draggedId === w.id) return
+                  const from = weapons.findIndex((x) => x.id === draggedId)
+                  const to = weapons.findIndex((x) => x.id === w.id)
+                  if (from === -1 || to === -1) return
+                  const next = [...weapons]
+                  const [moved] = next.splice(from, 1)
+                  if (!moved) return
+                  next.splice(to, 0, moved)
+                  onReorderWeapons?.(next.map((x) => x.id))
+                  setDraggedId(null)
+                  setDragOverId(null)
+                }}
+                onDragEnd={() => {
+                  setDraggedId(null)
+                  setDragOverId(null)
+                }}
                 onDelete={() => onDeleteWeapon?.(w.id)}
               />
             ))}
