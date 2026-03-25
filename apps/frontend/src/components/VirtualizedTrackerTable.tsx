@@ -151,7 +151,7 @@ export function VirtualizedTrackerTable({
                 {weapons.map((w) => (
                   <td
                     key={w.id}
-                    className={`px-3 align-top w-52 transition-colors border-r border-gray-800 ${
+                    className={`pl-3 pr-1 align-top w-52 transition-colors border-r border-gray-800 ${
                       isCurrentIndex
                         ? "bg-red-500/30 group-hover/row:bg-red-500/50 group-focus-within/row:bg-red-500/50"
                         : "group-hover/row:bg-gray-800/50 group-focus-within/row:bg-gray-800/50"

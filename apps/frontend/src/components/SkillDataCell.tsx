@@ -134,13 +134,13 @@ export function SkillDataCell({
             comments.map((c) => (
               <div
                 key={c.id}
-                className={`w-1.5 h-1.5 rounded-full shrink-0 ${COMMENT_COLOR_CLASSES[c.color].bg}`}
+                className={`w-2 h-2 rounded-full shrink-0 ${COMMENT_COLOR_CLASSES[c.color].bg}`}
               />
             ))}
         </div>
 
         {/* Action buttons — revealed on hover */}
-        <div className="absolute inset-0 flex flex-col items-center justify-around py-0.5 transition-opacity opacity-0 group-hover/cell:opacity-100 pointer-events-none group-hover/cell:pointer-events-auto">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-y-1.5 py-0.5 transition-opacity opacity-0 group-hover/cell:opacity-100 pointer-events-none group-hover/cell:pointer-events-auto">
           {roll && (
             <button
               type="button"
@@ -155,7 +155,7 @@ export function SkillDataCell({
               <MessageSquare size={11} />
               {comments.length > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full flex items-center justify-center text-white"
+                  className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full flex items-center justify-center text-white"
                   style={{ fontSize: "7px" }}
                 >
                   {comments.length}
