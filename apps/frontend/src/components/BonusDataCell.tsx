@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { MessageSquare, Trash2, Upload } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useComments } from "../hooks/useComments"
 import type { BonusRoll, Weapon } from "../lib/api-service"
@@ -7,11 +8,10 @@ import { BONUSES } from "../lib/constants"
 import { addToast } from "../lib/toast"
 import type { BonusData } from "../types/bonus-roll-types"
 import { BONUS_KEYS } from "../types/bonus-roll-types"
+import { COMMENT_COLOR_CLASSES } from "../types/comment-types"
 import { ComboBox } from "./ComboBox"
-import { CommentPin } from "./CommentPin"
 import { CommentPopover } from "./CommentPopover"
 import { ImportPreviewModal } from "./ImportPreviewModal"
-import { PinIconButton } from "./PinIconButton"
 
 export interface BonusDataCellProps {
   roll: BonusRoll | null
@@ -59,7 +59,7 @@ export function BonusDataCell({
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
   ]
-  const pinRef = useRef<HTMLDivElement>(null)
+  const gutterRef = useRef<HTMLDivElement>(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
 
@@ -136,10 +136,10 @@ export function BonusDataCell({
 
   return (
     <div
-      className="relative flex flex-row gap-1 py-1 pr-4"
+      className="relative group/cell flex flex-row gap-1 py-1"
       data-bonus-row={`${weapon.id}-${index}`}
     >
-      <div className="flex-1 flex flex-col gap-1">
+      <div className="flex-1 flex flex-col gap-1 min-w-0">
         {BONUS_KEYS.map((key, i) => (
           <div key={key} ref={comboRefs[i]}>
             <ComboBox
@@ -168,35 +168,62 @@ export function BonusDataCell({
         ))}
       </div>
 
-      <div
-        ref={pinRef}
-        className="absolute -right-4.5 top-0 bottom-0 flex flex-col items-center justify-around py-1"
-      >
-        {roll && (
-          <CommentPin
-            comments={comments}
-            onClick={() => setPopoverOpen((v) => !v)}
-          />
-        )}
-      </div>
+      <div ref={gutterRef} className="w-4 shrink-0 relative">
+        {/* Comment dots — always visible, fade on hover */}
+        <div className="absolute inset-0 flex flex-col items-center gap-0.5 py-1 transition-opacity opacity-100 group-hover/cell:opacity-0 pointer-events-none">
+          {roll &&
+            comments.map((c) => (
+              <div
+                key={c.id}
+                className={`w-1.5 h-1.5 rounded-full shrink-0 ${COMMENT_COLOR_CLASSES[c.color].bg}`}
+              />
+            ))}
+        </div>
 
-      <div className="absolute right-0 top-0 bottom-0 flex flex-col items-center justify-around py-1">
-        <PinIconButton
-          label="Upload rolls from this index"
-          onClick={() => setImportOpen(true)}
-        >
-          <span className="font-mono leading-none">↑</span>
-        </PinIconButton>
-        {roll && (
-          <PinIconButton
-            label="Delete roll"
-            onClick={() => deleteMutation.mutate()}
-            disabled={deleteMutation.isPending}
-            variant="danger"
+        {/* Action buttons — revealed on hover */}
+        <div className="absolute inset-0 flex flex-col items-center justify-around py-0.5 transition-opacity opacity-0 group-hover/cell:opacity-100 pointer-events-none group-hover/cell:pointer-events-auto">
+          {roll && (
+            <button
+              type="button"
+              title={
+                comments.length > 0
+                  ? `${comments.length} comment(s)`
+                  : "Add comment"
+              }
+              onClick={() => setPopoverOpen((v) => !v)}
+              className="relative flex items-center justify-center text-gray-500 hover:text-gray-200 transition-colors"
+            >
+              <MessageSquare size={11} />
+              {comments.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full flex items-center justify-center text-white"
+                  style={{ fontSize: "7px" }}
+                >
+                  {comments.length}
+                </span>
+              )}
+            </button>
+          )}
+          <button
+            type="button"
+            title="Import rolls from this index"
+            onClick={() => setImportOpen(true)}
+            className="flex items-center justify-center text-gray-500 hover:text-gray-200 transition-colors"
           >
-            <span className="font-mono leading-none">×</span>
-          </PinIconButton>
-        )}
+            <Upload size={11} />
+          </button>
+          {roll && (
+            <button
+              type="button"
+              title="Delete roll"
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+              className="flex items-center justify-center text-gray-500 hover:text-red-400 transition-colors disabled:opacity-40"
+            >
+              <Trash2 size={11} />
+            </button>
+          )}
+        </div>
       </div>
 
       {importOpen && (
@@ -209,11 +236,11 @@ export function BonusDataCell({
         />
       )}
 
-      {popoverOpen && roll && pinRef.current && (
+      {popoverOpen && roll && gutterRef.current && (
         <CommentPopover
           comments={comments}
           isLoading={commentsLoading}
-          anchorRect={pinRef.current.getBoundingClientRect()}
+          anchorRect={gutterRef.current.getBoundingClientRect()}
           onClose={() => setPopoverOpen(false)}
           onCreate={(content, color) =>
             createComment.mutate({ content, color })
