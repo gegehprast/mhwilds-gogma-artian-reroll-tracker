@@ -18,6 +18,7 @@ interface Props {
 }
 
 const PAGE_SIZE = 20
+const MAX_ROLL_INDEX = 1000
 
 export function VirtualizedTrackerTable({
   weapons,
@@ -35,9 +36,12 @@ export function VirtualizedTrackerTable({
   const maxExisting =
     existingIndices.length > 0 ? existingIndices[existingIndices.length - 1] : 0
   const [visibleCount, setVisibleCount] = useState(() =>
-    Math.max(PAGE_SIZE, maxExisting),
+    Math.min(Math.max(PAGE_SIZE, maxExisting), MAX_ROLL_INDEX),
   )
-  const totalRows = Math.max(visibleCount, maxExisting)
+  const totalRows = Math.min(
+    Math.max(visibleCount, maxExisting),
+    MAX_ROLL_INDEX,
+  )
   const allIndices =
     overrideIndices ?? Array.from({ length: totalRows }, (_, i) => i + 1)
   const nextIndex = totalRows + 1
@@ -64,7 +68,7 @@ export function VirtualizedTrackerTable({
       lastVirtualRowIndex !== undefined &&
       lastVirtualRowIndex >= allIndices.length - 3
     ) {
-      setVisibleCount((c) => c + PAGE_SIZE)
+      setVisibleCount((c) => Math.min(c + PAGE_SIZE, MAX_ROLL_INDEX))
     }
   }, [lastVirtualRowIndex, allIndices.length, overrideIndices])
 

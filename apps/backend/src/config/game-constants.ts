@@ -30,3 +30,5 @@ export const ELEMENTS = [
 
 export type WeaponType = (typeof WEAPON_TYPES)[number]
 export type Element = (typeof ELEMENTS)[number]
+
+export const MAX_ROLL_INDEX = 1000

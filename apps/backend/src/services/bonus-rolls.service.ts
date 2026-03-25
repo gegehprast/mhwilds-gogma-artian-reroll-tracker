@@ -1,7 +1,8 @@
 import type { Result } from "@bunkit/result"
 import { err, ok } from "@bunkit/result"
+import { MAX_ROLL_INDEX } from "@/config/game-constants"
 import type { DatabaseError } from "@/core/errors"
-import { ForbiddenError, NotFoundError } from "@/core/errors"
+import { ForbiddenError, NotFoundError, ValidationError } from "@/core/errors"
 import {
   type BonusRollRepository,
   getBonusRollRepository,
@@ -55,7 +56,10 @@ export class BonusRollService {
     bonus5: string,
     atIndex?: number,
   ): Promise<
-    Result<BonusRoll, NotFoundError | ForbiddenError | DatabaseError>
+    Result<
+      BonusRoll,
+      NotFoundError | ForbiddenError | ValidationError | DatabaseError
+    >
   > {
     const check = await this.assertWeaponOwnership(weaponId, trackerId)
     if (check.isErr()) return err(check.error)
@@ -63,9 +67,16 @@ export class BonusRollService {
     const maxIndex = await this.repo.findMaxIndexByTrackerId(trackerId)
     if (maxIndex.isErr()) return err(maxIndex.error)
 
+    const targetIndex = atIndex ?? maxIndex.value + 1
+    if (targetIndex > MAX_ROLL_INDEX) {
+      return err(
+        new ValidationError(`Roll index cannot exceed ${MAX_ROLL_INDEX}`),
+      )
+    }
+
     const created = await this.repo.create({
       weaponId,
-      index: atIndex ?? maxIndex.value + 1,
+      index: targetIndex,
       bonus1,
       bonus2,
       bonus3,
@@ -148,6 +159,11 @@ export class BonusRollService {
     if (check.isErr()) return err(check.error)
 
     const toIndex = fromIndex + rolls.length - 1
+    if (toIndex > MAX_ROLL_INDEX) {
+      return err(
+        new ValidationError(`Roll index cannot exceed ${MAX_ROLL_INDEX}`),
+      )
+    }
     const deleted = await this.repo.deleteRange(weaponId, fromIndex, toIndex)
     if (deleted.isErr()) return err(deleted.error)
 
