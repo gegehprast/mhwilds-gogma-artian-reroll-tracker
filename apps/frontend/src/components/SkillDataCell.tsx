@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useCommentMutations } from "../hooks/useComments"
-import type { SkillRollWithComments, Weapon } from "../lib/api-service"
+import type {
+  SkillRoll,
+  SkillRollWithComments,
+  Weapon,
+} from "../lib/api-service"
 import { skillRollService } from "../lib/api-service"
 import { GROUP_SKILLS, SET_SKILLS } from "../lib/constants"
 import { addToast } from "../lib/toast"
@@ -15,24 +19,17 @@ export interface SkillDataCellProps {
   index: number
   weapon: Weapon
   trackerId: string
-  highlightSetSkill?: boolean
-  highlightGroupSkill?: boolean
-  updateRoll: (
-    weaponId: string,
-    rollId: string,
-    data: { setSkill?: string; groupSkill?: string },
-  ) => void
-  updating: boolean
+  filterSetSkill?: string
+  filterGroupSkill?: string
 }
 
-export function SkillDataCell({
+export const SkillDataCell = memo(function SkillDataCell({
   roll,
   index,
   weapon,
   trackerId,
-  highlightSetSkill,
-  highlightGroupSkill,
-  updateRoll,
+  filterSetSkill,
+  filterGroupSkill,
 }: SkillDataCellProps) {
   const qc = useQueryClient()
   const [setSkill, setSetSkill] = useState(roll?.setSkill ?? "")
@@ -47,13 +44,19 @@ export function SkillDataCell({
     create: createComment,
     update: updateComment,
     remove: removeComment,
-  } = useCommentMutations(trackerId, roll?.id, "skill")
+  } = useCommentMutations(trackerId, weapon.id, roll?.id, "skill")
 
   const createMutation = useMutation({
     mutationFn: ({ s, g, idx }: { g: string; s: string; idx: number }) =>
       skillRollService.create(trackerId, weapon.id, s, g, idx),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
+    onSuccess: (newRoll: SkillRoll) => {
+      qc.setQueryData<SkillRollWithComments[]>(
+        ["skill-rolls", trackerId, weapon.id],
+        (old) => {
+          const entry: SkillRollWithComments = { ...newRoll, comments: [] }
+          return [...(old ?? []), entry].sort((a, b) => a.index - b.index)
+        },
+      )
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setGroupSkill("")
       setSetSkill("")
@@ -67,9 +70,35 @@ export function SkillDataCell({
       return skillRollService.delete(trackerId, weapon.id, roll.id)
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["skill-rolls", trackerId, weapon.id] })
+      qc.setQueryData<SkillRollWithComments[]>(
+        ["skill-rolls", trackerId, weapon.id],
+        (old) => old?.filter((r) => r.id !== roll?.id),
+      )
       qc.invalidateQueries({ queryKey: ["tracker"] })
       addToast("Roll deleted", "success")
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: (data: { setSkill?: string; groupSkill?: string }) => {
+      if (!roll) throw new Error("No roll to update")
+      return skillRollService.update(trackerId, weapon.id, roll.id, data)
+    },
+    onSuccess: (updatedRoll) => {
+      qc.setQueryData<SkillRollWithComments[]>(
+        ["skill-rolls", trackerId, weapon.id],
+        (old) =>
+          old?.map((r) =>
+            r.id === updatedRoll.id
+              ? {
+                  ...r,
+                  setSkill: updatedRoll.setSkill,
+                  groupSkill: updatedRoll.groupSkill,
+                }
+              : r,
+          ),
+      )
+      addToast("Roll updated", "success")
     },
   })
 
@@ -82,12 +111,17 @@ export function SkillDataCell({
     if (!groupSkill && !setSkill) return
     if (roll) {
       if (groupSkill !== roll.groupSkill || setSkill !== roll.setSkill) {
-        updateRoll(weapon.id, roll.id, { groupSkill, setSkill })
+        updateMutation.mutate({ groupSkill, setSkill })
       }
     } else {
       createMutation.mutate({ s: setSkill, g: groupSkill, idx: index })
     }
   }
+
+  const highlightSetSkill =
+    !!filterSetSkill && roll?.setSkill === filterSetSkill
+  const highlightGroupSkill =
+    !!filterGroupSkill && roll?.groupSkill === filterGroupSkill
 
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
 
@@ -171,4 +205,4 @@ export function SkillDataCell({
       )}
     </div>
   )
-}
+})

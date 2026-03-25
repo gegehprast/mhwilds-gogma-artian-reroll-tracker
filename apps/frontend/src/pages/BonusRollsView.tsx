@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { AddBonusCell } from "../components/AddBonusCell"
 import { BonusDataCell } from "../components/BonusDataCell"
@@ -9,7 +9,6 @@ import type { Tracker, Weapon } from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
 import { BONUSES } from "../lib/constants"
 import { addToast } from "../lib/toast"
-import type { BonusData } from "../types/bonus-roll-types"
 
 interface Props {
   tracker: Tracker
@@ -37,22 +36,6 @@ export function BonusRollsView({ tracker }: Props) {
     tracker.id,
     weapons,
   )
-
-  const updateRollMutation = useMutation({
-    mutationFn: ({
-      weaponId,
-      rollId,
-      data,
-    }: {
-      weaponId: string
-      rollId: string
-      data: Partial<BonusData>
-    }) => bonusRollService.update(tracker.id, weaponId, rollId, data),
-    onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["bonus-rolls", tracker.id, weaponId] })
-      addToast("Roll updated", "success")
-    },
-  })
 
   const [filterBonus, setFilterBonus] = useState("")
   const [filledOnly, setFilledOnly] = useState(false)
@@ -169,27 +152,13 @@ export function BonusRollsView({ tracker }: Props) {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??
               null
-            const highlightedBonuses =
-              !!filterBonus && !!roll
-                ? [
-                    roll.bonus1,
-                    roll.bonus2,
-                    roll.bonus3,
-                    roll.bonus4,
-                    roll.bonus5,
-                  ].map((b) => b === filterBonus)
-                : undefined
             return (
               <BonusDataCell
                 roll={roll}
                 index={idx}
                 weapon={w}
                 trackerId={tracker.id}
-                highlightedBonuses={highlightedBonuses}
-                updateRoll={(weaponId, rollId, data) =>
-                  updateRollMutation.mutate({ weaponId, rollId, data })
-                }
-                updating={updateRollMutation.isPending}
+                filterBonus={filterBonus || undefined}
               />
             )
           }}

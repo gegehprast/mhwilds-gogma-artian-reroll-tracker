@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useCommentMutations } from "../hooks/useComments"
-import type { BonusRollWithComments, Weapon } from "../lib/api-service"
+import type {
+  BonusRoll,
+  BonusRollWithComments,
+  Weapon,
+} from "../lib/api-service"
 import { bonusRollService } from "../lib/api-service"
 import { BONUSES } from "../lib/constants"
 import { addToast } from "../lib/toast"
@@ -17,22 +21,15 @@ export interface BonusDataCellProps {
   index: number
   weapon: Weapon
   trackerId: string
-  highlightedBonuses?: boolean[]
-  updateRoll: (
-    weaponId: string,
-    rollId: string,
-    data: Partial<BonusData>,
-  ) => void
-  updating: boolean
+  filterBonus?: string
 }
 
-export function BonusDataCell({
+export const BonusDataCell = memo(function BonusDataCell({
   roll,
   index,
   weapon,
   trackerId,
-  highlightedBonuses,
-  updateRoll,
+  filterBonus,
 }: BonusDataCellProps) {
   const qc = useQueryClient()
   const emptyValues: BonusData = {
@@ -69,13 +66,19 @@ export function BonusDataCell({
     create: createComment,
     update: updateComment,
     remove: removeComment,
-  } = useCommentMutations(trackerId, roll?.id, "bonus")
+  } = useCommentMutations(trackerId, weapon.id, roll?.id, "bonus")
 
   const createMutation = useMutation({
     mutationFn: ({ bonuses, idx }: { bonuses: BonusData; idx: number }) =>
       bonusRollService.create(trackerId, weapon.id, bonuses, idx),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bonus-rolls", trackerId, weapon.id] })
+    onSuccess: (newRoll: BonusRoll) => {
+      qc.setQueryData<BonusRollWithComments[]>(
+        ["bonus-rolls", trackerId, weapon.id],
+        (old) => {
+          const entry: BonusRollWithComments = { ...newRoll, comments: [] }
+          return [...(old ?? []), entry].sort((a, b) => a.index - b.index)
+        },
+      )
       qc.invalidateQueries({ queryKey: ["tracker"] })
       setValues(emptyValues)
       addToast("Roll saved", "success")
@@ -88,9 +91,38 @@ export function BonusDataCell({
       return bonusRollService.delete(trackerId, weapon.id, roll.id)
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bonus-rolls", trackerId, weapon.id] })
+      qc.setQueryData<BonusRollWithComments[]>(
+        ["bonus-rolls", trackerId, weapon.id],
+        (old) => old?.filter((r) => r.id !== roll?.id),
+      )
       qc.invalidateQueries({ queryKey: ["tracker"] })
       addToast("Roll deleted", "success")
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: (data: Partial<BonusData>) => {
+      if (!roll) throw new Error("No roll to update")
+      return bonusRollService.update(trackerId, weapon.id, roll.id, data)
+    },
+    onSuccess: (updatedRoll) => {
+      qc.setQueryData<BonusRollWithComments[]>(
+        ["bonus-rolls", trackerId, weapon.id],
+        (old) =>
+          old?.map((r) =>
+            r.id === updatedRoll.id
+              ? {
+                  ...r,
+                  bonus1: updatedRoll.bonus1,
+                  bonus2: updatedRoll.bonus2,
+                  bonus3: updatedRoll.bonus3,
+                  bonus4: updatedRoll.bonus4,
+                  bonus5: updatedRoll.bonus5,
+                }
+              : r,
+          ),
+      )
+      addToast("Roll updated", "success")
     },
   })
 
@@ -116,7 +148,7 @@ export function BonusDataCell({
         if (latest[key].trim() !== roll[key]) changed[key] = latest[key].trim()
       }
       if (Object.keys(changed).length > 0) {
-        updateRoll(weapon.id, roll.id, changed)
+        updateMutation.mutate(changed)
       }
     } else {
       createMutation.mutate({
@@ -133,6 +165,15 @@ export function BonusDataCell({
   }
 
   const inputBg = roll ? "bg-gray-700" : "bg-gray-800"
+  const highlightedBonuses = filterBonus
+    ? [
+        roll?.bonus1,
+        roll?.bonus2,
+        roll?.bonus3,
+        roll?.bonus4,
+        roll?.bonus5,
+      ].map((b) => b === filterBonus)
+    : undefined
 
   return (
     <div
@@ -209,4 +250,4 @@ export function BonusDataCell({
       )}
     </div>
   )
-}
+})

@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { AddSkillCell } from "../components/AddSkillCell"
 import { SkillDataCell } from "../components/SkillDataCell"
@@ -36,22 +36,6 @@ export function SkillRollsView({ tracker }: Props) {
     tracker.id,
     weapons,
   )
-
-  const updateRollMutation = useMutation({
-    mutationFn: ({
-      weaponId,
-      rollId,
-      data,
-    }: {
-      weaponId: string
-      rollId: string
-      data: { setSkill?: string; groupSkill?: string }
-    }) => skillRollService.update(tracker.id, weaponId, rollId, data),
-    onSuccess: (_, { weaponId }) => {
-      qc.invalidateQueries({ queryKey: ["skill-rolls", tracker.id, weaponId] })
-      addToast("Roll updated", "success")
-    },
-  })
 
   const [filterSetSkill, setFilterSetSkill] = useState("")
   const [filterGroupSkill, setFilterGroupSkill] = useState("")
@@ -179,28 +163,14 @@ export function SkillRollsView({ tracker }: Props) {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??
               null
-            const highlightSetSkill =
-              isFiltered &&
-              !!filterSetSkill &&
-              !!roll &&
-              roll.setSkill === filterSetSkill
-            const highlightGroupSkill =
-              isFiltered &&
-              !!filterGroupSkill &&
-              !!roll &&
-              roll.groupSkill === filterGroupSkill
             return (
               <SkillDataCell
                 roll={roll}
                 index={idx}
                 weapon={w}
                 trackerId={tracker.id}
-                highlightSetSkill={highlightSetSkill}
-                highlightGroupSkill={highlightGroupSkill}
-                updateRoll={(weaponId, rollId, data) =>
-                  updateRollMutation.mutate({ weaponId, rollId, data })
-                }
-                updating={updateRollMutation.isPending}
+                filterSetSkill={filterSetSkill || undefined}
+                filterGroupSkill={filterGroupSkill || undefined}
               />
             )
           }}
