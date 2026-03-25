@@ -15,6 +15,8 @@ export interface SkillDataCellProps {
   index: number
   weapon: Weapon
   trackerId: string
+  highlightSetSkill?: boolean
+  highlightGroupSkill?: boolean
   updateRoll: (
     weaponId: string,
     rollId: string,
@@ -28,6 +30,8 @@ export function SkillDataCell({
   index,
   weapon,
   trackerId,
+  highlightSetSkill,
+  highlightGroupSkill,
   updateRoll,
 }: SkillDataCellProps) {
   const qc = useQueryClient()
@@ -89,7 +93,7 @@ export function SkillDataCell({
 
   return (
     <div
-      className="relative group/cell flex flex-row gap-1 py-1"
+      className={`relative group/cell flex flex-row gap-1 py-1`}
       data-skill-row={`${weapon.id}-${index}`}
     >
       <div className="flex-1 flex flex-col gap-1 min-w-0">
@@ -105,6 +109,7 @@ export function SkillDataCell({
           options={SET_SKILLS}
           placeholder="Set skill"
           inputBg={inputBg}
+          ringHighlight={highlightSetSkill}
         />
         <div ref={groupContainerRef}>
           <ComboBox
@@ -121,6 +126,7 @@ export function SkillDataCell({
             options={GROUP_SKILLS}
             placeholder="Group skill"
             inputBg={inputBg}
+            ringHighlight={highlightGroupSkill}
           />
         </div>
       </div>

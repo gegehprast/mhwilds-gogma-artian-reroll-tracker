@@ -169,12 +169,23 @@ export function BonusRollsView({ tracker }: Props) {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??
               null
+            const highlightedBonuses =
+              !!filterBonus && !!roll
+                ? [
+                    roll.bonus1,
+                    roll.bonus2,
+                    roll.bonus3,
+                    roll.bonus4,
+                    roll.bonus5,
+                  ].map((b) => b === filterBonus)
+                : undefined
             return (
               <BonusDataCell
                 roll={roll}
                 index={idx}
                 weapon={w}
                 trackerId={tracker.id}
+                highlightedBonuses={highlightedBonuses}
                 updateRoll={(weaponId, rollId, data) =>
                   updateRollMutation.mutate({ weaponId, rollId, data })
                 }

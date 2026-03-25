@@ -9,6 +9,7 @@ interface ComboBoxProps {
   options: readonly string[]
   placeholder?: string
   inputBg?: string
+  ringHighlight?: boolean
 }
 
 export function ComboBox({
@@ -19,6 +20,7 @@ export function ComboBox({
   options,
   placeholder,
   inputBg = "bg-gray-800",
+  ringHighlight = false,
 }: ComboBoxProps) {
   const [open, setOpen] = useState(false)
   const [inputValue, setInputValue] = useState(value)
@@ -136,7 +138,7 @@ export function ComboBox({
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className={`w-full ${inputBg} text-gray-200 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-red-500/60 placeholder-gray-600${hasError ? " ring-2 ring-red-500" : ""}`}
+        className={`w-full ${inputBg} text-gray-200 text-xs rounded px-2 py-1 outline-none focus:ring-1 focus:ring-red-500/60 placeholder-gray-600${hasError ? " ring-2 ring-red-500" : ringHighlight ? " ring-2 ring-yellow-400" : ""}`}
       />
       {open &&
         filtered.length > 0 &&

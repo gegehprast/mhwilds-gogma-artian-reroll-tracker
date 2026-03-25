@@ -17,6 +17,7 @@ export interface BonusDataCellProps {
   index: number
   weapon: Weapon
   trackerId: string
+  highlightedBonuses?: boolean[]
   updateRoll: (
     weaponId: string,
     rollId: string,
@@ -30,6 +31,7 @@ export function BonusDataCell({
   index,
   weapon,
   trackerId,
+  highlightedBonuses,
   updateRoll,
 }: BonusDataCellProps) {
   const qc = useQueryClient()
@@ -134,7 +136,7 @@ export function BonusDataCell({
 
   return (
     <div
-      className="relative group/cell flex flex-row gap-1 py-1"
+      className={`relative group/cell flex flex-row gap-1 py-1`}
       data-bonus-row={`${weapon.id}-${index}`}
     >
       <div className="flex-1 flex flex-col gap-1 min-w-0">
@@ -161,6 +163,7 @@ export function BonusDataCell({
               options={BONUSES}
               placeholder={`Bonus ${i + 1}`}
               inputBg={inputBg}
+              ringHighlight={highlightedBonuses?.[i]}
             />
           </div>
         ))}

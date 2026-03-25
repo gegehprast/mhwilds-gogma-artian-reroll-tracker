@@ -179,12 +179,24 @@ export function SkillRollsView({ tracker }: Props) {
             const roll =
               (rollsByWeapon.get(w.id) ?? []).find((r) => r.index === idx) ??
               null
+            const highlightSetSkill =
+              isFiltered &&
+              !!filterSetSkill &&
+              !!roll &&
+              roll.setSkill === filterSetSkill
+            const highlightGroupSkill =
+              isFiltered &&
+              !!filterGroupSkill &&
+              !!roll &&
+              roll.groupSkill === filterGroupSkill
             return (
               <SkillDataCell
                 roll={roll}
                 index={idx}
                 weapon={w}
                 trackerId={tracker.id}
+                highlightSetSkill={highlightSetSkill}
+                highlightGroupSkill={highlightGroupSkill}
                 updateRoll={(weaponId, rollId, data) =>
                   updateRollMutation.mutate({ weaponId, rollId, data })
                 }
