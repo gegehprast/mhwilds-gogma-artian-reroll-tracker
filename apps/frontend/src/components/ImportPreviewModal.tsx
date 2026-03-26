@@ -166,7 +166,21 @@ export function ImportPreviewModal({
               }}
             />
           ) : (
-            <ImportDropZone onFile={processFile} parseError={parseError} />
+            <>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Import a JSON file from{" "}
+                <a
+                  href="https://www.nexusmods.com/monsterhunterwilds/mods/3902"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 underline"
+                >
+                  Artian Reroll Tracker v4.2.2
+                </a>{" "}
+                on Nexus Mods.
+              </p>
+              <ImportDropZone onFile={processFile} parseError={parseError} />
+            </>
           )}
 
           {importError && (
